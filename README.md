@@ -462,11 +462,7 @@ Create/edit VS Code settings file `~/.vscode/settings.json` or workspace `.vscod
         "--server",
         "http://localhost:5000"
       ],
-      "description": "HexStrike AI v5.0 - Advanced Cybersecurity Automation Platform",
-      "timeout": 300,
-      "env": {
-        "HEXSTRIKE_SERVER": "http://localhost:5000"
-      }
+      "description": "HexStrike AI v5.0 - Advanced Cybersecurity Automation Platform"
     }
   }
 }
@@ -518,12 +514,7 @@ Create/edit Cursor settings file `~/.cursor/mcp_settings.json`:
         "--server",
         "http://localhost:5000"
       ],
-      "description": "HexStrike AI v5.0 - Advanced Cybersecurity Automation Platform",
-      "timeout": 300,
-      "env": {
-        "HEXSTRIKE_SERVER": "http://localhost:5000"
-      },
-      "alwaysAllow": []
+      "description": "HexStrike AI v5.0 - Advanced Cybersecurity Automation Platform"
     }
   }
 }
