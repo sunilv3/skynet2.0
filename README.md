@@ -368,16 +368,18 @@ Edit `~/.config/Claude/claude_desktop_config.json`:
 **Configure VS Code settings** in `.vscode/settings.json`:
 ```json
 {
-  "mcp.servers": {
-    "hexstrike-ai": {
-      "command": "python3",
-      "args": [
-        "/path/to/hexstrike-ai/hexstrike_mcp.py",
-        "--server", "http://localhost:5000"
-      ],
-      "description": "HexStrike AI MCP Agents v5.0"
-    }
-  }
+	"servers": {
+		"hexstrike": {
+			"type": "stdio",
+			"command": "python3",
+			"args": [
+				"/path/to/hexstrike-ai/hexstrike_mcp.py",
+				"--server",
+				"http://localhost:5000"
+			]
+		}
+	},
+	"inputs": []
 }
 ```
 
