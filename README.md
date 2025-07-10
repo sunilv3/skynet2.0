@@ -333,7 +333,7 @@ sudo apt update && sudo apt install -y \
 # Stay tuned for containerized deployment options
 ```
 
-### 🌐 **Cloud Deployment**
+### 🌐 **Cloud Deployment (Updating SOON!)**
 
 <details>
 <summary><b>AWS EC2 Deployment</b></summary>
@@ -434,6 +434,135 @@ Edit `~/.config/Claude/claude_desktop_config.json`:
 "Generate XSS payloads for a PHP application"
 "Analyze this JWT token for vulnerabilities"
 "Start a bug bounty reconnaissance on target.com"
+```
+
+</details>
+
+### 💻 **VS Code Copilot Integration**
+
+<details>
+<summary><b>VS Code MCP Configuration</b></summary>
+
+**Step 1: Install VS Code Copilot Extension**
+```bash
+# Install VS Code Copilot extension from marketplace
+# or use command line
+code --install-extension GitHub.copilot
+```
+
+**Step 2: Configure MCP Settings**
+Create/edit VS Code settings file `~/.vscode/settings.json` or workspace `.vscode/settings.json`:
+```json
+{
+  "mcp.servers": {
+    "hexstrike-ai": {
+      "command": "python3",
+      "args": [
+        "/path/to/hexstrike-ai/hexstrike_mcp.py",
+        "--server",
+        "http://localhost:5000"
+      ],
+      "description": "HexStrike AI v5.0 - Advanced Cybersecurity Automation Platform",
+      "timeout": 300,
+      "env": {
+        "HEXSTRIKE_SERVER": "http://localhost:5000"
+      }
+    }
+  }
+}
+```
+
+**Step 3: Start Services and Use**
+```bash
+# Terminal 1: Start HexStrike Server
+python3 hexstrike_server.py
+
+# Open VS Code and use Copilot with prompts like:
+# "Use HexStrike AI to scan example.com with nmap"
+# "Generate XSS payloads for testing with HexStrike AI"
+# "Perform vulnerability assessment on target.com using HexStrike tools"
+```
+
+**Usage Examples in VS Code:**
+```
+// In VS Code with Copilot, use these prompts:
+// @hexstrike-ai scan example.com with comprehensive nmap scan
+// @hexstrike-ai generate SQL injection payloads for MySQL
+// @hexstrike-ai perform subdomain enumeration on target.com
+// @hexstrike-ai analyze JWT token vulnerabilities
+```
+
+</details>
+
+### 🎯 **Cursor AI Integration**
+
+<details>
+<summary><b>Cursor MCP Setup Guide</b></summary>
+
+**Step 1: Install Cursor**
+```bash
+# Download from cursor.sh and install
+# Or use package manager
+curl -fsSL https://cursor.sh/install.sh | sh
+```
+
+**Step 2: Configure MCP Settings**
+Create/edit Cursor settings file `~/.cursor/mcp_settings.json`:
+```json
+{
+  "mcpServers": {
+    "hexstrike-ai": {
+      "command": "python3",
+      "args": [
+        "/path/to/hexstrike-ai/hexstrike_mcp.py",
+        "--server",
+        "http://localhost:5000"
+      ],
+      "description": "HexStrike AI v5.0 - Advanced Cybersecurity Automation Platform",
+      "timeout": 300,
+      "env": {
+        "HEXSTRIKE_SERVER": "http://localhost:5000"
+      },
+      "alwaysAllow": []
+    }
+  }
+}
+```
+
+**Step 3: Start Services**
+```bash
+# Terminal 1: Start HexStrike Server
+python3 hexstrike_server.py
+
+# Terminal 2: Start Cursor
+cursor
+
+# Test integration in Cursor chat:
+# "Use HexStrike AI to perform penetration testing on example.com"
+# "Generate advanced payloads for web application testing"
+```
+
+**Usage in Cursor:**
+```
+# Example prompts in Cursor AI chat:
+"Scan example.com using HexStrike AI nmap integration with service detection"
+"Use HexStrike AI to enumerate subdomains for target.com"
+"Generate contextual XSS payloads using HexStrike AI for React application"
+"Perform comprehensive vulnerability assessment using HexStrike AI tools"
+"Analyze API security using HexStrike AI JWT and GraphQL tools"
+```
+
+**Advanced Cursor Integration:**
+```json
+# For advanced users, add to Cursor workspace settings:
+{
+  "hexstrike.integration": {
+    "autoConnect": true,
+    "serverUrl": "http://localhost:5000",
+    "defaultTools": ["nmap", "nuclei", "amass", "gobuster"],
+    "aiPayloadGeneration": true
+  }
+}
 ```
 
 </details>
