@@ -1,34 +1,66 @@
 <div align="center">
 
-# HexStrike AI Agents v5.0
-### The Ultimate AI-Powered Cybersecurity Automation Platform
+# HexStrike AI MCP Agents v5.0
+### AI-Powered Cybersecurity Tool Integration via Model Context Protocol
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Security](https://img.shields.io/badge/Security-Penetration%20Testing-red.svg)](https://github.com/0x4m4/hexstrike-ai)
-[![AI](https://img.shields.io/badge/AI-Powered-purple.svg)](https://github.com/0x4m4/hexstrike-ai)
+[![MCP](https://img.shields.io/badge/MCP-Compatible-purple.svg)](https://github.com/0x4m4/hexstrike-ai)
 [![Version](https://img.shields.io/badge/Version-5.0.0-orange.svg)](https://github.com/0x4m4/hexstrike-ai/releases)
 [![Tools](https://img.shields.io/badge/Security%20Tools-70%2B-brightgreen.svg)](https://github.com/0x4m4/hexstrike-ai)
 
-**Revolutionary AI-Driven Cybersecurity Framework for Penetration Testing, Bug Bounty Hunting, CTF Challenges, and Security Research**
+**MCP Server that enables AI agents to perform autonomous cybersecurity testing and penetration testing through 70+ integrated security tools**
 
-[🚀 Quick Start](#-quick-installation) • [📚 Documentation](#-comprehensive-feature-set) • [🛠️ Features](#-key-highlights) • [💡 Examples](#-usage-examples) • [🤝 Contributing](#-contributing) • [⭐ Star Us](https://github.com/0x4m4/hexstrike-ai)
+[🚀 Quick Start](#-quick-installation) • [📚 Documentation](#-architecture-overview) • [🛠️ Features](#-comprehensive-feature-set) • [💡 Examples](#-ai-agent-usage-examples) • [🤝 Contributing](#-contributing) • [⭐ Star Us](https://github.com/0x4m4/hexstrike-ai)
 
 </div>
 
 ---
 
-## **Why Choose HexStrike AI Agents v5.0?**
+## 🏗️ **Architecture Overview**
 
-HexStrike AI is the **most advanced open-source cybersecurity automation platform** that revolutionizes security testing by combining traditional penetration testing tools with cutting-edge artificial intelligence. Trusted by security professionals, researchers, and ethical hackers worldwide.
+HexStrike AI MCP Agents is a **Model Context Protocol (MCP) server** that bridges AI agents with cybersecurity tools. This project serves as the foundation for HexStrike AI - a separate automated AI pentesting platform.
+
+```mermaid
+graph TD
+    A[AI Agent - Claude/GPT/Copilot] -->|MCP Protocol| B[HexStrike MCP Server]
+    B -->|Tool Execution| C[Security Tools - nmap/nuclei/etc]
+    B -->|File Operations| D[Payload Generation]
+    B -->|Process Control| E[Real-time Monitoring]
+    C -->|Results| B
+    D -->|Payloads| B
+    E -->|Status| B
+    B -->|Analysis & Results| A
+    
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style C fill:#fff3e0
+    style D fill:#e8f5e8
+    style E fill:#fce4ec
+```
+
+### **How It Works:**
+1. **AI Agent Connection**: Claude, GPT, or other MCP-compatible AI agents connect to this server
+2. **Intelligent Tool Usage**: AI agents autonomously select and execute appropriate security tools
+3. **Real-time Results**: Agents receive live feedback and adapt their testing strategies
+4. **Autonomous Pentesting**: AI performs comprehensive security assessments without human intervention
+
+*Note: Some components of this project are integrated into the main HexStrike AI automated pentesting platform.*
+
+---
+
+## **Why Choose HexStrike AI MCP Agents?**
+
+Enable your AI agents to become autonomous cybersecurity experts with access to professional-grade security tools and intelligent automation capabilities.
 
 ### 🎯 **Perfect For:**
-- 🔍 **Penetration Testers** - Automate reconnaissance and vulnerability discovery
-- 💰 **Bug Bounty Hunters** - Accelerate target analysis and exploit development
-- 🏆 **CTF Players** - Advanced forensics, crypto, and reversing capabilities
-- 🔬 **Security Researchers** - AI-powered payload generation and testing
-- 🎖️ **Red Team Operators** - Comprehensive attack surface analysis
-- 📚 **Security Students** - Learning platform with real-world tools
+- 🤖 **AI Agent Developers** - Provide your agents with cybersecurity capabilities
+- 🔍 **Automated Penetration Testing** - Let AI agents perform comprehensive security assessments
+- 💰 **Bug Bounty Automation** - AI-driven target analysis and vulnerability discovery
+- 🏆 **CTF Automation** - AI agents that can solve security challenges
+- 🔬 **Security Research** - Automated tool orchestration and payload generation
+- 📚 **Security Training** - AI tutors with practical security tool access
 
 ---
 
@@ -36,23 +68,23 @@ HexStrike AI is the **most advanced open-source cybersecurity automation platfor
 
 <div align="center">
 
-| 🎯 **70+ Security Tools** | 🤖 **AI-Powered Intelligence** | ⚡ **50% Performance Boost** |
+| 🤖 **AI Agent Integration** | 🛠️ **70+ Security Tools** | ⚡ **Real-time Control** |
 |:---:|:---:|:---:|
-| Complete penetration testing arsenal | Contextual payload generation & analysis | Advanced caching & optimization |
+| MCP protocol for seamless AI connection | Complete penetration testing toolkit | Command termination & progress tracking |
 
-| 🎮 **Real-time Control** | 🌐 **Modern API Testing** | 🔧 **Professional Integration** |
+| 🔧 **Intelligent Automation** | 🌐 **Modern API Testing** | 📊 **Advanced Monitoring** |
 |:---:|:---:|:---:|
-| Command termination & progress tracking | GraphQL, JWT, REST API security | MCP, Roo Code, Claude integration |
+| AI-driven tool selection & usage | GraphQL, JWT, REST API security | Live dashboards & system metrics |
 
 </div>
 
 ### ✨ **What Makes Us Special:**
 
-- 🔥 **Zero Server Restart** - Terminate long-running scans without interruption
+- 🔥 **Zero Human Intervention** - AI agents handle complete security assessments
 - 🎨 **Beautiful Real-time Output** - Progress bars, ETA calculations, visual status
-- 🧠 **AI Contextual Payloads** - Technology-specific exploit generation
-- 📊 **Live Dashboard** - Monitor all processes with system metrics
-- 🔄 **Smart Caching** - 50% faster repeated operations
+- 🧠 **Intelligent Tool Selection** - AI chooses the right tools for each scenario
+- 📊 **Live Dashboard** - Monitor all AI agent activities with system metrics
+- 🔄 **Smart Caching** - Optimized performance for repeated operations
 - 🛡️ **Comprehensive Coverage** - Network, web, binary, cloud, CTF tools
 
 ---
@@ -161,10 +193,10 @@ HexStrike AI is the **most advanced open-source cybersecurity automation platfor
 
 </details>
 
-### 🤖 **AI-Powered Intelligence System**
+### 🤖 **AI-Powered Automation Features**
 
 <details>
-<summary><b>🎯 Contextual Payload Generation</b></summary>
+<summary><b>🎯 Intelligent Payload Generation</b></summary>
 
 **Smart Attack Vector Creation:**
 - **XSS Payloads** - Basic, advanced, filter bypass techniques
@@ -176,7 +208,7 @@ HexStrike AI is the **most advanced open-source cybersecurity automation platfor
 - **CSRF** - Cross-site request forgery payload generation
 
 **Features:**
-- 🧠 **Technology Detection** - Automatic context adaptation
+- 🧠 **Context Awareness** - AI adapts payloads to target technology
 - 🎯 **Risk Assessment** - Automatic payload severity rating
 - 🔄 **Encoding Variations** - URL, HTML, Unicode encoding
 - 📊 **Success Probability** - AI-calculated effectiveness scores
@@ -233,22 +265,11 @@ HexStrike AI is the **most advanced open-source cybersecurity automation platfor
 <details>
 <summary><b>🚀 Intelligent Caching System</b></summary>
 
-- **50% Performance Boost** - Smart result caching with LRU eviction
+- **Performance Optimization** - Smart result caching with LRU eviction
 - **Context-Aware TTL** - Dynamic cache expiration based on command type
 - **Hit Rate Optimization** - Statistical analysis and cache tuning
 - **Memory Management** - Configurable cache size and cleanup
 - **Cache Analytics** - Detailed performance metrics
-
-</details>
-
-<details>
-<summary><b>📊 Enhanced Logging & Monitoring</b></summary>
-
-- **Color-Coded Output** - Visual command execution status
-- **Structured Logging** - JSON-formatted audit trails
-- **Performance Metrics** - Real-time system resource monitoring
-- **Security Analytics** - Vulnerability discovery statistics
-- **Export Capabilities** - Multiple output formats (JSON, XML, CSV)
 
 </details>
 
@@ -267,7 +288,9 @@ Storage: 20GB+ free space
 Network: High-speed internet for tool updates
 ```
 
-### 🛠️ **Manual Installation**
+### 🛠️ **Installation Steps**
+
+#### **Step 1: Install Server Dependencies**
 
 ```bash
 # 1. Clone the repository
@@ -276,132 +299,38 @@ cd hexstrike-ai
 
 # 2. Install Python dependencies
 pip3 install -r requirements.txt
+```
 
-# 3. Start HexStrike AI Server
+#### **Step 2: Install Security Tools**
+
+**Required Tools** (install separately from their respective sources):
+- **Network Tools**: nmap, amass, subfinder, nuclei, autorecon, fierce, masscan
+- **Web Tools**: gobuster, ffuf, dirb, nikto, sqlmap, wpscan, burpsuite, zaproxy
+- **Password Tools**: hydra, john, hashcat, medusa, patator, crackmapexec
+- **Binary Tools**: gdb, radare2, binwalk, ropgadget, checksec, ghidra
+- **Forensics Tools**: volatility3, foremost, steghide, exiftool, hashpump
+- **Cloud Tools**: prowler, trivy, scout-suite, kube-hunter, kube-bench
+- **Recon Tools**: hakrawler, httpx, paramspider, aquatone, subjack, dnsenum
+
+*Note: Each tool should be installed according to its official documentation.*
+
+#### **Step 3: Start HexStrike Server**
+
+```bash
+# Start the MCP server
 python3 hexstrike_server.py
 
-# 4. Verify installation
+# Verify server is running
 curl http://localhost:5000/health
-
-# 5. Attach the MCP JSON Configuration with your desired AI and run it
 ```
 
-### 🛡️ **Required Kali Linux Tools**
+#### **Step 4: Configure AI Agent**
 
-The following security tools need to be installed on your Kali Linux system:
-
-```bash
-# Install required security tools (Complete list of all tools)
-sudo apt update && sudo apt install -y \
-    nmap amass subfinder nuclei autorecon fierce masscan \
-    gobuster ffuf dirb nikto sqlmap wpscan burpsuite zaproxy \
-    arjun wafw00f feroxbuster dotdotpwn xsser wfuzz \
-    hydra john hashcat medusa patator crackmapexec evil-winrm \
-    gdb radare2 binwalk ropgadget checksec ghidra xxd \
-    volatility3 foremost steghide exiftool hashpump autopsy sleuthkit \
-    prowler trivy scout-suite kube-hunter kube-bench cloudsploit \
-    hakrawler httpx paramspider aquatone subjack dnsenum
-```
-
-**Complete Tool List:**
-
-**🔍 Network Reconnaissance & Scanning:**
-- nmap, amass, subfinder, nuclei, autorecon, fierce, masscan
-
-**🌐 Web Application Security Testing:**
-- gobuster, ffuf, dirb, nikto, sqlmap, wpscan, burpsuite, zaproxy, arjun, wafw00f, feroxbuster, dotdotpwn, xsser, wfuzz
-
-**🔐 Authentication & Password Security:**
-- hydra, john, hashcat, medusa, patator, crackmapexec, evil-winrm
-
-**🔬 Binary Analysis & Reverse Engineering:**
-- gdb, radare2, binwalk, ropgadget, checksec, ghidra, xxd, strings, objdump
-
-**🏆 Advanced CTF & Forensics Tools:**
-- volatility3, foremost, steghide, exiftool, hashpump, autopsy, sleuthkit
-
-**☁️ Cloud & Container Security:**
-- prowler, trivy, scout-suite, kube-hunter, kube-bench, cloudsploit
-
-**🔥 Bug Bounty & Reconnaissance Arsenal:**
-- hakrawler, httpx, paramspider, aquatone, subjack, dnsenum, fierce
-
-### 🐳 **Docker Deployment (Coming Soon)**
-
-```bash
-# Docker support will be available in the next release
-# Stay tuned for containerized deployment options
-```
-
-### 🌐 **Cloud Deployment (Updating SOON!)**
-
-<details>
-<summary><b>AWS EC2 Deployment</b></summary>
-
-```bash
-# Launch EC2 instance with security group allowing port 5000
-aws ec2 run-instances \
-    --image-id ami-0abcdef1234567890 \
-    --instance-type t3.medium \
-    --key-name your-key-pair \
-    --security-groups hexstrike-sg
-
-# SSH and install
-ssh -i your-key.pem ubuntu@your-ec2-ip
-git clone https://github.com/0x4m4/hexstrike-ai.git
-cd hexstrike-ai && ./install.sh
-```
-
-</details>
+Use the provided MCP configuration file [`hexstrike-ai-mcp.json`](hexstrike-ai-mcp.json) with your AI agent.
 
 ---
 
 ## **AI Integration Setup**
-
-### **Roo Code Integration**
-
-<details>
-<summary><b>Complete Roo Code Setup Guide</b></summary>
-
-**Step 1: Install Roo Code**
-```bash
-# Download from roo.dev and install
-curl -sSL https://install.roo.dev | bash
-```
-
-**Step 2: Configure MCP Settings**
-Create/edit `~/.config/roo/mcp-settings.json`:
-```json
-{
-  "mcpServers": {
-    "hexstrike-ai": {
-      "command": "python3",
-      "args": [
-        "/path/hexstrike_mcp.py",
-        "--server",
-        "http://localhost:5000"
-      ],
-      "description": "HexStrike AI v5.0 - Advanced Cybersecurity Automation Platform",
-      "timeout": 300,
-      "alwaysAllow": []
-    }
-  }
-}
-```
-
-**Step 3: Start Services**
-```bash
-# Terminal 1: Start HexStrike Server
-python3 hexstrike_server.py
-
-# Terminal 2: Start Roo Code
-roo-code
-
-# Test integration in Roo Code:
-# "Scan example.com with nmap and analyze the results"
-```
-
-</details>
 
 ### **Claude Desktop Integration**
 
@@ -427,15 +356,6 @@ Edit `~/.config/Claude/claude_desktop_config.json`:
 }
 ```
 
-**Usage in Claude:**
-```
-# Example prompts:
-"Perform a comprehensive security scan of example.com"
-"Generate XSS payloads for a PHP application"
-"Analyze this JWT token for vulnerabilities"
-"Start a bug bounty reconnaissance on target.com"
-```
-
 </details>
 
 ### **VS Code Copilot Integration**
@@ -443,15 +363,7 @@ Edit `~/.config/Claude/claude_desktop_config.json`:
 <details>
 <summary><b>VS Code MCP Configuration</b></summary>
 
-**Step 1: Install VS Code Copilot Extension**
-```bash
-# Install VS Code Copilot extension from marketplace
-# or use command line
-code --install-extension GitHub.copilot
-```
-
-**Step 2: Configure MCP Settings**
-Create/edit VS Code settings file `~/.vscode/settings.json` or workspace `.vscode/settings.json`:
+**Configure VS Code settings** in `.vscode/settings.json`:
 ```json
 {
   "mcp.servers": {
@@ -459,33 +371,12 @@ Create/edit VS Code settings file `~/.vscode/settings.json` or workspace `.vscod
       "command": "python3",
       "args": [
         "/path/to/hexstrike-ai/hexstrike_mcp.py",
-        "--server",
-        "http://localhost:5000"
+        "--server", "http://localhost:5000"
       ],
-      "description": "HexStrike AI v5.0 - Advanced Cybersecurity Automation Platform"
+      "description": "HexStrike AI MCP Agents v5.0"
     }
   }
 }
-```
-
-**Step 3: Start Services and Use**
-```bash
-# Terminal 1: Start HexStrike Server
-python3 hexstrike_server.py
-
-# Open VS Code and use Copilot with prompts like:
-# "Use HexStrike AI to scan example.com with nmap"
-# "Generate XSS payloads for testing with HexStrike AI"
-# "Perform vulnerability assessment on target.com using HexStrike tools"
-```
-
-**Usage Examples in VS Code:**
-```
-// In VS Code with Copilot, use these prompts:
-// @hexstrike-ai scan example.com with comprehensive nmap scan
-// @hexstrike-ai generate SQL injection payloads for MySQL
-// @hexstrike-ai perform subdomain enumeration on target.com
-// @hexstrike-ai analyze JWT token vulnerabilities
 ```
 
 </details>
@@ -495,15 +386,7 @@ python3 hexstrike_server.py
 <details>
 <summary><b>Cursor MCP Setup Guide</b></summary>
 
-**Step 1: Install Cursor**
-```bash
-# Download from cursor.sh and install
-# Or use package manager
-curl -fsSL https://cursor.sh/install.sh | sh
-```
-
-**Step 2: Configure MCP Settings**
-Create/edit Cursor settings file `~/.cursor/mcp_settings.json`:
+**Configure Cursor settings** in `~/.cursor/mcp_settings.json`:
 ```json
 {
   "mcpServers": {
@@ -511,362 +394,62 @@ Create/edit Cursor settings file `~/.cursor/mcp_settings.json`:
       "command": "python3",
       "args": [
         "/path/to/hexstrike-ai/hexstrike_mcp.py",
-        "--server",
-        "http://localhost:5000"
+        "--server", "http://localhost:5000"
       ],
-      "description": "HexStrike AI v5.0 - Advanced Cybersecurity Automation Platform"
+      "description": "HexStrike AI MCP Agents v5.0"
     }
   }
 }
-```
-
-**Step 3: Start Services**
-```bash
-# Terminal 1: Start HexStrike Server
-python3 hexstrike_server.py
-
-# Terminal 2: Start Cursor
-cursor
-
-# Test integration in Cursor chat:
-# "Use HexStrike AI to perform penetration testing on example.com"
-# "Generate advanced payloads for web application testing"
-```
-
-**Usage in Cursor:**
-```
-# Example prompts in Cursor AI chat:
-"Scan example.com using HexStrike AI nmap integration with service detection"
-"Use HexStrike AI to enumerate subdomains for target.com"
-"Generate contextual XSS payloads using HexStrike AI for React application"
-"Perform comprehensive vulnerability assessment using HexStrike AI tools"
-"Analyze API security using HexStrike AI JWT and GraphQL tools"
-```
-
-**Advanced Cursor Integration:**
-```json
-# For advanced users, add to Cursor workspace settings:
-{
-  "hexstrike.integration": {
-    "autoConnect": true,
-    "serverUrl": "http://localhost:5000",
-    "defaultTools": ["nmap", "nuclei", "amass", "gobuster"],
-    "aiPayloadGeneration": true
-  }
-}
-```
-
-</details>
-
-### **Custom AI Integration**
-
-<details>
-<summary><b>Build Your Own Integration</b></summary>
-
-```python
-# Custom AI client example
-import requests
-
-class HexStrikeAI:
-    def __init__(self, base_url="http://localhost:5000"):
-        self.base_url = base_url
-    
-    def security_scan(self, target, scan_type="comprehensive"):
-        """Perform automated security scanning"""
-        if scan_type == "comprehensive":
-            # Network scan
-            nmap_result = self.nmap_scan(target)
-            # Web scan
-            web_result = self.web_scan(target)
-            # Vulnerability scan
-            vuln_result = self.vulnerability_scan(target)
-            
-            return {
-                "network": nmap_result,
-                "web": web_result,
-                "vulnerabilities": vuln_result
-            }
-    
-    def ai_payload_generation(self, attack_type, target_tech):
-        """Generate contextual security payloads"""
-        response = requests.post(f"{self.base_url}/api/ai/generate_payload",
-                               json={
-                                   "attack_type": attack_type,
-                                   "technology": target_tech,
-                                   "complexity": "advanced"
-                               })
-        return response.json()
-
-# Usage
-ai = HexStrikeAI()
-results = ai.security_scan("example.com")
-payloads = ai.ai_payload_generation("xss", "php")
 ```
 
 </details>
 
 ---
 
-## **Usage Examples**
+## **AI Agent Usage Examples**
 
-### 🎯 **Basic Security Scanning**
+### 🎯 **Example AI Conversations**
 
-<details>
-<summary><b>Network Reconnaissance Workflow</b></summary>
+#### **Autonomous Penetration Testing**
+```
+User: "Perform a comprehensive security assessment of example.com"
 
-```python
-import requests
+AI Agent: "I'll conduct a multi-phase security assessment:
+1. Starting with network reconnaissance using nmap...
+2. Performing subdomain enumeration with amass...
+3. Running web application scans with nuclei...
+4. Testing for common vulnerabilities...
 
-# 1. Advanced Nmap scan with service detection
-nmap_data = {
-    "target": "example.com",
-    "scan_type": "-sV -sC",
-    "ports": "1-10000",
-    "additional_args": "-T4 --script vuln"
-}
-nmap_result = requests.post("http://localhost:5000/api/tools/nmap", json=nmap_data)
-
-# 2. Subdomain enumeration with Amass
-amass_data = {
-    "domain": "example.com",
-    "mode": "enum",
-    "additional_args": "-active -brute -w /usr/share/wordlists/subdomains.txt"
-}
-amass_result = requests.post("http://localhost:5000/api/tools/amass", json=amass_data)
-
-# 3. Nuclei vulnerability scanning
-nuclei_data = {
-    "target": "https://example.com",
-    "severity": "high,critical",
-    "additional_args": "-rl 100"
-}
-nuclei_result = requests.post("http://localhost:5000/api/tools/nuclei", json=nuclei_data)
+[Real-time results and analysis follow]"
 ```
 
-</details>
+#### **Intelligent Vulnerability Discovery**
+```
+User: "Find XSS vulnerabilities in this web application"
 
-<details>
-<summary><b>Web Application Security Testing</b></summary>
+AI Agent: "I'll test for XSS vulnerabilities:
+1. Crawling the application with hakrawler...
+2. Discovering parameters with paramspider...
+3. Generating contextual XSS payloads...
+4. Testing each injection point...
 
-```python
-# Directory enumeration with Gobuster
-gobuster_data = {
-    "url": "https://example.com",
-    "mode": "dir",
-    "wordlist": "/usr/share/wordlists/dirb/big.txt",
-    "additional_args": "-x php,html,js,txt -t 50 -k"
-}
-gobuster_result = requests.post("http://localhost:5000/api/tools/gobuster", json=gobuster_data)
-
-# SQL injection testing with SQLMap
-sqlmap_data = {
-    "url": "https://example.com/login.php",
-    "data": "username=admin&password=test",
-    "additional_args": "--batch --level 3 --risk 2 --dbs"
-}
-sqlmap_result = requests.post("http://localhost:5000/api/tools/sqlmap", json=sqlmap_data)
-
-# Web application scanning with Nikto
-nikto_data = {
-    "host": "https://example.com",
-    "additional_args": "-ssl -Display V"
-}
-nikto_result = requests.post("http://localhost:5000/api/tools/nikto", json=nikto_data)
+[Detailed vulnerability report with proof-of-concepts]"
 ```
 
-</details>
+#### **Advanced API Security Testing**
+```
+User: "Audit this GraphQL API for security issues"
 
-### 🤖 **AI-Powered Security Testing**
+AI Agent: "I'll perform a comprehensive GraphQL security audit:
+1. Testing introspection queries...
+2. Analyzing query depth limitations...
+3. Checking for batch query vulnerabilities...
+4. Examining authentication bypass techniques...
 
-<details>
-<summary><b>Intelligent Payload Generation</b></summary>
-
-```python
-# Generate contextual XSS payloads for PHP application
-xss_payload_data = {
-    "attack_type": "xss",
-    "complexity": "advanced",
-    "technology": "php",
-    "url": "https://vulnerable-app.com/search.php"
-}
-xss_payloads = requests.post("http://localhost:5000/api/ai/generate_payload", json=xss_payload_data)
-
-# Generate SQL injection payloads for MySQL
-sqli_payload_data = {
-    "attack_type": "sqli",
-    "complexity": "time_based",
-    "technology": "mysql",
-    "url": "https://vulnerable-app.com/login.php"
-}
-sqli_payloads = requests.post("http://localhost:5000/api/ai/generate_payload", json=sqli_payload_data)
-
-# Comprehensive attack suite generation
-attack_suite_data = {
-    "target_url": "https://api.example.com",
-    "attack_types": "xss,sqli,lfi,ssti,xxe"
-}
-attack_suite = requests.post("http://localhost:5000/api/ai/generate_attack_suite", json=attack_suite_data)
+[Complete API security assessment with recommendations]"
 ```
 
-</details>
-
-<details>
-<summary><b>Advanced API Security Testing</b></summary>
-
-```python
-# GraphQL security assessment
-graphql_data = {
-    "endpoint": "https://api.example.com/graphql",
-    "introspection": True,
-    "query_depth": 15,
-    "test_mutations": True
-}
-graphql_result = requests.post("http://localhost:5000/api/tools/graphql_scanner", json=graphql_data)
-
-# JWT token comprehensive analysis
-jwt_data = {
-    "jwt_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
-    "target_url": "https://api.example.com/protected"
-}
-jwt_result = requests.post("http://localhost:5000/api/tools/jwt_analyzer", json=jwt_data)
-
-# API schema security analysis
-schema_data = {
-    "schema_url": "https://api.example.com/swagger.json",
-    "schema_type": "openapi"
-}
-schema_result = requests.post("http://localhost:5000/api/tools/api_schema_analyzer", json=schema_data)
-
-# Comprehensive API security audit
-api_audit_data = {
-    "base_url": "https://api.example.com",
-    "schema_url": "https://api.example.com/swagger.json",
-    "jwt_token": "eyJhbGciOiJIUzI1NiI...",
-    "graphql_endpoint": "https://api.example.com/graphql"
-}
-audit_result = requests.post("http://localhost:5000/api/tools/comprehensive_api_audit", json=api_audit_data)
-```
-
-</details>
-
-### 🎮 **Real-time Process Management**
-
-<details>
-<summary><b>Command Control & Monitoring</b></summary>
-
-```python
-# List all active processes with detailed information
-processes = requests.get("http://localhost:5000/api/processes/list")
-print(f"Active processes: {processes.json()['total_count']}")
-
-# Get comprehensive process dashboard
-dashboard = requests.get("http://localhost:5000/api/processes/dashboard")
-for process in dashboard.json()['processes']:
-    print(f"PID {process['pid']}: {process['progress_bar']} {process['progress_percent']}")
-
-# Terminate a long-running scan that's stuck
-terminate_result = requests.post("http://localhost:5000/api/processes/terminate/12345")
-
-# Pause and resume processes for resource management
-pause_result = requests.post("http://localhost:5000/api/processes/pause/12345")
-resume_result = requests.post("http://localhost:5000/api/processes/resume/12345")
-
-# Monitor specific process status
-status = requests.get("http://localhost:5000/api/processes/status/12345")
-print(f"Process status: {status.json()['process']['status']}")
-```
-
-</details>
-
-### 🏆 **CTF & Digital Forensics**
-
-<details>
-<summary><b>Advanced Analysis Workflow</b></summary>
-
-```python
-# Memory forensics with Volatility3
-volatility_data = {
-    "memory_file": "/tmp/challenge.dump",
-    "plugin": "windows.pslist",
-    "additional_args": "--output-file /tmp/processes.txt"
-}
-vol_result = requests.post("http://localhost:5000/api/tools/volatility3", json=volatility_data)
-
-# File carving with Foremost
-foremost_data = {
-    "input_file": "/tmp/disk.img",
-    "output_dir": "/tmp/carved_files",
-    "file_types": "jpg,png,pdf,doc,zip"
-}
-foremost_result = requests.post("http://localhost:5000/api/tools/foremost", json=foremost_data)
-
-# Steganography analysis
-steghide_data = {
-    "action": "extract",
-    "cover_file": "/tmp/suspicious_image.jpg",
-    "passphrase": "secret123",
-    "output_file": "/tmp/hidden_data.txt"
-}
-steg_result = requests.post("http://localhost:5000/api/tools/steghide", json=steghide_data)
-
-# Metadata extraction
-exiftool_data = {
-    "file_path": "/tmp/evidence.jpg",
-    "output_format": "json"
-}
-exif_result = requests.post("http://localhost:5000/api/tools/exiftool", json=exiftool_data)
-```
-
-</details>
-
-### 🏢 **Enterprise Bug Bounty Workflow**
-
-<details>
-<summary><b>Complete Reconnaissance Pipeline</b></summary>
-
-```bash
-#!/bin/bash
-# Automated bug bounty reconnaissance script
-
-TARGET="example.com"
-API_BASE="http://localhost:5000"
-
-echo "🎯 Starting comprehensive reconnaissance for $TARGET"
-
-# 1. Subdomain Discovery
-echo "📡 Phase 1: Subdomain enumeration"
-curl -s -X POST "$API_BASE/api/tools/amass" \
-  -H "Content-Type: application/json" \
-  -d "{\"domain\": \"$TARGET\", \"mode\": \"enum\"}" | jq .
-
-# 2. HTTP probing
-echo "🌐 Phase 2: HTTP service discovery"
-curl -s -X POST "$API_BASE/api/tools/httpx" \
-  -H "Content-Type: application/json" \
-  -d "{\"targets\": \"$TARGET\", \"methods\": \"GET,POST\"}" | jq .
-
-# 3. Web crawling
-echo "🕷️ Phase 3: Web endpoint discovery"
-curl -s -X POST "$API_BASE/api/tools/hakrawler" \
-  -H "Content-Type: application/json" \
-  -d "{\"url\": \"https://$TARGET\", \"depth\": 3}" | jq .
-
-# 4. Vulnerability scanning
-echo "🔍 Phase 4: Vulnerability assessment"
-curl -s -X POST "$API_BASE/api/tools/nuclei" \
-  -H "Content-Type: application/json" \
-  -d "{\"target\": \"https://$TARGET\", \"severity\": \"high,critical\"}" | jq .
-
-# 5. AI-powered payload testing
-echo "🤖 Phase 5: AI payload generation"
-curl -s -X POST "$API_BASE/api/ai/generate_attack_suite" \
-  -H "Content-Type: application/json" \
-  -d "{\"target_url\": \"https://$TARGET\", \"attack_types\": \"xss,sqli,lfi\"}" | jq .
-
-echo "✅ Reconnaissance complete!"
-```
-
-</details>
+*Video demonstrations and screenshots showing AI agents in action will be added here.*
 
 ---
 
@@ -880,7 +463,6 @@ echo "✅ Reconnaissance complete!"
 | `/api/command` | POST | Execute arbitrary commands | `command`, `use_cache` |
 | `/api/telemetry` | GET | System performance metrics | None |
 | `/api/cache/stats` | GET | Cache performance statistics | None |
-| `/api/cache/clear` | POST | Clear system cache | None |
 
 ### 🛡️ **Security Tools API**
 
@@ -893,32 +475,6 @@ echo "✅ Reconnaissance complete!"
 | **Amass** | `/api/tools/amass` | `domain`, `mode`, `additional_args` |
 | **Subfinder** | `/api/tools/subfinder` | `domain`, `silent`, `additional_args` |
 | **Nuclei** | `/api/tools/nuclei` | `target`, `severity`, `additional_args` |
-| **AutoRecon** | `/api/tools/autorecon` | `target`, `additional_args` |
-
-</details>
-
-<details>
-<summary><b>Web Application Security</b></summary>
-
-| Tool | Endpoint | Key Parameters |
-|------|----------|---------------|
-| **Gobuster** | `/api/tools/gobuster` | `url`, `mode`, `wordlist`, `additional_args` |
-| **SQLMap** | `/api/tools/sqlmap` | `url`, `data`, `additional_args` |
-| **Nikto** | `/api/tools/nikto` | `host`, `additional_args` |
-| **WPScan** | `/api/tools/wpscan` | `url`, `additional_args` |
-| **FFuf** | `/api/tools/ffuf` | `url`, `wordlist`, `additional_args` |
-
-</details>
-
-<details>
-<summary><b>Advanced API Testing</b></summary>
-
-| Tool | Endpoint | Key Parameters |
-|------|----------|---------------|
-| **GraphQL Scanner** | `/api/tools/graphql_scanner` | `endpoint`, `introspection`, `query_depth` |
-| **JWT Analyzer** | `/api/tools/jwt_analyzer` | `jwt_token`, `target_url` |
-| **API Fuzzer** | `/api/tools/api_fuzzer` | `base_url`, `endpoints`, `methods` |
-| **Schema Analyzer** | `/api/tools/api_schema_analyzer` | `schema_url`, `schema_type` |
 
 </details>
 
@@ -945,226 +501,93 @@ echo "✅ Reconnaissance complete!"
 | **List Processes** | `GET /api/processes/list` | List all active processes |
 | **Process Status** | `GET /api/processes/status/<pid>` | Get detailed process information |
 | **Terminate** | `POST /api/processes/terminate/<pid>` | Stop specific process |
-| **Pause** | `POST /api/processes/pause/<pid>` | Pause running process |
-| **Resume** | `POST /api/processes/resume/<pid>` | Resume paused process |
 | **Dashboard** | `GET /api/processes/dashboard` | Live monitoring dashboard |
 
 </details>
 
 ---
 
-## **Advanced Use Cases**
+## **Troubleshooting**
 
-### 🎯 **Enterprise Security Assessment**
+### Common Issues
 
-<details>
-<summary><b>Complete Infrastructure Audit</b></summary>
+1. **MCP Connection Failed**:
+   ```bash
+   # Check if server is running
+   netstat -tlnp | grep 5000
+   
+   # Restart server
+   python3 hexstrike_server.py
+   ```
 
-```python
-class EnterpriseSecurityAudit:
-    def __init__(self, base_url="http://localhost:5000"):
-        self.api = base_url
-        
-    def comprehensive_assessment(self, target_scope):
-        """Complete enterprise security assessment"""
-        results = {
-            "scope": target_scope,
-            "findings": {},
-            "risk_rating": "UNKNOWN"
-        }
-        
-        # Phase 1: Network Discovery
-        network_results = self.network_discovery(target_scope)
-        results["findings"]["network"] = network_results
-        
-        # Phase 2: Web Application Testing
-        web_results = self.web_app_testing(target_scope)
-        results["findings"]["web_applications"] = web_results
-        
-        # Phase 3: API Security Assessment
-        api_results = self.api_security_testing(target_scope)
-        results["findings"]["api_security"] = api_results
-        
-        # Phase 4: Cloud Security Review
-        cloud_results = self.cloud_security_assessment()
-        results["findings"]["cloud_security"] = cloud_results
-        
-        # Risk Calculation
-        results["risk_rating"] = self.calculate_risk(results["findings"])
-        
-        return results
-    
-    def network_discovery(self, scope):
-        """Network reconnaissance and vulnerability discovery"""
-        # Implementation details...
-        pass
-    
-    def web_app_testing(self, scope):
-        """Web application security testing"""
-        # Implementation details...
-        pass
-    
-    def api_security_testing(self, scope):
-        """API security assessment"""
-        # Implementation details...
-        pass
-    
-    def cloud_security_assessment(self):
-        """Cloud infrastructure security review"""
-        # Implementation details...
-        pass
+2. **Security Tools Not Found**:
+   ```bash
+   # Check tool availability
+   which nmap gobuster nuclei
+   
+   # Install missing tools from their official sources
+   ```
+
+3. **AI Agent Cannot Connect**:
+   ```bash
+   # Verify MCP configuration paths
+   # Check server logs for connection attempts
+   python3 hexstrike_mcp.py --debug
+   ```
+
+### Debug Mode
+Enable debug mode for detailed logging:
+```bash
+python3 hexstrike_server.py --debug
+python3 hexstrike_mcp.py --debug
 ```
-
-</details>
-
-### 🏆 **CTF Competition Framework**
-
-<details>
-<summary><b>Automated CTF Challenge Solver</b></summary>
-
-```python
-class CTFSolver:
-    """Automated CTF challenge analysis and solving"""
-    
-    def __init__(self):
-        self.api_base = "http://localhost:5000"
-        self.categories = {
-            "forensics": self.solve_forensics,
-            "crypto": self.solve_crypto,
-            "web": self.solve_web,
-            "pwn": self.solve_pwn,
-            "reverse": self.solve_reverse
-        }
-    
-    def analyze_challenge(self, challenge_file, category=None):
-        """Automatically analyze and attempt to solve CTF challenge"""
-        if not category:
-            category = self.detect_category(challenge_file)
-        
-        if category in self.categories:
-            return self.categories[category](challenge_file)
-        else:
-            return self.generic_analysis(challenge_file)
-    
-    def solve_forensics(self, file_path):
-        """Automated forensics analysis"""
-        results = {}
-        
-        # Memory dump analysis
-        if file_path.endswith('.dump') or file_path.endswith('.mem'):
-            vol_result = requests.post(f"{self.api_base}/api/tools/volatility3",
-                                     json={"memory_file": file_path, "plugin": "windows.pslist"})
-            results["memory_analysis"] = vol_result.json()
-        
-        # File carving
-        foremost_result = requests.post(f"{self.api_base}/api/tools/foremost",
-                                      json={"input_file": file_path, "output_dir": "/tmp/carved"})
-        results["file_carving"] = foremost_result.json()
-        
-        # Steganography detection
-        steg_result = requests.post(f"{self.api_base}/api/tools/steghide",
-                                  json={"action": "info", "cover_file": file_path})
-        results["steganography"] = steg_result.json()
-        
-        return results
-    
-    def solve_web(self, url):
-        """Automated web challenge solving"""
-        # AI payload generation for web challenges
-        payload_result = requests.post(f"{self.api_base}/api/ai/generate_attack_suite",
-                                     json={"target_url": url, "attack_types": "xss,sqli,lfi,ssti"})
-        return payload_result.json()
-```
-
-</details>
-
-### 💰 **Bug Bounty Automation**
-
-<details>
-<summary><b>Intelligent Target Discovery</b></summary>
-
-```python
-class BugBountyHunter:
-    """Automated bug bounty hunting framework"""
-    
-    def __init__(self):
-        self.api_base = "http://localhost:5000"
-        self.discovered_assets = []
-        self.vulnerabilities = []
-    
-    def hunt(self, target_domain, scope_file=None):
-        """Complete bug bounty hunting workflow"""
-        
-        # Phase 1: Asset Discovery
-        print("🎯 Phase 1: Asset Discovery")
-        assets = self.discover_assets(target_domain)
-        
-        # Phase 2: Technology Stack Analysis
-        print("🔍 Phase 2: Technology Analysis")
-        tech_stack = self.analyze_technology_stack(assets)
-        
-        # Phase 3: Vulnerability Discovery
-        print("💥 Phase 3: Vulnerability Discovery")
-        vulns = self.discover_vulnerabilities(assets, tech_stack)
-        
-        # Phase 4: Exploitation Validation
-        print("🧪 Phase 4: Exploitation Validation")
-        validated_vulns = self.validate_vulnerabilities(vulns)
-        
-        return {
-            "assets": assets,
-            "technology_stack": tech_stack,
-            "vulnerabilities": vulns,
-            "validated_vulnerabilities": validated_vulns
-        }
-    
-    def discover_assets(self, domain):
-        """Multi-source asset discovery"""
-        assets = []
-        
-        # Subdomain enumeration
-        amass_result = requests.post(f"{self.api_base}/api/tools/amass",
-                                   json={"domain": domain, "mode": "enum"})
-        
-        # HTTP probing
-        httpx_result = requests.post(f"{self.api_base}/api/tools/httpx",
-                                   json={"targets": domain})
-        
-        # Web crawling
-        hakrawler_result = requests.post(f"{self.api_base}/api/tools/hakrawler",
-                                       json={"url": f"https://{domain}", "depth": 3})
-        
-        return assets
-    
-    def analyze_technology_stack(self, assets):
-        """Technology fingerprinting and analysis"""
-        # Implementation for technology detection
-        pass
-    
-    def discover_vulnerabilities(self, assets, tech_stack):
-        """AI-powered vulnerability discovery"""
-        vulns = []
-        
-        for asset in assets:
-            # Generate contextual payloads based on technology stack
-            payload_result = requests.post(f"{self.api_base}/api/ai/generate_payload",
-                                         json={
-                                             "attack_type": "xss",
-                                             "technology": tech_stack.get(asset, "generic"),
-                                             "complexity": "advanced"
-                                         })
-            vulns.append(payload_result.json())
-        
-        return vulns
-```
-
-</details>
 
 ---
 
-## **Contributing**
+## **Performance Features**
 
-We welcome contributions from the cybersecurity community! Here's how you can help make HexStrike AI even better:
+- **⚡ Result Caching**: Optimized performance for repeated operations
+- **🔄 Concurrent Execution**: Multiple tools can run simultaneously
+- **📊 Real-time Progress**: Live command output and progress tracking
+- **💾 Memory Optimization**: Efficient handling of large outputs
+- **🔧 Automatic Cleanup**: Temporary files and processes are managed
+
+---
+
+## **What's New in v5.0**
+
+### 🔥 Major Enhancements
+- **MCP Integration**: Full Model Context Protocol support for AI agents
+- **Advanced Process Control**: Real-time command termination and monitoring
+- **Enhanced Caching**: LRU cache with intelligent TTL management
+- **Cloud Security**: Comprehensive cloud and container security tools
+- **AI Automation**: Intelligent payload generation and testing capabilities
+- **File Operations**: Complete file management system for AI agents
+
+### 🆕 New Features
+- Real-time command output streaming
+- Progress indicators for long-running operations
+- Contextual payload generation system
+- Advanced API security testing (GraphQL, JWT)
+- Comprehensive process dashboard
+- Enhanced error handling with detailed logging
+
+---
+
+## 🔒 Security Considerations
+
+⚠️ **Important Security Notes**:
+- This tool provides AI agents with powerful system access
+- Run in isolated environments or dedicated security testing VMs
+- AI agents can execute arbitrary security tools - ensure proper oversight
+- Monitor AI agent activities through the real-time dashboard
+- Consider implementing authentication for production deployments
+
+---
+
+## 📝 Contributing
+
+We welcome contributions from the cybersecurity and AI community!
 
 ### 🔧 **Development Environment Setup**
 
@@ -1178,159 +601,31 @@ python3 -m venv hexstrike-dev
 source hexstrike-dev/bin/activate
 
 # 3. Install development dependencies
-pip install -r requirements-dev.txt
+pip install -r requirements.txt
 
-# 4. Install pre-commit hooks
-pre-commit install
-
-# 5. Run tests to ensure everything works
-python -m pytest tests/ -v
-
-# 6. Start development server
+# 4. Start development server
 python3 hexstrike_server.py --port 5000 --debug
 ```
 
-### 📝 **Contribution Guidelines**
-
-1. **🍴 Fork** the repository on GitHub
-2. **🌿 Create** a feature branch (`git checkout -b feature/amazing-security-tool`)
-3. **🔧 Develop** your enhancement with comprehensive testing
-4. **📚 Document** your changes with examples and usage
-5. **✅ Test** thoroughly across different environments
-6. **📤 Submit** a detailed pull request
-
 ### 🎯 **Priority Areas for Contribution**
+- **🤖 AI Agent Integrations** - Support for new AI platforms and agents
+- **🛠️ Security Tool Additions** - Integration of additional security tools
+- **⚡ Performance Optimizations** - Caching improvements and scalability enhancements
+- **📖 Documentation** - AI usage examples and integration guides
+- **🧪 Testing Frameworks** - Automated testing for AI agent interactions
 
-- **🛠️ New Security Tools** - Integration of additional penetration testing tools
-- **🧠 AI Enhancements** - Improved payload generation and analysis algorithms
-- **⚡ Performance** - Optimization, caching improvements, and scalability
-- **📖 Documentation** - Tutorials, use cases, and advanced examples
-- **🧪 Testing** - Unit tests, integration tests, and security validations
-- **🌐 Integrations** - New AI platforms and cybersecurity frameworks
-
-### 💡 **Feature Request Process**
-
-1. **🔍 Check** existing issues and feature requests
-2. **📝 Create** detailed issue with use case description
-3. **💬 Discuss** implementation approach with maintainers
-4. **🚀 Implement** with proper testing and documentation
-5. **🎉 Celebrate** your contribution to the community!
-
-
-## 🔒 Security Considerations
-
-⚠️ **Important Security Notes**:
-- This tool executes system commands and should only be used in controlled environments
-- Run on isolated systems or VMs
-- Consider implementing authentication for production use
-- Monitor system resources and set appropriate limits
-
-## 🤝 MCP Integration
-
-HexStrike AI implements the Model Context Protocol (MCP) for seamless AI agent integration:
-
-```python
-# AI agents can call tools directly:
-nmap_scan(target="example.com", ports="80,443")
-nuclei_scan(target="https://example.com", severity="high")
-create_file(filename="exploit.py", content="python_code_here")
-```
-
-## 📈 Performance Features
-
-- **⚡ Result Caching**: 50% faster repeated operations
-- **🔄 Concurrent Execution**: Multiple tools can run simultaneously
-- **📊 Real-time Progress**: Live command output and progress tracking
-- **💾 Memory Optimization**: Efficient handling of large outputs
-- **🔧 Automatic Cleanup**: Temporary files and processes are managed
-
-## 🛠️ Troubleshooting
-
-### Common Issues
-
-1. **Connection Refused**:
-   ```bash
-   # Check if server is running
-   netstat -tlnp | grep 5000
-   
-   # Start server
-   python3 hexstrike_server.py
-   ```
-
-2. **Missing Tools**:
-   ```bash
-   # Install missing tools
-   apt update && apt install nmap gobuster nuclei
-   
-   # Check tool availability
-   curl http://localhost:5000/health
-   ```
-
-3. **Python Package Issues**:
-   ```bash
-   # Install in virtual environment
-   python3 -m venv hexstrike_env
-   source hexstrike_env/bin/activate
-   pip install flask psutil requests fastmcp
-   ```
-
-### Debug Mode
-Enable debug mode for detailed logging:
-```bash
-python3 hexstrike_server.py --debug
-python3 hexstrike_mcp.py --debug
-```
-
-## 🔄 Architecture Overview
-
-```mermaid
-graph TD
-    A[AI Agent] -->|MCP Protocol| B[hexstrike_mcp.py]
-    B -->|HTTP/JSON| C[hexstrike_server.py]
-    C -->|Enhanced Execution| D[Security Tools]
-    C -->|Caching| E[Cache Layer]
-    C -->|Telemetry| F[Metrics Collection]
-    C -->|File Ops| G[File System]
-    D -->|Results| C
-    E -->|Fast Retrieval| B
-    F -->|Analytics| B
-    G -->|File Management| B
-```
-
-## 🎯 What's New in v5.0
-
-### 🔥 Major Enhancements
-- **Visual Overhaul**: Reddish color scheme, enhanced banner, real-time logging
-- **Advanced Caching**: LRU cache with TTL for 50% performance improvement
-- **Cloud Security**: Prowler, Trivy, kube-hunter integration
-- **File Operations**: Complete file management system
-- **Python Environment**: Automatic dependency management
-- **Telemetry**: Comprehensive system monitoring
-
-### 🆕 New Features
-- Real-time command output streaming
-- Progress indicators for long-running operations
-- Payload generation (up to 100MB)
-- Cache management endpoints
-- Enhanced error handling with partial results
-- System resource monitoring
-
-## 📝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+---
 
 ## 📄 License
 
 MIT License - see LICENSE file for details.
 
+---
+
 ## 👨‍💻 Author
 
-**m0x4m4** - [www.0x4m4.com](https://www.0x4m4.com)
+**m0x4m4** - [www.0x4m4.com](https://www.0x4m4.com) | [HexStrike](https://www.hexstrike.com)
 
 ---
 
-**HexStrike AI v5.0 - The future of AI-driven cybersecurity automation!**
+**HexStrike AI MCP Agents v5.0 - Empowering AI agents with autonomous cybersecurity capabilities!**
