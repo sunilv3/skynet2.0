@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🔥 HexStrike AI Agents v5.0
+# HexStrike AI Agents v5.0
 ### The Ultimate AI-Powered Cybersecurity Automation Platform
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
@@ -18,7 +18,7 @@
 
 ---
 
-## 🌟 **Why Choose HexStrike AI Agents v5.0?**
+## **Why Choose HexStrike AI Agents v5.0?**
 
 HexStrike AI is the **most advanced open-source cybersecurity automation platform** that revolutionizes security testing by combining traditional penetration testing tools with cutting-edge artificial intelligence. Trusted by security professionals, researchers, and ethical hackers worldwide.
 
