@@ -454,6 +454,8 @@ AI Agent: "I'll perform a comprehensive GraphQL security audit:
 ```
 
 <p align="center">
+  <img src="assets/usage_input.png" alt="Usage Output Example" width="600"/>
+  <br/>
   <img src="assets/usage_output.png" alt="Usage Output Example" width="600"/>
   <br/>
   <img src="assets/usage_server1.png" alt="Server Usage Example 1" width="600"/>
