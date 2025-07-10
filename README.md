@@ -25,6 +25,17 @@
 HexStrike AI MCP Agents is a **Model Context Protocol (MCP) server** that bridges AI agents with cybersecurity tools. This project serves as the foundation for HexStrike AI - a separate automated AI pentesting platform.
 
 ```mermaid
+%%{init: {"themeVariables": {
+  "primaryColor": "#b71c1c",
+  "secondaryColor": "#ff5252",
+  "tertiaryColor": "#ff8a80",
+  "background": "#2d0000",
+  "edgeLabelBackground":"#b71c1c",
+  "fontFamily": "monospace",
+  "fontSize": "20px",
+  "fontColor": "#fffde7",
+  "nodeTextColor": "#fffde7"
+}}}%%
 graph TD
     A[AI Agent - Claude/GPT/Copilot] -->|MCP Protocol| B[HexStrike MCP Server]
     B -->|Tool Execution| C[Security Tools - nmap/nuclei/etc]
@@ -35,11 +46,11 @@ graph TD
     E -->|Status| B
     B -->|Analysis & Results| A
     
-    style A fill:#ff6b6b,stroke:#d63031,stroke-width:3px,color:#fff
-    style B fill:#a29bfe,stroke:#6c5ce7,stroke-width:3px,color:#fff
-    style C fill:#fd79a8,stroke:#e84393,stroke-width:3px,color:#fff
-    style D fill:#fdcb6e,stroke:#e17055,stroke-width:3px,color:#fff
-    style E fill:#55a3ff,stroke:#0984e3,stroke-width:3px,color:#fff
+    style A fill:#b71c1c,stroke:#ff5252,stroke-width:3px,color:#fffde7
+    style B fill:#ff5252,stroke:#b71c1c,stroke-width:3px,color:#fffde7
+    style C fill:#ff8a80,stroke:#b71c1c,stroke-width:3px,color:#fffde7
+    style D fill:#b71c1c,stroke:#ff8a80,stroke-width:3px,color:#fffde7
+    style E fill:#b71c1c,stroke:#ff5252,stroke-width:3px,color:#fffde7
 ```
 
 ### **How It Works:**
