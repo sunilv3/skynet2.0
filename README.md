@@ -453,7 +453,13 @@ AI Agent: "I'll perform a comprehensive GraphQL security audit:
 [Complete API security assessment with recommendations]"
 ```
 
-*Video demonstrations and screenshots showing AI agents in action will be added here.*
+<p align="center">
+  <img src="assets/usage_output.png" alt="Usage Output Example" width="600"/>
+  <br/>
+  <img src="assets/usage_server1.png" alt="Server Usage Example 1" width="600"/>
+  <br/>
+  <img src="assets/usage_server2.png" alt="Server Usage Example 2" width="600"/>
+</p>
 
 ---
 
