@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="assets/hexstrike-logo.png" alt="HexStrike AI Logo" width="220" style="margin-bottom: 20px;"/>
+
 # HexStrike AI MCP Agents v5.0
 ### AI-Powered Cybersecurity Tool Integration via Model Context Protocol
 
