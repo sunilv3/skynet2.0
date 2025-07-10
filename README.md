@@ -452,6 +452,7 @@ AI Agent: "I'll perform a comprehensive GraphQL security audit:
 
 [Complete API security assessment with recommendations]"
 ```
+#### **Example Test Run: Basic quick recon on 0x4m4.com**
 
 <p align="center">
   <img src="assets/usage_input.png" alt="Usage Output Example" width="600"/>
