@@ -254,7 +254,7 @@ HexStrike AI is the **most advanced open-source cybersecurity automation platfor
 
 ---
 
-## 🔧 **Quick Installation**
+## **Quick Installation**
 
 ### 📋 **System Requirements**
 
@@ -278,7 +278,7 @@ cd hexstrike-ai
 pip3 install -r requirements.txt
 
 # 3. Start HexStrike AI Server
-python3 hexstrike_server.py --port 5000 --debug
+python3 hexstrike_server.py --port 5000
 
 # 4. Verify installation
 curl http://localhost:5000/health
