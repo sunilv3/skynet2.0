@@ -12,7 +12,7 @@
 
 **MCP Server that enables AI agents to perform autonomous cybersecurity testing and penetration testing through 70+ integrated security tools**
 
-[🏗️ Architecture](#️-architecture-overview) • [🚀 Installation](#-quick-installation) • [🛠️ Features](#-comprehensive-feature-set) • [🤖 AI Usage](#-ai-agent-usage-examples) • [📡 API Reference](#-api-reference) • [⭐ Star Us](https://github.com/0x4m4/hexstrike-ai)
+[🏗️ Architecture](#️-architecture-overview) • [🚀 Installation](#quick-installation) • [🛠️ Features](#comprehensive-feature-set) • [🤖 AI Usage](#ai-agent-usage-examples) • [📡 API Reference](#api-reference) • [⭐ Star Us](https://github.com/0x4m4/hexstrike-ai)
 
 </div>
 
