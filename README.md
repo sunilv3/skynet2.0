@@ -1297,7 +1297,7 @@ graph TD
     G -->|File Management| B
 ```
 
-## 🎯 What's New in v4.0
+## 🎯 What's New in v5.0
 
 ### 🔥 Major Enhancements
 - **Visual Overhaul**: Reddish color scheme, enhanced banner, real-time logging
@@ -1333,4 +1333,4 @@ MIT License - see LICENSE file for details.
 
 ---
 
-**🔥 HexStrike AI v4.0 - The future of AI-driven cybersecurity automation! 🔥**
+**HexStrike AI v5.0 - The future of AI-driven cybersecurity automation!**
