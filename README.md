@@ -12,7 +12,7 @@
 
 **MCP Server that enables AI agents to perform autonomous cybersecurity testing and penetration testing through 70+ integrated security tools**
 
-[🚀 Quick Start](#-quick-installation) • [📚 Documentation](#-architecture-overview) • [🛠️ Features](#-comprehensive-feature-set) • [💡 Examples](#-ai-agent-usage-examples) • [🤝 Contributing](#-contributing) • [⭐ Star Us](https://github.com/0x4m4/hexstrike-ai)
+[🏗️ Architecture](#️-architecture-overview) • [🚀 Installation](#-quick-installation) • [🛠️ Features](#-comprehensive-feature-set) • [🤖 AI Usage](#-ai-agent-usage-examples) • [📡 API Reference](#-api-reference) • [⭐ Star Us](https://github.com/0x4m4/hexstrike-ai)
 
 </div>
 
@@ -33,11 +33,11 @@ graph TD
     E -->|Status| B
     B -->|Analysis & Results| A
     
-    style A fill:#e1f5fe
-    style B fill:#f3e5f5
-    style C fill:#fff3e0
-    style D fill:#e8f5e8
-    style E fill:#fce4ec
+    style A fill:#ff6b6b,stroke:#d63031,stroke-width:3px,color:#fff
+    style B fill:#a29bfe,stroke:#6c5ce7,stroke-width:3px,color:#fff
+    style C fill:#fd79a8,stroke:#e84393,stroke-width:3px,color:#fff
+    style D fill:#fdcb6e,stroke:#e17055,stroke-width:3px,color:#fff
+    style E fill:#55a3ff,stroke:#0984e3,stroke-width:3px,color:#fff
 ```
 
 ### **How It Works:**
@@ -312,7 +312,7 @@ pip3 install -r requirements.txt
 - **Cloud Tools**: prowler, trivy, scout-suite, kube-hunter, kube-bench
 - **Recon Tools**: hakrawler, httpx, paramspider, aquatone, subjack, dnsenum
 
-*Note: Each tool should be installed according to its official documentation.*
+*Note: Each tool should be installed according to its official documentation. Even if not all tools are installed it will work fine and will ignore that tool.*
 
 #### **Step 3: Start HexStrike Server**
 
