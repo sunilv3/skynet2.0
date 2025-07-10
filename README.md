@@ -32,7 +32,7 @@ HexStrike AI is the **most advanced open-source cybersecurity automation platfor
 
 ---
 
-## 🚀 **Key Highlights**
+## **Key Highlights**
 
 <div align="center">
 
@@ -57,7 +57,7 @@ HexStrike AI is the **most advanced open-source cybersecurity automation platfor
 
 ---
 
-## 🛠️ **Comprehensive Feature Set**
+## **Comprehensive Feature Set**
 
 ### 🎯 **Core Security Tools (70+)**
 
