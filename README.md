@@ -278,10 +278,12 @@ cd hexstrike-ai
 pip3 install -r requirements.txt
 
 # 3. Start HexStrike AI Server
-python3 hexstrike_server.py --port 5000
+python3 hexstrike_server.py
 
 # 4. Verify installation
 curl http://localhost:5000/health
+
+# 5. Attach the MCP JSON Configuration with your desired AI and run it
 ```
 
 ### 🛡️ **Required Kali Linux Tools**
@@ -289,21 +291,40 @@ curl http://localhost:5000/health
 The following security tools need to be installed on your Kali Linux system:
 
 ```bash
-# Install required security tools
+# Install required security tools (Complete list of all tools)
 sudo apt update && sudo apt install -y \
-    nmap gobuster dirb nikto sqlmap hydra john \
-    hashcat amass ffuf nuclei subfinder wpscan \
-    burpsuite zaproxy volatility3 foremost steghide \
-    radare2 gdb binwalk checksec exiftool
+    nmap amass subfinder nuclei autorecon fierce masscan \
+    gobuster ffuf dirb nikto sqlmap wpscan burpsuite zaproxy \
+    arjun wafw00f feroxbuster dotdotpwn xsser wfuzz \
+    hydra john hashcat medusa patator crackmapexec evil-winrm \
+    gdb radare2 binwalk ropgadget checksec ghidra xxd \
+    volatility3 foremost steghide exiftool hashpump autopsy sleuthkit \
+    prowler trivy scout-suite kube-hunter kube-bench cloudsploit \
+    hakrawler httpx paramspider aquatone subjack dnsenum
 ```
 
-**Tool List:**
-- **Network Tools**: nmap, amass, subfinder, nuclei
-- **Web Testing**: gobuster, dirb, nikto, sqlmap, ffuf, wpscan
-- **Password Tools**: hydra, john, hashcat
-- **Binary Analysis**: radare2, gdb, binwalk, checksec
-- **Forensics**: volatility3, foremost, steghide, exiftool
-- **Proxy Tools**: burpsuite, zaproxy
+**Complete Tool List:**
+
+**🔍 Network Reconnaissance & Scanning:**
+- nmap, amass, subfinder, nuclei, autorecon, fierce, masscan
+
+**🌐 Web Application Security Testing:**
+- gobuster, ffuf, dirb, nikto, sqlmap, wpscan, burpsuite, zaproxy, arjun, wafw00f, feroxbuster, dotdotpwn, xsser, wfuzz
+
+**🔐 Authentication & Password Security:**
+- hydra, john, hashcat, medusa, patator, crackmapexec, evil-winrm
+
+**🔬 Binary Analysis & Reverse Engineering:**
+- gdb, radare2, binwalk, ropgadget, checksec, ghidra, xxd, strings, objdump
+
+**🏆 Advanced CTF & Forensics Tools:**
+- volatility3, foremost, steghide, exiftool, hashpump, autopsy, sleuthkit
+
+**☁️ Cloud & Container Security:**
+- prowler, trivy, scout-suite, kube-hunter, kube-bench, cloudsploit
+
+**🔥 Bug Bounty & Reconnaissance Arsenal:**
+- hakrawler, httpx, paramspider, aquatone, subjack, dnsenum, fierce
 
 ### 🐳 **Docker Deployment (Coming Soon)**
 
