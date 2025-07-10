@@ -356,9 +356,9 @@ cd hexstrike-ai && ./install.sh
 
 ---
 
-## 🤖 **AI Integration Setup**
+## **AI Integration Setup**
 
-### 🎯 **Roo Code Integration**
+### **Roo Code Integration**
 
 <details>
 <summary><b>Complete Roo Code Setup Guide</b></summary>
@@ -403,7 +403,7 @@ roo-code
 
 </details>
 
-### 🧠 **Claude Desktop Integration**
+### **Claude Desktop Integration**
 
 <details>
 <summary><b>Claude MCP Configuration</b></summary>
@@ -438,7 +438,7 @@ Edit `~/.config/Claude/claude_desktop_config.json`:
 
 </details>
 
-### 💻 **VS Code Copilot Integration**
+### **VS Code Copilot Integration**
 
 <details>
 <summary><b>VS Code MCP Configuration</b></summary>
@@ -490,7 +490,7 @@ python3 hexstrike_server.py
 
 </details>
 
-### 🎯 **Cursor AI Integration**
+### **Cursor AI Integration**
 
 <details>
 <summary><b>Cursor MCP Setup Guide</b></summary>
@@ -558,7 +558,7 @@ cursor
 
 </details>
 
-### 🔗 **Custom AI Integration**
+### **Custom AI Integration**
 
 <details>
 <summary><b>Build Your Own Integration</b></summary>
