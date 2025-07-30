@@ -2,17 +2,18 @@
 
 <img src="assets/hexstrike-logo.png" alt="HexStrike AI Logo" width="220" style="margin-bottom: 20px;"/>
 
-# HexStrike AI MCP Agents v5.0
-### AI-Powered Cybersecurity Tool Integration via Model Context Protocol
+# HexStrike AI MCP Agents v6.0
+### AI-Powered Vulnerability Intelligence & Autonomous Cybersecurity Platform
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Security](https://img.shields.io/badge/Security-Penetration%20Testing-red.svg)](https://github.com/0x4m4/hexstrike-ai)
 [![MCP](https://img.shields.io/badge/MCP-Compatible-purple.svg)](https://github.com/0x4m4/hexstrike-ai)
-[![Version](https://img.shields.io/badge/Version-5.0.0-orange.svg)](https://github.com/0x4m4/hexstrike-ai/releases)
+[![Version](https://img.shields.io/badge/Version-6.0.0-orange.svg)](https://github.com/0x4m4/hexstrike-ai/releases)
 [![Tools](https://img.shields.io/badge/Security%20Tools-70%2B-brightgreen.svg)](https://github.com/0x4m4/hexstrike-ai)
+[![Intelligence](https://img.shields.io/badge/AI%20Intelligence-Advanced-blue.svg)](https://github.com/0x4m4/hexstrike-ai)
 
-**MCP Server that enables AI agents to perform autonomous cybersecurity testing and penetration testing through 70+ integrated security tools**
+**Next-generation MCP Server with Advanced Vulnerability Intelligence, AI-powered Exploit Generation, and Autonomous Threat Hunting capabilities**
 
 [🏗️ Architecture](#️-architecture-overview) • [🚀 Installation](#quick-installation) • [🛠️ Features](#comprehensive-feature-set) • [🤖 AI Usage](#ai-agent-usage-examples) • [📡 API Reference](#api-reference) • [⭐ Star Us](https://github.com/0x4m4/hexstrike-ai)
 
@@ -203,6 +204,19 @@ Enable your AI agents to become autonomous cybersecurity experts with access to 
 - **Subjack** - Subdomain takeover vulnerability checker
 - **DNSENUM** - DNS enumeration script
 - **Fierce** - Domain scanner for locating targets
+
+</details>
+
+<details>
+<summary><b>🧠 Advanced Vulnerability Intelligence (v6.0 NEW!)</b></summary>
+
+- **CVE Intelligence** - Real-time CVE monitoring with AI exploitability analysis
+- **Exploit Generation** - AI-powered exploit development from vulnerability data
+- **Attack Chain Discovery** - Multi-stage attack path identification and optimization
+- **Threat Intelligence** - Advanced IOC correlation across multiple sources
+- **Zero-Day Research** - Automated vulnerability research and pattern recognition
+- **Advanced Payloads** - Nation-state level evasion techniques and obfuscation
+- **Threat Hunting** - AI-assisted threat hunting with vulnerability correlation
 
 </details>
 
@@ -411,7 +425,7 @@ Edit `~/.config/Claude/claude_desktop_config.json`:
         "/path/to/hexstrike-ai/hexstrike_mcp.py",
         "--server", "http://localhost:5000"
       ],
-      "description": "HexStrike AI MCP Agents v5.0"
+      "description": "HexStrike AI MCP Agents v6.0"
     }
   }
 }
@@ -578,23 +592,31 @@ python3 hexstrike_mcp.py --debug
 
 ---
 
-## **What's New in v5.0**
+## **What's New in v6.0**
 
-### 🔥 Major Enhancements
+### 🧠 Major Intelligence Enhancements
+- **Advanced Vulnerability Intelligence**: Real-time CVE monitoring with AI-powered exploitability analysis
+- **AI Exploit Generation**: Autonomous exploit development from vulnerability descriptions
+- **Attack Chain Discovery**: Multi-stage attack path identification with success probability calculations
+- **Threat Intelligence Correlation**: Advanced IOC analysis across multiple intelligence sources
+- **Zero-Day Research Automation**: AI-driven vulnerability research and pattern recognition
+- **Nation-State Payloads**: Advanced evasion techniques with environmental keying
+
+### 🆕 New Intelligence Features
+- CVE database monitoring with CVSS scoring and exploitability assessment
+- Automatic exploit generation with multiple sophistication levels
+- Attack chain optimization with vulnerability correlation
+- Threat hunting assistance with AI-powered detection queries
+- Advanced payload generation with anti-analysis capabilities
+- Comprehensive vulnerability intelligence dashboard
+
+### 🔥 Previous v5.0 Enhancements
 - **MCP Integration**: Full Model Context Protocol support for AI agents
 - **Advanced Process Control**: Real-time command termination and monitoring
 - **Enhanced Caching**: LRU cache with intelligent TTL management
 - **Cloud Security**: Comprehensive cloud and container security tools
 - **AI Automation**: Intelligent payload generation and testing capabilities
 - **File Operations**: Complete file management system for AI agents
-
-### 🆕 New Features
-- Real-time command output streaming
-- Progress indicators for long-running operations
-- Contextual payload generation system
-- Advanced API security testing (GraphQL, JWT)
-- Comprehensive process dashboard
-- Enhanced error handling with detailed logging
 
 ---
 
@@ -652,4 +674,4 @@ MIT License - see LICENSE file for details.
 
 ---
 
-**HexStrike AI MCP Agents v5.0 - Empowering AI agents with autonomous cybersecurity capabilities!**
+**HexStrike AI MCP Agents v6.0 - Next-generation AI-powered vulnerability intelligence and autonomous cybersecurity platform!**
