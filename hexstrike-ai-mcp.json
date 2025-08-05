@@ -7,7 +7,7 @@
         "--server",
         "http://localhost:5000"
       ],
-      "description": "HexStrike AI v5.0 - Advanced Cybersecurity Automation Platform",
+      "description": "HexStrike AI v6.0 - Advanced Cybersecurity Automation Platform",
       "timeout": 300,
       "alwaysAllow": []
     }

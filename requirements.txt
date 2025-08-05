@@ -1,10 +1,274 @@
-flask>=2.3.0
-psutil>=5.9.0
-requests>=2.31.0
-fastmcp>=0.2.0
-# Advanced Vulnerability Intelligence Dependencies
-nvdlib>=0.7.0
-feedparser>=6.0.10
-python-dateutil>=2.8.2
-beautifulsoup4>=4.12.0
-lxml>=4.9.3
+# HexStrike AI MCP Agents v6.0 - Python Dependencies
+# Enhanced with 150+ Security Tools Integration, AI-Powered Intelligence & Browser Agent
+
+# ============================================================================
+# CORE FRAMEWORK DEPENDENCIES
+# ============================================================================
+flask==2.3.3                    # Web framework for API server
+requests==2.31.0                # HTTP library for API calls and tool integration
+psutil==5.9.5                   # System and process utilities for monitoring
+fastmcp==0.2.0                  # Model Context Protocol framework for AI agents
+
+# ============================================================================
+# DATA PROCESSING & ANALYSIS
+# ============================================================================
+pandas==2.0.3                   # Data manipulation and analysis
+numpy==1.24.3                   # Numerical computing and array operations
+python-dateutil==2.8.2          # Date and time utilities
+scipy==1.11.2                   # Scientific computing and statistical analysis
+
+# ============================================================================
+# NETWORKING & HTTP ENHANCED
+# ============================================================================
+urllib3==2.0.4                  # HTTP client library with connection pooling
+certifi==2023.7.22              # Certificate authority bundle
+charset-normalizer==3.2.0       # Character encoding detection
+httpx==0.24.1                   # Modern HTTP client for async operations
+aiohttp==3.8.5                  # Async HTTP client/server framework
+websockets==11.0.3              # WebSocket client and server implementation
+
+# ============================================================================
+# JSON & DATA SERIALIZATION
+# ============================================================================
+jsonschema==4.19.0              # JSON schema validation
+pydantic==2.3.0                 # Data validation using Python type annotations
+orjson==3.9.5                   # Fast JSON serialization library
+msgpack==1.0.5                  # Binary serialization format
+
+# ============================================================================
+# LOGGING & MONITORING ENHANCED
+# ============================================================================
+colorama==0.4.6                 # Cross-platform colored terminal text
+rich==13.5.2                    # Rich text and beautiful formatting
+tqdm==4.66.1                    # Progress bars for long-running operations
+loguru==0.7.0                   # Enhanced logging with better formatting
+structlog==23.1.0               # Structured logging for better analysis
+
+# ============================================================================
+# SECURITY & CRYPTOGRAPHY ENHANCED
+# ============================================================================
+cryptography==41.0.4            # Cryptographic recipes and primitives
+pycryptodome==3.18.0            # Cryptographic library with additional algorithms
+hashlib-compat==1.0.1           # Hash function compatibility layer
+bcrypt==4.0.1                   # Password hashing library
+passlib==1.7.4                  # Password hashing framework
+jwt==1.3.1                      # JSON Web Token implementation
+pyotp==2.9.0                    # One-time password library
+
+# ============================================================================
+# FILE PROCESSING & ANALYSIS ENHANCED
+# ============================================================================
+python-magic==0.4.27            # File type identification using libmagic
+pillow==10.0.0                  # Python Imaging Library for image processing
+exifread==3.0.0                 # EXIF metadata extraction from images
+pdfplumber==0.9.0               # PDF text extraction and analysis
+python-docx==0.8.11             # Microsoft Word document processing
+openpyxl==3.1.2                 # Excel file processing
+zipfile36==0.1.3                # Enhanced ZIP file handling
+
+# ============================================================================
+# DATABASE & STORAGE ENHANCED
+# ============================================================================
+sqlite3-utils==3.34.0           # SQLite database utilities
+sqlalchemy==2.0.20              # SQL toolkit and ORM
+redis==4.6.0                    # Redis client for caching
+pymongo==4.5.0                  # MongoDB driver for document storage
+
+# ============================================================================
+# THREADING & CONCURRENCY ENHANCED
+# ============================================================================
+concurrent-futures==3.1.1       # Concurrent execution framework
+threading2==0.1.2               # Enhanced threading utilities
+asyncio-throttle==1.0.2         # Rate limiting for async operations
+aiofiles==23.2.1                # Async file operations
+
+# ============================================================================
+# SYSTEM INTEGRATION ENHANCED
+# ============================================================================
+subprocess32==3.5.4             # Enhanced subprocess module
+signal-tools==1.0.0             # Signal handling utilities
+click==8.1.7                    # Command line interface creation
+typer==0.9.0                    # Modern CLI framework
+pexpect==4.8.0                  # Expect-like subprocess control
+
+# ============================================================================
+# BROWSER AGENT & WEB AUTOMATION (v6.0 ENHANCED!)
+# ============================================================================
+selenium==4.15.2                # Web browser automation for Browser Agent
+webdriver-manager==4.0.1        # Automatic ChromeDriver management
+beautifulsoup4==4.12.2          # HTML/XML parsing for DOM analysis
+lxml==4.9.3                     # XML and HTML processing
+scrapy==2.11.0                  # Web scraping framework
+playwright==1.37.0              # Modern web automation library
+mitmproxy==9.0.1                # HTTP proxy for traffic analysis
+pyppeteer==1.0.2                # Headless Chrome automation alternative
+
+# ============================================================================
+# NETWORK ANALYSIS & MONITORING
+# ============================================================================
+scapy==2.5.0                    # Packet manipulation and network analysis
+netaddr==0.8.0                  # Network address manipulation
+dnspython==2.4.2                # DNS toolkit for Python
+python-nmap==0.7.1              # Nmap integration library
+pyshark==0.6                    # Wireshark packet analysis
+
+# ============================================================================
+# BINARY ANALYSIS & REVERSE ENGINEERING
+# ============================================================================
+pwntools==4.10.0                # CTF framework and exploit development
+capstone==5.0.1                 # Disassembly framework
+keystone-engine==0.9.2          # Assembler framework
+unicorn==2.0.1                  # CPU emulator framework
+angr==9.2.65                    # Binary analysis platform
+r2pipe==1.7.4                   # Radare2 Python bindings
+
+# ============================================================================
+# CLOUD & CONTAINER SECURITY
+# ============================================================================
+boto3==1.28.57                  # AWS SDK for Python
+azure-identity==1.14.0          # Azure authentication library
+azure-mgmt-security==5.0.0      # Azure security management
+google-cloud-security-center==1.23.0  # Google Cloud Security Center
+kubernetes==27.2.0              # Kubernetes Python client
+docker==6.1.3                   # Docker SDK for Python
+
+# ============================================================================
+# AI & MACHINE LEARNING ENHANCED (v6.0 NEW!)
+# ============================================================================
+torch==2.0.1                    # PyTorch deep learning framework for AI agents
+transformers==4.33.2            # Hugging Face transformers for NLP and AI analysis
+sentence-transformers==2.2.2    # Sentence embeddings for semantic analysis
+scikit-learn==1.3.0             # Machine learning library for pattern recognition
+numpy==1.24.3                   # Numerical computing for AI operations
+openai==0.28.0                  # OpenAI API client for GPT integration
+anthropic==0.3.11               # Anthropic Claude API client for MCP integration
+langchain==0.0.292              # LangChain framework for AI agent orchestration
+tiktoken==0.5.1                 # Tokenizer for AI model integration
+
+# ============================================================================
+# DEVELOPMENT & TESTING ENHANCED
+# ============================================================================
+pytest==7.4.2                   # Testing framework
+pytest-asyncio==0.21.1          # Async testing support
+pytest-cov==4.1.0               # Coverage reporting
+pytest-mock==3.11.1             # Mocking utilities
+black==23.7.0                   # Code formatter
+flake8==6.0.0                   # Code linting
+mypy==1.5.1                     # Static type checking
+bandit==1.7.5                   # Security linting
+safety==2.3.5                   # Dependency vulnerability scanning
+
+# ============================================================================
+# ADVANCED PROCESS MANAGEMENT & MONITORING (v6.0 ENHANCED!)
+# ============================================================================
+memory-profiler==0.61.0         # Memory usage profiling
+py-spy==0.3.14                  # Sampling profiler for Python
+prometheus-client==0.17.1       # Prometheus metrics client
+grafana-api==1.0.3              # Grafana API client
+cachetools==5.3.1               # Advanced caching utilities
+diskcache==5.6.3                # Disk-based caching for large datasets
+joblib==1.3.2                   # Parallel processing and caching
+
+# ============================================================================
+# VULNERABILITY INTELLIGENCE & CVE ANALYSIS (v6.0 NEW!)
+# ============================================================================
+cve-search-api==1.0.0           # CVE database API integration
+nvdlib==0.7.3                   # NIST NVD API client for CVE data
+exploit-db==1.3.0               # Exploit Database integration
+mitre-cve==1.1.0                # MITRE CVE database client
+vulners==2.0.7                  # Vulners API for vulnerability intelligence
+
+# ============================================================================
+# SPECIALIZED SECURITY LIBRARIES ENHANCED
+# ============================================================================
+yara-python==4.3.1              # YARA pattern matching engine
+python-whois==0.8.0             # WHOIS protocol client
+shodan==1.29.1                  # Shodan API client
+censys==2.2.5                   # Censys API client
+virustotal-api==1.1.11          # VirusTotal API client
+haveibeenpwned==3.0.0           # Have I Been Pwned API client
+threatintel==1.0.0              # Threat intelligence correlation
+iocextract==1.16.1              # IOC extraction from text
+
+# ============================================================================
+# STEGANOGRAPHY & FORENSICS
+# ============================================================================
+stegano==0.11.2                 # Steganography tools
+pillow-heif==0.13.0             # HEIF image format support
+python-magic==0.4.27            # File type detection
+volatility3==2.4.1              # Memory forensics framework
+
+# ============================================================================
+# CRYPTOGRAPHY & HASH ANALYSIS
+# ============================================================================
+hashid==3.1.4                   # Hash identifier
+john==1.9.0                     # John the Ripper Python bindings
+hashcat-utils==1.9              # Hashcat utilities
+cryptography==41.0.4            # Modern cryptography library
+
+# ============================================================================
+# OSINT & RECONNAISSANCE
+# ============================================================================
+shodan==1.29.1                  # Shodan search engine API
+censys==2.2.5                   # Censys internet scanning API
+python-whois==0.8.0             # WHOIS information retrieval
+dnspython==2.4.2                # DNS toolkit
+sublist3r==1.1                  # Subdomain enumeration tool
+
+# ============================================================================
+# NOTES & INSTALLATION REQUIREMENTS
+# ============================================================================
+
+# ============================================================================
+# EXTERNAL SECURITY TOOLS (150+ Tools - Install separately)
+# ============================================================================
+# 
+# HexStrike v6.0 integrates with 150+ external security tools that must be
+# installed separately from their official sources:
+# 
+# 🔍 Network & Reconnaissance (25+ tools):
+# - nmap, masscan, rustscan, autorecon, amass, subfinder, fierce
+# - dnsenum, theharvester, responder, netexec, enum4linux-ng
+# 
+# 🌐 Web Application Security (40+ tools):
+# - gobuster, feroxbuster, ffuf, dirb, dirsearch, nuclei, nikto
+# - sqlmap, wpscan, arjun, paramspider, x8, katana, httpx
+# - dalfox, jaeles, hakrawler, gau, waybackurls, wafw00f
+# 
+# 🔐 Authentication & Password (12+ tools):
+# - hydra, john, hashcat, medusa, patator, netexec
+# - evil-winrm, hash-identifier, ophcrack
+# 
+# 🔬 Binary Analysis & Reverse Engineering (25+ tools):
+# - ghidra, radare2, gdb, binwalk, ropgadget, checksec, strings
+# - volatility3, foremost, steghide, exiftool, angr, pwntools
+# 
+# ☁️ Cloud & Container Security (20+ tools):
+# - prowler, scout-suite, trivy, kube-hunter, kube-bench
+# - docker-bench-security, checkov, terrascan, falco
+# 
+# 🏆 CTF & Forensics (20+ tools):
+# - volatility3, autopsy, sleuthkit, stegsolve, zsteg, outguess
+# - photorec, testdisk, scalpel, bulk-extractor
+# 
+# 🕵️ OSINT & Intelligence (20+ tools):
+# - sherlock, social-analyzer, recon-ng, maltego, spiderfoot
+# - shodan-cli, censys-cli, have-i-been-pwned
+# 
+# 🌐 Browser Agent Requirements:
+# - Chrome/Chromium browser and ChromeDriver for headless automation
+# - Burp Suite integration support for proxy chaining
+# 
+# 🤖 AI Agent Dependencies:
+# - FastMCP framework for AI agent communication
+# - Optional: OpenAI/Anthropic API keys for enhanced AI features
+# 
+# Installation Notes:
+# 1. Kali Linux 2024.1+ includes most tools by default
+# 2. Ubuntu/Debian users should install tools from official repositories
+# 3. Some tools require compilation from source or additional setup
+# 4. Cloud tools require API keys and authentication configuration
+# 5. Browser Agent requires Chrome/Chromium and ChromeDriver installation
+# 6. AI features require API keys for OpenAI/Anthropic services (optional)
+# 
+# For complete installation instructions and setup guides, see README.md
