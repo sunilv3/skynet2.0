@@ -179,13 +179,13 @@ class ModernVisualEngine:
 ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚══════╝
 {ModernVisualEngine.COLORS['RESET']}
 {ModernVisualEngine.COLORS['NEON_BLUE']}┌─────────────────────────────────────────────────────────────────────┐
-│  {ModernVisualEngine.COLORS['BRIGHT_WHITE']}🚀 HexStrike AI - Advanced Penetration Testing Framework{ModernVisualEngine.COLORS['NEON_BLUE']}      │
+│  {ModernVisualEngine.COLORS['BRIGHT_WHITE']}🚀 HexStrike AI (www.hexstrike.com) - Advanced Penetration Testing Framework{ModernVisualEngine.COLORS['NEON_BLUE']}      │
 │  {ModernVisualEngine.COLORS['CYBER_ORANGE']}⚡ Enhanced with AI-Powered Intelligence & Automation{ModernVisualEngine.COLORS['NEON_BLUE']}       │
 │  {ModernVisualEngine.COLORS['ELECTRIC_PURPLE']}🎯 Bug Bounty | CTF | Red Team | Security Research{ModernVisualEngine.COLORS['NEON_BLUE']}           │
 └─────────────────────────────────────────────────────────────────────┘{ModernVisualEngine.COLORS['RESET']}
 
 {ModernVisualEngine.COLORS['TERMINAL_GRAY']}[INFO] Server starting on {API_HOST}:{API_PORT}
-[INFO] Enhanced with 70+ security tools and AI intelligence
+[INFO] Enhanced with 150+ security tools and AI intelligence
 [INFO] Ready for advanced penetration testing operations{ModernVisualEngine.COLORS['RESET']}
 """
         return banner
