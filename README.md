@@ -870,7 +870,7 @@ sudo apt install volatility3 foremost steghide exiftool
 
 # Some tools might need manual download and install for that you have to follow this process:
 
-This same pattern works for any external tool:
+# This same pattern works for any external tool:
 
 - Download/compile the tool
 - Place it somewhere in $PATH (like /usr/local/bin/)
@@ -879,7 +879,7 @@ This same pattern works for any external tool:
 - Check /health endpoint to confirm detection
 - The key is making sure the tool is executable and in a directory that's in your $PATH environment variable!
 
-How hexstrike looks for the tools:
+# How hexstrike looks for the tools:
 
 - which command searches all directories in $PATH
 - Returns full path if tool exists and is executable
