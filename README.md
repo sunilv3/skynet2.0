@@ -810,7 +810,7 @@ HexStrike v6.0 features a completely redesigned visual experience with a **profe
 
 ---
 
-## � **Quyick Installation**
+## � **Quick Installation**
 
 ### 📋 **Enhanced System Requirements**
 
@@ -842,10 +842,7 @@ source hexstrike-env/bin/activate  # Linux/Mac
 # 3. Install Python dependencies
 pip3 install -r requirements.txt
 
-# 4. Install additional AI dependencies
-pip3 install torch transformers sentence-transformers
-
-# 5. Install Browser Agent dependencies
+# 4. Install Browser Agent dependencies
 pip3 install selenium beautifulsoup4 mitmproxy
 # Download ChromeDriver (or use webdriver-manager for automatic management)
 pip3 install webdriver-manager
