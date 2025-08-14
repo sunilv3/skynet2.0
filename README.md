@@ -867,6 +867,24 @@ sudo apt install evil-winrm hash-identifier ophcrack
 # Binary Analysis & Reverse Engineering
 sudo apt install gdb radare2 binwalk ghidra checksec strings objdump
 sudo apt install volatility3 foremost steghide exiftool
+
+# Some tools might need manual download and install for that you have to follow this process:
+
+This same pattern works for any external tool:
+
+- Download/compile the tool
+- Place it somewhere in $PATH (like /usr/local/bin/)
+- Make it executable (chmod +x)
+- Restart your HexStrike server (to refresh tool cache)
+- Check /health endpoint to confirm detection
+- The key is making sure the tool is executable and in a directory that's in your $PATH environment variable!
+
+How hexstrike looks for the tools:
+
+- which command searches all directories in $PATH
+- Returns full path if tool exists and is executable
+- Your project marks it as available if which succeeds
+- Tool is now usable in all the scan functions
 ```
 
 **☁️ Cloud Security Tools:**
