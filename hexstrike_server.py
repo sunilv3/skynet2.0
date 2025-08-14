@@ -126,6 +126,10 @@ class ModernVisualEngine:
         'BURGUNDY': '\033[38;5;52m',
         'SCARLET': '\033[38;5;197m',
         'RUBY': '\033[38;5;161m',
+    # Unified theme primary/secondary (used going forward instead of legacy blue/green accents)
+    'PRIMARY_BORDER': '\033[38;5;160m',  # CRIMSON
+    'ACCENT_LINE': '\033[38;5;196m',      # HACKER_RED
+    'ACCENT_GRADIENT': '\033[38;5;124m',  # BLOOD_RED (for subtle alternation)
         # Highlighting colors
         'HIGHLIGHT_RED': '\033[48;5;196m\033[38;5;15m',  # Red background, white text
         'HIGHLIGHT_YELLOW': '\033[48;5;226m\033[38;5;16m',  # Yellow background, black text
@@ -169,24 +173,31 @@ class ModernVisualEngine:
     @staticmethod
     def create_banner() -> str:
         """Create the enhanced HexStrike banner"""
+        # Build a blood-red themed border using primary/gradient alternation
+        border_color = ModernVisualEngine.COLORS['PRIMARY_BORDER']
+        accent = ModernVisualEngine.COLORS['ACCENT_LINE']
+        gradient = ModernVisualEngine.COLORS['ACCENT_GRADIENT']
+        RESET = ModernVisualEngine.COLORS['RESET']
+        BOLD = ModernVisualEngine.COLORS['BOLD']
+        title_block = f"{accent}{BOLD}"
         banner = f"""
-{ModernVisualEngine.COLORS['MATRIX_GREEN']}{ModernVisualEngine.COLORS['BOLD']}
+{title_block}
 ██╗  ██╗███████╗██╗  ██╗███████╗████████╗██████╗ ██╗██╗  ██╗███████╗
 ██║  ██║██╔════╝╚██╗██╔╝██╔════╝╚══██╔══╝██╔══██╗██║██║ ██╔╝██╔════╝
 ███████║█████╗   ╚███╔╝ ███████╗   ██║   ██████╔╝██║█████╔╝ █████╗  
 ██╔══██║██╔══╝   ██╔██╗ ╚════██║   ██║   ██╔══██╗██║██╔═██╗ ██╔══╝  
 ██║  ██║███████╗██╔╝ ██╗███████║   ██║   ██║  ██║██║██║  ██╗███████╗
 ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚══════╝
-{ModernVisualEngine.COLORS['RESET']}
-{ModernVisualEngine.COLORS['NEON_BLUE']}┌─────────────────────────────────────────────────────────────────────┐
-│  {ModernVisualEngine.COLORS['BRIGHT_WHITE']}🚀 HexStrike AI (www.hexstrike.com) - Advanced Penetration Testing Framework{ModernVisualEngine.COLORS['NEON_BLUE']}      │
-│  {ModernVisualEngine.COLORS['CYBER_ORANGE']}⚡ Enhanced with AI-Powered Intelligence & Automation{ModernVisualEngine.COLORS['NEON_BLUE']}       │
-│  {ModernVisualEngine.COLORS['ELECTRIC_PURPLE']}🎯 Bug Bounty | CTF | Red Team | Security Research{ModernVisualEngine.COLORS['NEON_BLUE']}           │
-└─────────────────────────────────────────────────────────────────────┘{ModernVisualEngine.COLORS['RESET']}
+{RESET}
+{border_color}┌─────────────────────────────────────────────────────────────────────┐
+│  {ModernVisualEngine.COLORS['BRIGHT_WHITE']}🚀 HexStrike AI - Blood-Red Offensive Intelligence Core{border_color}        │
+│  {accent}⚡ AI-Automated Recon | Exploitation | Analysis Pipeline{border_color}          │
+│  {gradient}🎯 Bug Bounty | CTF | Red Team | Zero-Day Research{border_color}              │
+└─────────────────────────────────────────────────────────────────────┘{RESET}
 
 {ModernVisualEngine.COLORS['TERMINAL_GRAY']}[INFO] Server starting on {API_HOST}:{API_PORT}
-[INFO] Enhanced with 150+ security tools and AI intelligence
-[INFO] Ready for advanced penetration testing operations{ModernVisualEngine.COLORS['RESET']}
+[INFO] 150+ integrated modules | Adaptive AI decision engine active
+[INFO] Blood-red theme engaged – unified offensive operations UI{RESET}
 """
         return banner
     
@@ -201,9 +212,11 @@ class ModernVisualEngine:
         filled = int(width * percentage / 100)
         bar = '█' * filled + '░' * (width - filled)
         
+        border = ModernVisualEngine.COLORS['PRIMARY_BORDER']
+        fill_col = ModernVisualEngine.COLORS['ACCENT_LINE']
         return f"""
-{ModernVisualEngine.COLORS['NEON_BLUE']}┌─ {tool} ─{'─' * (width - len(tool) - 4)}┐
-│ {ModernVisualEngine.COLORS['MATRIX_GREEN']}{bar}{ModernVisualEngine.COLORS['NEON_BLUE']} │ {percentage:6.1f}%
+{border}┌─ {tool} ─{'─' * (width - len(tool) - 4)}┐
+│ {fill_col}{bar}{border} │ {percentage:6.1f}%
 └─{'─' * (width + 10)}┘{ModernVisualEngine.COLORS['RESET']}"""
 
     @staticmethod
@@ -222,23 +235,23 @@ class ModernVisualEngine:
         if style == 'cyber':
             filled_char = '█'
             empty_char = '░'
-            bar_color = ModernVisualEngine.COLORS['MATRIX_GREEN']
-            progress_color = ModernVisualEngine.COLORS['NEON_BLUE']
+            bar_color = ModernVisualEngine.COLORS['ACCENT_LINE']
+            progress_color = ModernVisualEngine.COLORS['PRIMARY_BORDER']
         elif style == 'matrix':
             filled_char = '▓'
             empty_char = '▒'
-            bar_color = ModernVisualEngine.COLORS['MATRIX_GREEN']
-            progress_color = ModernVisualEngine.COLORS['ELECTRIC_PURPLE']
+            bar_color = ModernVisualEngine.COLORS['ACCENT_LINE']
+            progress_color = ModernVisualEngine.COLORS['ACCENT_GRADIENT']
         elif style == 'neon':
             filled_char = '━'
             empty_char = '─'
-            bar_color = ModernVisualEngine.COLORS['NEON_BLUE']
+            bar_color = ModernVisualEngine.COLORS['PRIMARY_BORDER']
             progress_color = ModernVisualEngine.COLORS['CYBER_ORANGE']
         else:  # default
             filled_char = '█'
             empty_char = '░'
-            bar_color = ModernVisualEngine.COLORS['MATRIX_GREEN']
-            progress_color = ModernVisualEngine.COLORS['NEON_BLUE']
+            bar_color = ModernVisualEngine.COLORS['ACCENT_LINE']
+            progress_color = ModernVisualEngine.COLORS['PRIMARY_BORDER']
         
         # Build the progress bar
         filled_part = bar_color + filled_char * filled_width
@@ -266,16 +279,16 @@ class ModernVisualEngine:
         
         if not processes:
             return f"""
-{ModernVisualEngine.COLORS['MATRIX_GREEN']}╭─────────────────────────────────────────────────────────────────────────────╮
-│ {ModernVisualEngine.COLORS['NEON_BLUE']}📊 HEXSTRIKE LIVE DASHBOARD{ModernVisualEngine.COLORS['MATRIX_GREEN']}                                           │
+{ModernVisualEngine.COLORS['PRIMARY_BORDER']}╭─────────────────────────────────────────────────────────────────────────────╮
+│ {ModernVisualEngine.COLORS['ACCENT_LINE']}📊 HEXSTRIKE LIVE DASHBOARD{ModernVisualEngine.COLORS['PRIMARY_BORDER']}                                           │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│ {ModernVisualEngine.COLORS['TERMINAL_GRAY']}No active processes currently running{ModernVisualEngine.COLORS['MATRIX_GREEN']}                                    │
+│ {ModernVisualEngine.COLORS['TERMINAL_GRAY']}No active processes currently running{ModernVisualEngine.COLORS['PRIMARY_BORDER']}                                    │
 ╰─────────────────────────────────────────────────────────────────────────────╯{ModernVisualEngine.COLORS['RESET']}
 """
         
         dashboard_lines = [
-            f"{ModernVisualEngine.COLORS['MATRIX_GREEN']}╭─────────────────────────────────────────────────────────────────────────────╮",
-            f"│ {ModernVisualEngine.COLORS['NEON_BLUE']}📊 HEXSTRIKE LIVE DASHBOARD{ModernVisualEngine.COLORS['MATRIX_GREEN']}                                           │",
+            f"{ModernVisualEngine.COLORS['PRIMARY_BORDER']}╭─────────────────────────────────────────────────────────────────────────────╮",
+            f"│ {ModernVisualEngine.COLORS['ACCENT_LINE']}📊 HEXSTRIKE LIVE DASHBOARD{ModernVisualEngine.COLORS['PRIMARY_BORDER']}                                           │",
             f"├─────────────────────────────────────────────────────────────────────────────┤"
         ]
         
@@ -284,10 +297,10 @@ class ModernVisualEngine:
             command = proc_info.get('command', 'unknown')[:50] + "..." if len(proc_info.get('command', '')) > 50 else proc_info.get('command', 'unknown')
             duration = proc_info.get('duration', 0)
             
-            status_color = ModernVisualEngine.COLORS['MATRIX_GREEN'] if status == 'running' else ModernVisualEngine.COLORS['HACKER_RED']
+            status_color = ModernVisualEngine.COLORS['ACCENT_LINE'] if status == 'running' else ModernVisualEngine.COLORS['HACKER_RED']
             
             dashboard_lines.append(
-                f"│ {ModernVisualEngine.COLORS['CYBER_ORANGE']}PID {pid}{ModernVisualEngine.COLORS['MATRIX_GREEN']} | {status_color}{status}{ModernVisualEngine.COLORS['MATRIX_GREEN']} | {ModernVisualEngine.COLORS['BRIGHT_WHITE']}{command}{ModernVisualEngine.COLORS['MATRIX_GREEN']} │"
+                f"│ {ModernVisualEngine.COLORS['CYBER_ORANGE']}PID {pid}{ModernVisualEngine.COLORS['PRIMARY_BORDER']} | {status_color}{status}{ModernVisualEngine.COLORS['PRIMARY_BORDER']} | {ModernVisualEngine.COLORS['BRIGHT_WHITE']}{command}{ModernVisualEngine.COLORS['PRIMARY_BORDER']} │"
             )
         
         dashboard_lines.append(f"╰─────────────────────────────────────────────────────────────────────────────╯{ModernVisualEngine.COLORS['RESET']}")
@@ -303,10 +316,10 @@ class ModernVisualEngine:
         
         # Severity color mapping
         severity_colors = {
-            'CRITICAL': ModernVisualEngine.COLORS['HACKER_RED'],
-            'HIGH': ModernVisualEngine.COLORS['CYBER_ORANGE'],
-            'MEDIUM': ModernVisualEngine.COLORS['ELECTRIC_PURPLE'],
-            'LOW': ModernVisualEngine.COLORS['NEON_BLUE'],
+            'CRITICAL': ModernVisualEngine.COLORS['VULN_CRITICAL'],
+            'HIGH': ModernVisualEngine.COLORS['HACKER_RED'],
+            'MEDIUM': ModernVisualEngine.COLORS['ACCENT_GRADIENT'],
+            'LOW': ModernVisualEngine.COLORS['CYBER_ORANGE'],
             'INFO': ModernVisualEngine.COLORS['TERMINAL_GRAY']
         }
         
@@ -5744,26 +5757,8 @@ class CVEIntelligenceManager:
     
     @staticmethod
     def create_banner():
-        """Create an enhanced cyberpunk-style banner"""
-        banner = f"""
-{ModernVisualEngine.COLORS['MATRIX_GREEN']}{ModernVisualEngine.COLORS['BOLD']}
-╔══════════════════════════════════════════════════════════════════════════════╗
-║  {ModernVisualEngine.COLORS['ELECTRIC_PURPLE']}██╗  ██╗███████╗██╗  ██╗███████╗████████╗██████╗ ██╗██╗  ██╗███████╗{ModernVisualEngine.COLORS['MATRIX_GREEN']}  ║
-║  {ModernVisualEngine.COLORS['ELECTRIC_PURPLE']}██║  ██║██╔════╝╚██╗██╔╝██╔════╝╚══██╔══╝██╔══██╗██║██║ ██╔╝██╔════╝{ModernVisualEngine.COLORS['MATRIX_GREEN']}  ║
-║  {ModernVisualEngine.COLORS['ELECTRIC_PURPLE']}███████║█████╗   ╚███╔╝ ███████╗   ██║   ██████╔╝██║█████╔╝ █████╗{ModernVisualEngine.COLORS['MATRIX_GREEN']}    ║
-║  {ModernVisualEngine.COLORS['ELECTRIC_PURPLE']}██╔══██║██╔══╝   ██╔██╗ ╚════██║   ██║   ██╔══██╗██║██╔═██╗ ██╔══╝{ModernVisualEngine.COLORS['MATRIX_GREEN']}    ║
-║  {ModernVisualEngine.COLORS['ELECTRIC_PURPLE']}██║  ██║███████╗██╔╝ ██╗███████║   ██║   ██║  ██║██║██║  ██╗███████╗{ModernVisualEngine.COLORS['MATRIX_GREEN']}  ║
-║  {ModernVisualEngine.COLORS['ELECTRIC_PURPLE']}╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚══════╝{ModernVisualEngine.COLORS['MATRIX_GREEN']}  ║
-║                                                                              ║
-║  {ModernVisualEngine.COLORS['NEON_BLUE']}🚀 HexStrike AI v6.0 - Next-Gen Cybersecurity Automation Platform{ModernVisualEngine.COLORS['MATRIX_GREEN']}     ║
-║  {ModernVisualEngine.COLORS['CYBER_ORANGE']}⚡ Enhanced Visual Engine • AI-Powered Tool Selection • Real-time UI{ModernVisualEngine.COLORS['MATRIX_GREEN']}  ║
-║  {ModernVisualEngine.COLORS['CYBER_ORANGE']}🎯 Bug Bounty Hunting • CTF Excellence • Advanced Pentesting{ModernVisualEngine.COLORS['MATRIX_GREEN']}            ║
-║                                                                              ║
-║  {ModernVisualEngine.COLORS['TERMINAL_GRAY']}Developed by: 0x4m4 | www.0x4m4.com | www.hexstrike.com{ModernVisualEngine.COLORS['MATRIX_GREEN']}            ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-{ModernVisualEngine.COLORS['RESET']}
-"""
-        return banner
+        """Reuse unified ModernVisualEngine banner (legacy hook)."""
+        return ModernVisualEngine.create_banner()
     
     @staticmethod
     def render_progress_bar(progress: float, width: int = 40, style: str = 'cyber', 
@@ -5779,25 +5774,21 @@ class CVEIntelligenceManager:
         
         # Style-specific rendering
         if style == 'cyber':
-            filled_char = '█'
-            empty_char = '░'
-            bar_color = ModernVisualEngine.COLORS['MATRIX_GREEN']
-            progress_color = ModernVisualEngine.COLORS['NEON_BLUE']
+            filled_char = '█'; empty_char = '░'
+            bar_color = ModernVisualEngine.COLORS['ACCENT_LINE']
+            progress_color = ModernVisualEngine.COLORS['PRIMARY_BORDER']
         elif style == 'matrix':
-            filled_char = '▓'
-            empty_char = '▒'
-            bar_color = ModernVisualEngine.COLORS['MATRIX_GREEN']
-            progress_color = ModernVisualEngine.COLORS['ELECTRIC_PURPLE']
+            filled_char = '▓'; empty_char = '▒'
+            bar_color = ModernVisualEngine.COLORS['ACCENT_LINE']
+            progress_color = ModernVisualEngine.COLORS['ACCENT_GRADIENT']
         elif style == 'neon':
-            filled_char = '━'
-            empty_char = '─'
-            bar_color = ModernVisualEngine.COLORS['NEON_BLUE']
+            filled_char = '━'; empty_char = '─'
+            bar_color = ModernVisualEngine.COLORS['PRIMARY_BORDER']
             progress_color = ModernVisualEngine.COLORS['CYBER_ORANGE']
-        else:  # default
-            filled_char = '█'
-            empty_char = '░'
-            bar_color = ModernVisualEngine.COLORS['MATRIX_GREEN']
-            progress_color = ModernVisualEngine.COLORS['NEON_BLUE']
+        else:
+            filled_char = '█'; empty_char = '░'
+            bar_color = ModernVisualEngine.COLORS['ACCENT_LINE']
+            progress_color = ModernVisualEngine.COLORS['PRIMARY_BORDER']
         
         # Build the progress bar
         filled_part = bar_color + filled_char * filled_width
@@ -11038,6 +11029,9 @@ class HTTPTestingFramework:
         })
         self.proxy_history = []
         self.vulnerabilities = []
+        self.match_replace_rules = []  # [{'where':'query|headers|body|url','pattern':'regex','replacement':'str'}]
+        self.scope = None  # {'host': 'example.com', 'include_subdomains': True}
+        self._req_id = 0
         
     def setup_proxy(self, proxy_port: int = 8080):
         """Setup HTTP proxy for request interception"""
@@ -11054,20 +11048,27 @@ class HTTPTestingFramework:
                 self.session.headers.update(headers)
             if cookies:
                 self.session.cookies.update(cookies)
+
+            # Apply match/replace rules prior to sending
+            url, data, send_headers = self._apply_match_replace(url, data, dict(self.session.headers))
+            if headers:
+                send_headers.update(headers)
                 
             if method.upper() == 'GET':
-                response = self.session.get(url, params=data, timeout=30)
+                response = self.session.get(url, params=data, headers=send_headers, timeout=30)
             elif method.upper() == 'POST':
-                response = self.session.post(url, data=data, timeout=30)
+                response = self.session.post(url, data=data, headers=send_headers, timeout=30)
             elif method.upper() == 'PUT':
-                response = self.session.put(url, data=data, timeout=30)
+                response = self.session.put(url, data=data, headers=send_headers, timeout=30)
             elif method.upper() == 'DELETE':
-                response = self.session.delete(url, timeout=30)
+                response = self.session.delete(url, headers=send_headers, timeout=30)
             else:
-                response = self.session.request(method, url, data=data, timeout=30)
+                response = self.session.request(method, url, data=data, headers=send_headers, timeout=30)
             
             # Store request/response in history
+            self._req_id += 1
             request_data = {
+                'id': self._req_id,
                 'url': url,
                 'method': method,
                 'headers': dict(response.request.headers),
@@ -11101,6 +11102,131 @@ class HTTPTestingFramework:
         except Exception as e:
             logger.error(f"{ModernVisualEngine.format_error_card('ERROR', 'HTTP-Framework', str(e))}")
             return {'success': False, 'error': str(e)}
+
+    # ----------------- Match & Replace and Scope -----------------
+    def set_match_replace_rules(self, rules: list):
+        """Set match/replace rules. Each rule: {'where','pattern','replacement'}"""
+        self.match_replace_rules = rules or []
+
+    def set_scope(self, host: str, include_subdomains: bool = True):
+        self.scope = {'host': host, 'include_subdomains': include_subdomains}
+
+    def _in_scope(self, url: str) -> bool:
+        if not self.scope:
+            return True
+        try:
+            from urllib.parse import urlparse
+            h = urlparse(url).hostname or ''
+            target = self.scope.get('host','')
+            if not h or not target:
+                return True
+            if h == target:
+                return True
+            if self.scope.get('include_subdomains') and h.endswith('.'+target):
+                return True
+        except Exception:
+            return True
+        return False
+
+    def _apply_match_replace(self, url: str, data, headers: dict):
+        import re
+        from urllib.parse import urlparse, parse_qsl, urlencode, urlunparse
+        original_url = url
+        out_headers = dict(headers)
+        out_data = data
+        for rule in self.match_replace_rules:
+            where = (rule.get('where') or 'url').lower()
+            pattern = rule.get('pattern') or ''
+            repl = rule.get('replacement') or ''
+            try:
+                if where == 'url':
+                    url = re.sub(pattern, repl, url)
+                elif where == 'query':
+                    pr = urlparse(url)
+                    qs = parse_qsl(pr.query, keep_blank_values=True)
+                    new_qs = []
+                    for k, v in qs:
+                        nk = re.sub(pattern, repl, k)
+                        nv = re.sub(pattern, repl, v)
+                        new_qs.append((nk, nv))
+                    url = urlunparse((pr.scheme, pr.netloc, pr.path, pr.params, urlencode(new_qs), pr.fragment))
+                elif where == 'headers':
+                    out_headers = {re.sub(pattern, repl, k): re.sub(pattern, repl, str(v)) for k, v in out_headers.items()}
+                elif where == 'body':
+                    if isinstance(out_data, dict):
+                        out_data = {re.sub(pattern, repl, k): re.sub(pattern, repl, str(v)) for k, v in out_data.items()}
+                    elif isinstance(out_data, str):
+                        out_data = re.sub(pattern, repl, out_data)
+            except Exception:
+                continue
+        # Ensure scope restriction
+        if not self._in_scope(url):
+            logger.warning(f"{ModernVisualEngine.format_tool_status('HTTP-Framework', 'SKIPPED', f'Out of scope: {url}')}" )
+            return original_url, data, headers
+        return url, out_data, out_headers
+
+    # ----------------- Repeater (custom send) -----------------
+    def send_custom_request(self, request_spec: dict) -> dict:
+        """Send a custom request with explicit fields, applying rules."""
+        url = request_spec.get('url','')
+        method = request_spec.get('method','GET')
+        headers = request_spec.get('headers') or {}
+        cookies = request_spec.get('cookies') or {}
+        data = request_spec.get('data')
+        return self.intercept_request(url, method, data, headers, cookies)
+
+    # ----------------- Intruder (Sniper mode) -----------------
+    def intruder_sniper(self, url: str, method: str = 'GET', location: str = 'query',
+                        params: list = None, payloads: list = None, base_data: dict = None,
+                        max_requests: int = 100) -> dict:
+        """Simple fuzzing: iterate payloads over each parameter individually (Sniper)."""
+        from urllib.parse import urlparse, parse_qsl, urlencode, urlunparse
+        params = params or []
+        payloads = payloads or ["'\"<>`, ${7*7}"]
+        base_data = base_data or {}
+        interesting = []
+        total = 0
+        baseline = self.intercept_request(url, method, base_data)
+        base_status = baseline.get('response',{}).get('status_code') if baseline.get('success') else None
+        base_len = baseline.get('response',{}).get('size') if baseline.get('success') else None
+        for p in params:
+            for pay in payloads:
+                if total >= max_requests:
+                    break
+                m_url = url
+                m_data = dict(base_data)
+                m_headers = {}
+                if location == 'query':
+                    pr = urlparse(url)
+                    q = dict(parse_qsl(pr.query, keep_blank_values=True))
+                    q[p] = pay
+                    m_url = urlunparse((pr.scheme, pr.netloc, pr.path, pr.params, urlencode(q), pr.fragment))
+                elif location == 'body':
+                    m_data[p] = pay
+                elif location == 'headers':
+                    m_headers[p] = pay
+                elif location == 'cookie':
+                    self.session.cookies.set(p, pay)
+                resp = self.intercept_request(m_url, method, m_data, m_headers)
+                total += 1
+                if not resp.get('success'):
+                    continue
+                r = resp['response']
+                changed = (base_status is not None and r.get('status_code') != base_status) or (base_len is not None and abs(r.get('size',0) - base_len) > 150)
+                reflected = pay in (r.get('content') or '')
+                if changed or reflected:
+                    interesting.append({
+                        'param': p,
+                        'payload': pay,
+                        'status_code': r.get('status_code'),
+                        'size': r.get('size'),
+                        'reflected': reflected
+                    })
+        return {
+            'success': True,
+            'tested': total,
+            'interesting': interesting[:50]
+        }
     
     def _analyze_response_for_vulns(self, url: str, response):
         """Analyze HTTP response for common vulnerabilities"""
@@ -11323,11 +11449,18 @@ class BrowserAgent:
                 'links': self._extract_links(),
                 'inputs': self._extract_inputs(),
                 'scripts': self._extract_scripts(),
-                'network_requests': self._get_network_logs()
+                'network_requests': self._get_network_logs(),
+                'console_errors': self._get_console_errors()
             }
             
             # Analyze for security issues
             security_analysis = self._analyze_page_security(page_source, page_info)
+            # Merge extended passive analysis
+            extended_passive = self._extended_passive_analysis(page_info, page_source)
+            security_analysis['issues'].extend(extended_passive['issues'])
+            security_analysis['total_issues'] = len(security_analysis['issues'])
+            security_analysis['security_score'] = max(0, 100 - (security_analysis['total_issues'] * 5))
+            security_analysis['passive_modules'] = extended_passive.get('modules', [])
             
             logger.info(f"{ModernVisualEngine.format_tool_status('BrowserAgent', 'SUCCESS', url)}")
             
@@ -11343,6 +11476,122 @@ class BrowserAgent:
             logger.error(f"{ModernVisualEngine.format_error_card('ERROR', 'BrowserAgent', str(e))}")
             return {'success': False, 'error': str(e)}
     
+    # ---------------------- Browser Deep Introspection Helpers ----------------------
+    def _get_console_errors(self) -> list:
+        """Collect console errors & warnings (if supported)"""
+        try:
+            logs = self.driver.get_log('browser')
+            out = []
+            for entry in logs[-100:]:
+                lvl = entry.get('level', '')
+                if lvl in ('SEVERE', 'WARNING'):
+                    out.append({'level': lvl, 'message': entry.get('message', '')[:500]})
+            return out
+        except Exception:
+            return []
+
+    def _analyze_cookies(self, cookies: list) -> list:
+        issues = []
+        for ck in cookies:
+            name = ck.get('name','')
+            # Selenium cookie dict may lack flags; attempt JS check if not present
+            # (we keep lightweight – deeper flag detection requires CDP)
+            if name.lower() in ('sessionid','phpseSSID','jsessionid') and len(ck.get('value','')) < 16:
+                issues.append({'type':'weak_session_cookie','severity':'medium','description':f'Session cookie {name} appears short'})
+        return issues
+
+    def _analyze_security_headers(self, page_source: str, page_info: dict) -> list:
+        # We cannot directly read response headers via Selenium; attempt a lightweight fetch with requests
+        issues = []
+        try:
+            resp = requests.get(page_info.get('url',''), timeout=10, verify=False)
+            headers = {k.lower():v for k,v in resp.headers.items()}
+            required = {
+                'content-security-policy':'CSP header missing (XSS mitigation)',
+                'x-frame-options':'X-Frame-Options missing (Clickjacking risk)',
+                'x-content-type-options':'X-Content-Type-Options missing (MIME sniffing risk)',
+                'referrer-policy':'Referrer-Policy missing (leaky referrers)',
+                'strict-transport-security':'HSTS missing (HTTPS downgrade risk)'
+            }
+            for key, desc in required.items():
+                if key not in headers:
+                    issues.append({'type':'missing_security_header','severity':'medium','description':desc,'header':key})
+            # Weak CSP heuristic
+            csp = headers.get('content-security-policy','')
+            if csp and "unsafe-inline" in csp:
+                issues.append({'type':'weak_csp','severity':'low','description':'CSP allows unsafe-inline scripts'})
+        except Exception:
+            pass
+        return issues
+
+    def _detect_mixed_content(self, page_info: dict) -> list:
+        issues = []
+        try:
+            page_url = page_info.get('url','')
+            if page_url.startswith('https://'):
+                for req in page_info.get('network_requests', [])[:200]:
+                    u = req.get('url','')
+                    if u.startswith('http://'):
+                        issues.append({'type':'mixed_content','severity':'medium','description':f'HTTP resource loaded over HTTPS page: {u[:100]}'})
+        except Exception:
+            pass
+        return issues
+
+    def _extended_passive_analysis(self, page_info: dict, page_source: str) -> dict:
+        modules = []
+        issues = []
+        # Cookies
+        cookie_issues = self._analyze_cookies(page_info.get('cookies', []))
+        if cookie_issues:
+            issues.extend(cookie_issues); modules.append('cookie_analysis')
+        # Headers
+        header_issues = self._analyze_security_headers(page_source, page_info)
+        if header_issues:
+            issues.extend(header_issues); modules.append('security_headers')
+        # Mixed content
+        mixed = self._detect_mixed_content(page_info)
+        if mixed:
+            issues.extend(mixed); modules.append('mixed_content')
+        # Console errors may hint at DOM XSS sinks
+        if page_info.get('console_errors'):
+            modules.append('console_log_capture')
+        return {'issues': issues, 'modules': modules}
+
+    def run_active_tests(self, page_info: dict, payload: str = '<hexstrikeXSSTest123>') -> dict:
+        """Very lightweight active tests (reflection check) - safe mode.
+        Only GET forms with text inputs to avoid state-changing operations."""
+        findings = []
+        tested = 0
+        for form in page_info.get('forms', []):
+            if form.get('method','GET').upper() != 'GET':
+                continue
+            params = []
+            for inp in form.get('inputs', [])[:3]:  # limit
+                if inp.get('type','text') in ('text','search'):
+                    params.append(f"{inp.get('name','param')}={payload}")
+            if not params:
+                continue
+            action = form.get('action') or page_info.get('url','')
+            if action.startswith('/'):
+                # relative
+                base = page_info.get('url','')
+                try:
+                    from urllib.parse import urljoin
+                    action = urljoin(base, action)
+                except Exception:
+                    pass
+            test_url = action + ('&' if '?' in action else '?') + '&'.join(params)
+            try:
+                r = requests.get(test_url, timeout=8, verify=False)
+                tested += 1
+                if payload in r.text:
+                    findings.append({'type':'reflected_xss','severity':'high','description':'Payload reflected in response','url':test_url})
+            except Exception:
+                continue
+            if tested >= 5:
+                break
+        return {'active_findings': findings, 'tested_forms': tested}
+
     def _get_local_storage(self) -> dict:
         """Extract local storage data"""
         try:
@@ -11533,61 +11782,93 @@ def http_framework_endpoint():
     """Enhanced HTTP testing framework (Burp Suite alternative)"""
     try:
         params = request.json
-        action = params.get("action", "request")  # request, spider, proxy_history
+        action = params.get("action", "request")  # request, spider, proxy_history, set_rules, set_scope, repeater, intruder
         url = params.get("url", "")
         method = params.get("method", "GET")
         data = params.get("data", {})
         headers = params.get("headers", {})
         cookies = params.get("cookies", {})
-        
+
         logger.info(f"{ModernVisualEngine.create_section_header('HTTP FRAMEWORK', '🔥', 'FIRE_RED')}")
-        
+
         if action == "request":
             if not url:
                 return jsonify({"error": "URL parameter is required for request action"}), 400
-            
-            request_command = f'{method} {url}'
+
+            request_command = f"{method} {url}"
             logger.info(f"{ModernVisualEngine.format_command_execution(request_command, 'STARTING')}")
             result = http_framework.intercept_request(url, method, data, headers, cookies)
-            
-            if result.get('success'):
+
+            if result.get("success"):
                 logger.info(f"{ModernVisualEngine.format_tool_status('HTTP-Framework', 'SUCCESS', url)}")
             else:
                 logger.error(f"{ModernVisualEngine.format_tool_status('HTTP-Framework', 'FAILED', url)}")
-            
+
             return jsonify(result)
-            
+
         elif action == "spider":
             if not url:
                 return jsonify({"error": "URL parameter is required for spider action"}), 400
-            
+
             max_depth = params.get("max_depth", 3)
             max_pages = params.get("max_pages", 100)
-            
-            spider_command = f'Spider {url}'
+
+            spider_command = f"Spider {url}"
             logger.info(f"{ModernVisualEngine.format_command_execution(spider_command, 'STARTING')}")
             result = http_framework.spider_website(url, max_depth, max_pages)
-            
-            if result.get('success'):
+
+            if result.get("success"):
                 total_pages = result.get("total_pages", 0)
-                pages_info = f'{total_pages} pages'
+                pages_info = f"{total_pages} pages"
                 logger.info(f"{ModernVisualEngine.format_tool_status('HTTP-Spider', 'SUCCESS', pages_info)}")
             else:
                 logger.error(f"{ModernVisualEngine.format_tool_status('HTTP-Spider', 'FAILED', url)}")
-            
+
             return jsonify(result)
-            
+
         elif action == "proxy_history":
             return jsonify({
-                'success': True,
-                'history': http_framework.proxy_history[-100:],  # Last 100 requests
-                'total_requests': len(http_framework.proxy_history),
-                'vulnerabilities': http_framework.vulnerabilities
+                "success": True,
+                "history": http_framework.proxy_history[-100:],  # Last 100 requests
+                "total_requests": len(http_framework.proxy_history),
+                "vulnerabilities": http_framework.vulnerabilities,
             })
-            
+
+        elif action == "set_rules":
+            rules = params.get("rules", [])
+            http_framework.set_match_replace_rules(rules)
+            return jsonify({"success": True, "rules_set": len(rules)})
+
+        elif action == "set_scope":
+            scope_host = params.get("host")
+            include_sub = params.get("include_subdomains", True)
+            if not scope_host:
+                return jsonify({"error": "host parameter required"}), 400
+            http_framework.set_scope(scope_host, include_sub)
+            return jsonify({"success": True, "scope": http_framework.scope})
+
+        elif action == "repeater":
+            request_spec = params.get("request") or {}
+            result = http_framework.send_custom_request(request_spec)
+            return jsonify(result)
+
+        elif action == "intruder":
+            if not url:
+                return jsonify({"error": "URL parameter required"}), 400
+            method = params.get("method", "GET")
+            location = params.get("location", "query")
+            fuzz_params = params.get("params", [])
+            payloads = params.get("payloads", [])
+            base_data = params.get("base_data", {})
+            max_requests = params.get("max_requests", 100)
+            result = http_framework.intruder_sniper(
+                url, method, location, fuzz_params, payloads, base_data, max_requests
+            )
+            return jsonify(result)
+
         else:
             return jsonify({"error": f"Unknown action: {action}"}), 400
-            
+
     except Exception as e:
         logger.error(f"{ModernVisualEngine.format_error_card('ERROR', 'HTTP-Framework', str(e))}")
         return jsonify({"error": f"Server error: {str(e)}"}), 500
@@ -11596,62 +11877,89 @@ def http_framework_endpoint():
 def browser_agent_endpoint():
     """AI-powered browser agent for web application inspection"""
     try:
-        params = request.json
+        params = request.json or {}
         action = params.get("action", "navigate")  # navigate, screenshot, close
         url = params.get("url", "")
         headless = params.get("headless", True)
         wait_time = params.get("wait_time", 5)
         proxy_port = params.get("proxy_port")
-        
-        logger.info(f"{ModernVisualEngine.create_section_header('BROWSER AGENT', '🌐', 'CRIMSON')}")
-        
+        active_tests = params.get("active_tests", False)
+
+        logger.info(
+            f"{ModernVisualEngine.create_section_header('BROWSER AGENT', '🌐', 'CRIMSON')}"
+        )
+
         if action == "navigate":
             if not url:
-                return jsonify({"error": "URL parameter is required for navigate action"}), 400
-            
+                return (
+                    jsonify({"error": "URL parameter is required for navigate action"}),
+                    400,
+                )
+
             # Setup browser if not already done
             if not browser_agent.driver:
                 setup_success = browser_agent.setup_browser(headless, proxy_port)
                 if not setup_success:
                     return jsonify({"error": "Failed to setup browser"}), 500
-            
+
             result = browser_agent.navigate_and_inspect(url, wait_time)
+            if result.get("success") and active_tests:
+                active_results = browser_agent.run_active_tests(
+                    result.get("page_info", {})
+                )
+                result["active_tests"] = active_results
+                if active_results["active_findings"]:
+                    logger.warning(
+                        ModernVisualEngine.format_error_card(
+                            "WARNING",
+                            "BrowserAgent",
+                            f"Active findings: {len(active_results['active_findings'])}",
+                        )
+                    )
             return jsonify(result)
-            
+
         elif action == "screenshot":
             if not browser_agent.driver:
-                return jsonify({"error": "Browser not initialized. Use navigate action first."}), 400
-            
+                return (
+                    jsonify(
+                        {"error": "Browser not initialized. Use navigate action first."}
+                    ),
+                    400,
+                )
+
             screenshot_path = f"/tmp/hexstrike_screenshot_{int(time.time())}.png"
             browser_agent.driver.save_screenshot(screenshot_path)
-            
-            return jsonify({
-                'success': True,
-                'screenshot': screenshot_path,
-                'current_url': browser_agent.driver.current_url,
-                'timestamp': datetime.now().isoformat()
-            })
-            
+
+            return jsonify(
+                {
+                    "success": True,
+                    "screenshot": screenshot_path,
+                    "current_url": browser_agent.driver.current_url,
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
+
         elif action == "close":
             browser_agent.close_browser()
-            return jsonify({
-                'success': True,
-                'message': 'Browser closed successfully'
-            })
-            
+            return jsonify({"success": True, "message": "Browser closed successfully"})
+
         elif action == "status":
-            return jsonify({
-                'success': True,
-                'browser_active': browser_agent.driver is not None,
-                'screenshots_taken': len(browser_agent.screenshots),
-                'pages_visited': len(browser_agent.page_sources)
-            })
-            
+            return jsonify(
+                {
+                    "success": True,
+                    "browser_active": browser_agent.driver is not None,
+                    "screenshots_taken": len(browser_agent.screenshots),
+                    "pages_visited": len(browser_agent.page_sources),
+                }
+            )
+
         else:
             return jsonify({"error": f"Unknown action: {action}"}), 400
-            
+
     except Exception as e:
-        logger.error(f"{ModernVisualEngine.format_error_card('ERROR', 'BrowserAgent', str(e))}")
+        logger.error(
+            f"{ModernVisualEngine.format_error_card('ERROR', 'BrowserAgent', str(e))}"
+        )
         return jsonify({"error": f"Server error: {str(e)}"}), 500
 
 @app.route("/api/tools/burpsuite-alternative", methods=["POST"])

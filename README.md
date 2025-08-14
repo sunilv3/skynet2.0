@@ -933,7 +933,7 @@ python3 hexstrike_server.py --port 8888
 ╭─────────────────────────────────────────────────────────────────────────────╮
 │ 🚀 Starting HexStrike AI Tools API Server                                  │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│ 🌐 Port: 5000                                                              │
+│ 🌐 Port: 8888                                                              │
 │ 🔧 Debug Mode: False                                                       │
 │ 💾 Cache Size: 1000 | TTL: 3600s                                          │
 │ ⏱️  Command Timeout: 300s                                                  │
@@ -942,24 +942,24 @@ python3 hexstrike_server.py --port 8888
 │ 🛠️ Security Tools: 150+ tools available                                   │
 ╰─────────────────────────────────────────────────────────────────────────────╯
 
-✅ Server successfully started on http://0.0.0.0:5000
-🔍 Health check: http://localhost:5000/health
-📡 API Documentation: http://localhost:5000/docs
+✅ Server successfully started on http://0.0.0.0:8888
+🔍 Health check: http://localhost:8888/health
+📡 API Documentation: http://localhost:8888/docs
 ```
 
 #### **Step 4: Verify Installation**
 
 ```bash
 # Test server health
-curl http://localhost:5000/health
+curl http://localhost:8888/health
 
 # Test AI agent capabilities
-curl -X POST http://localhost:5000/api/intelligence/analyze-target \
+curl -X POST http://localhost:8888/api/intelligence/analyze-target \
   -H "Content-Type: application/json" \
   -d '{"target": "example.com", "analysis_type": "comprehensive"}'
 
 # Test tool availability
-curl http://localhost:5000/api/tools/status
+curl http://localhost:8888/api/tools/status
 ```
 
 #### **Step 5: Configure AI Agent Integration**
@@ -970,9 +970,9 @@ curl http://localhost:5000/api/tools/status
   "mcpServers": {
     "hexstrike-ai": {
       "command": "python3",
-      "args": ["/path/to/hexstrike-ai/hexstrike_mcp.py", "--server", "http://localhost:5000"],
+      "args": ["/path/to/hexstrike-ai/hexstrike_mcp.py", "--server", "http://localhost:8888"],
       "env": {
-        "HEXSTRIKE_SERVER": "http://localhost:5000",
+        "HEXSTRIKE_SERVER": "http://localhost:8888",
         "HEXSTRIKE_TIMEOUT": "300"
       }
     }
@@ -981,7 +981,7 @@ curl http://localhost:5000/api/tools/status
 ```
 
 **For Other MCP-Compatible AI Agents:**
-- Server URL: `http://localhost:5000`
+- Server URL: `http://localhost:8888`
 - Protocol: HTTP REST API
 - Authentication: None (local deployment)
 - Timeout: 300 seconds (configurable)ration file [`hexstrike-ai-mcp.json`](hexstrike-ai-mcp.json) with your AI agent.
@@ -1004,11 +1004,13 @@ Edit `~/.config/Claude/claude_desktop_config.json`:
       "command": "python3",
       "args": [
         "/path/to/hexstrike-ai/hexstrike_mcp.py",
-        "--server", "http://localhost:5000"
+        "--server",
+        "http://localhost:8888"
       ],
-      "env": {
-        "HEXSTRIKE_SERVER": "http://localhost:5000"
-      }
+      "description": "🔥 HexStrike AI v6.0 - Advanced Cybersecurity Automation Platform",
+      "timeout": 300,
+      "alwaysAllow": [],
+      "disabled": false
     }
   }
 }
@@ -1031,7 +1033,7 @@ Edit `~/.config/Claude/claude_desktop_config.json`:
 			"args": [
 				"/path/to/hexstrike-ai/hexstrike_mcp.py",
 				"--server",
-				"http://localhost:5000"
+				"http://localhost:8888"
 			]
 		}
 	},
@@ -1054,7 +1056,7 @@ Edit `~/.config/Claude/claude_desktop_config.json`:
       "command": "python3",
       "args": [
         "/path/to/hexstrike-ai/hexstrike_mcp.py",
-        "--server", "http://localhost:5000"
+        "--server", "http://localhost:8888"
       ],
       "description": "HexStrike AI MCP Agents v6.0"
     }
@@ -1269,8 +1271,8 @@ Our FastMCP integration provides AI agents with access to all security tools thr
 
 1. **MCP Connection Failed**:
    ```bash
-   # Check if server is running
-   netstat -tlnp | grep 5000
+   # 1. Check if server is running
+   netstat -tlnp | grep 8888
    
    # Restart server
    python3 hexstrike_server.py
@@ -1368,7 +1370,7 @@ source hexstrike-dev/bin/activate
 pip install -r requirements.txt
 
 # 4. Start development server
-python3 hexstrike_server.py --port 5000 --debug
+python3 hexstrike_server.py --port 8888 --debug
 ```
 
 ### 🎯 **Priority Areas for Contribution**

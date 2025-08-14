@@ -5136,7 +5136,7 @@ def setup_mcp_server(hexstrike_client: HexStrikeClient) -> FastMCP:
             data: Request data/parameters
             headers: Custom headers
             cookies: Custom cookies
-            action: Action to perform (request, spider, proxy_history)
+            action: Action to perform (request, spider, proxy_history, set_rules, set_scope, repeater, intruder)
             
         Returns:
             HTTP testing results with vulnerability analysis
@@ -5167,7 +5167,7 @@ def setup_mcp_server(hexstrike_client: HexStrikeClient) -> FastMCP:
 
     @mcp.tool()
     def browser_agent_inspect(url: str, headless: bool = True, wait_time: int = 5, 
-                             action: str = "navigate", proxy_port: int = None) -> Dict[str, Any]:
+                             action: str = "navigate", proxy_port: int = None, active_tests: bool = False) -> Dict[str, Any]:
         """
         AI-powered browser agent for comprehensive web application inspection and security analysis.
         
@@ -5177,6 +5177,7 @@ def setup_mcp_server(hexstrike_client: HexStrikeClient) -> FastMCP:
             wait_time: Time to wait after page load
             action: Action to perform (navigate, screenshot, close, status)
             proxy_port: Optional proxy port for request interception
+            active_tests: Run lightweight active reflected XSS tests (safe GET-only)
             
         Returns:
             Browser inspection results with security analysis
@@ -5186,7 +5187,8 @@ def setup_mcp_server(hexstrike_client: HexStrikeClient) -> FastMCP:
             "headless": headless,
             "wait_time": wait_time,
             "action": action,
-            "proxy_port": proxy_port
+            "proxy_port": proxy_port,
+            "active_tests": active_tests
         }
         
         logger.info(f"{HexStrikeColors.CRIMSON}🌐 Starting Browser Agent {action}: {url}{HexStrikeColors.RESET}")
@@ -5209,6 +5211,43 @@ def setup_mcp_server(hexstrike_client: HexStrikeClient) -> FastMCP:
             logger.error(f"{Colors.ERROR}❌ Browser Agent {action} failed for {url}{Colors.RESET}")
         
         return result
+
+    # ---------------- Additional HTTP Framework Tools (sync with server) ----------------
+    @mcp.tool()
+    def http_set_rules(rules: list) -> Dict[str, Any]:
+        """Set match/replace rules used to rewrite parts of URL/query/headers/body before sending.
+        Rule format: {'where':'url|query|headers|body','pattern':'regex','replacement':'string'}"""
+        payload = {"action": "set_rules", "rules": rules}
+        return hexstrike_client.safe_post("api/tools/http-framework", payload)
+
+    @mcp.tool()
+    def http_set_scope(host: str, include_subdomains: bool = True) -> Dict[str, Any]:
+        """Define in-scope host (and optionally subdomains) so out-of-scope requests are skipped."""
+        payload = {"action": "set_scope", "host": host, "include_subdomains": include_subdomains}
+        return hexstrike_client.safe_post("api/tools/http-framework", payload)
+
+    @mcp.tool()
+    def http_repeater(request_spec: dict) -> Dict[str, Any]:
+        """Send a crafted request (Burp Repeater equivalent). request_spec keys: url, method, headers, cookies, data."""
+        payload = {"action": "repeater", "request": request_spec}
+        return hexstrike_client.safe_post("api/tools/http-framework", payload)
+
+    @mcp.tool()
+    def http_intruder(url: str, method: str = "GET", location: str = "query", params: list = None,
+                      payloads: list = None, base_data: dict = None, max_requests: int = 100) -> Dict[str, Any]:
+        """Simple Intruder (sniper) fuzzing. Iterates payloads over each param individually.
+        location: query|body|headers|cookie."""
+        payload = {
+            "action": "intruder",
+            "url": url,
+            "method": method,
+            "location": location,
+            "params": params or [],
+            "payloads": payloads or [],
+            "base_data": base_data or {},
+            "max_requests": max_requests
+        }
+        return hexstrike_client.safe_post("api/tools/http-framework", payload)
 
     @mcp.tool()
     def burpsuite_alternative_scan(target: str, scan_type: str = "comprehensive", 
@@ -5366,15 +5405,15 @@ def main():
     
     # Print enhanced startup banner
     banner = f"""
-{HexStrikeColors.NEON_BLUE}{HexStrikeColors.BOLD}╔══════════════════════════════════════════════════════════════════════════════╗
-║  {HexStrikeColors.FIRE_RED}🔥 HexStrike AI MCP Client v6.0 - Enhanced Visual Edition{HexStrikeColors.NEON_BLUE}              ║
+{HexStrikeColors.CRIMSON}{HexStrikeColors.BOLD}╔══════════════════════════════════════════════════════════════════════════════╗
+║  {HexStrikeColors.HACKER_RED}🔥 HexStrike AI MCP Client v6.0 - Blood-Red Offensive Core{HexStrikeColors.CRIMSON}         ║
 ╠══════════════════════════════════════════════════════════════════════════════╣{HexStrikeColors.RESET}
-{HexStrikeColors.BOLD}║{HexStrikeColors.RESET} {HexStrikeColors.MATRIX_GREEN}🤖 Advanced AI-driven cybersecurity automation{HexStrikeColors.RESET}
-{HexStrikeColors.BOLD}║{HexStrikeColors.RESET} {HexStrikeColors.CYBER_ORANGE}🔗 Connecting to: {args.server}{HexStrikeColors.RESET}
-{HexStrikeColors.BOLD}║{HexStrikeColors.RESET} {HexStrikeColors.WARNING}⚡ Enhanced Visual Engine with beautiful real-time output{HexStrikeColors.RESET}
-{HexStrikeColors.BOLD}║{HexStrikeColors.RESET} {HexStrikeColors.ELECTRIC_PURPLE}🎨 Modern UI components and progress visualization{HexStrikeColors.RESET}
-{HexStrikeColors.BOLD}║{HexStrikeColors.RESET} {HexStrikeColors.INFO}📊 Live dashboards and comprehensive reporting{HexStrikeColors.RESET}
-{HexStrikeColors.NEON_BLUE}{HexStrikeColors.BOLD}╚══════════════════════════════════════════════════════════════════════════════╝{HexStrikeColors.RESET}
+{HexStrikeColors.BOLD}║{HexStrikeColors.RESET} {HexStrikeColors.RUBY}🤖 Autonomous Offensive Orchestration Engine{HexStrikeColors.RESET}
+{HexStrikeColors.BOLD}║{HexStrikeColors.RESET} {HexStrikeColors.FIRE_RED}🔗 Connecting to: {args.server}{HexStrikeColors.RESET}
+{HexStrikeColors.BOLD}║{HexStrikeColors.RESET} {HexStrikeColors.SCARLET}⚡ AI-Augmented Recon | Exploit | Analysis Pipeline{HexStrikeColors.RESET}
+{HexStrikeColors.BOLD}║{HexStrikeColors.RESET} {HexStrikeColors.BLOOD_RED}🎨 Unified Blood-Red Theming & Visual Consistency{HexStrikeColors.RESET}
+{HexStrikeColors.BOLD}║{HexStrikeColors.RESET} {HexStrikeColors.WARNING}📊 Live Telemetry • Adaptive Decision Engine Active{HexStrikeColors.RESET}
+{HexStrikeColors.CRIMSON}{HexStrikeColors.BOLD}╚══════════════════════════════════════════════════════════════════════════════╝{HexStrikeColors.RESET}
     """
     print(banner)
     

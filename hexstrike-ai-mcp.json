@@ -5,7 +5,7 @@
       "args": [
         "/path/hexstrike_mcp.py",
         "--server",
-        "http://localhost:5000"
+        "http://localhost:8888"
       ],
       "description": "HexStrike AI v6.0 - Advanced Cybersecurity Automation Platform",
       "timeout": 300,
