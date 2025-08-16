@@ -5403,7 +5403,6 @@ def main():
         logger.setLevel(logging.DEBUG)
         logger.debug("🔍 Debug logging enabled")
     
-    # Print enhanced startup banner
     banner = f"""
 {HexStrikeColors.CRIMSON}{HexStrikeColors.BOLD}╔══════════════════════════════════════════════════════════════════════════════╗
 ║  {HexStrikeColors.HACKER_RED}🔥 HexStrike AI MCP Client v6.0 - Blood-Red Offensive Core{HexStrikeColors.CRIMSON}         ║
@@ -5415,7 +5414,7 @@ def main():
 {HexStrikeColors.BOLD}║{HexStrikeColors.RESET} {HexStrikeColors.WARNING}📊 Live Telemetry • Adaptive Decision Engine Active{HexStrikeColors.RESET}
 {HexStrikeColors.CRIMSON}{HexStrikeColors.BOLD}╚══════════════════════════════════════════════════════════════════════════════╝{HexStrikeColors.RESET}
     """
-    print(banner)
+    print(banner, file=sys.stderr)
     
     try:
         # Initialize the HexStrike AI client
