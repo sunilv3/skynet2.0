@@ -140,7 +140,7 @@ for handler in logging.getLogger().handlers:
 logger = logging.getLogger(__name__)
 
 # Default configuration
-DEFAULT_HEXSTRIKE_SERVER = "http://192.168.1.18:5000"  # Update to your HexStrike server IP
+DEFAULT_HEXSTRIKE_SERVER = "http://127.0.0.1:8888"  # Default HexStrike server URL
 DEFAULT_REQUEST_TIMEOUT = 300  # 5 minutes default timeout for API requests
 MAX_RETRIES = 3  # Maximum number of retries for connection attempts
 
@@ -5195,7 +5195,7 @@ def setup_mcp_server(hexstrike_client: HexStrikeClient) -> FastMCP:
         result = hexstrike_client.safe_post("api/tools/browser-agent", data_payload)
         
         if result.get("success"):
-            logger.info(f"{Colors.SUCCESS}✅ Browser Agent {action} completed for {url}{Colors.RESET}")
+            logger.info(f"{HexStrikeColors.SUCCESS}✅ Browser Agent {action} completed for {url}{HexStrikeColors.RESET}")
             
             # Enhanced logging for security analysis
             if action == "navigate" and result.get("result", {}).get("security_analysis"):
@@ -5204,11 +5204,11 @@ def setup_mcp_server(hexstrike_client: HexStrikeClient) -> FastMCP:
                 security_score = security_analysis.get("security_score", 0)
                 
                 if issues_count > 0:
-                    logger.warning(f"{Colors.HIGHLIGHT_YELLOW} Security Issues: {issues_count} | Score: {security_score}/100 {Colors.RESET}")
+                    logger.warning(f"{HexStrikeColors.HIGHLIGHT_YELLOW} Security Issues: {issues_count} | Score: {security_score}/100 {HexStrikeColors.RESET}")
                 else:
-                    logger.info(f"{Colors.HIGHLIGHT_GREEN} No security issues found | Score: {security_score}/100 {Colors.RESET}")
+                    logger.info(f"{HexStrikeColors.HIGHLIGHT_GREEN} No security issues found | Score: {security_score}/100 {HexStrikeColors.RESET}")
         else:
-            logger.error(f"{Colors.ERROR}❌ Browser Agent {action} failed for {url}{Colors.RESET}")
+            logger.error(f"{HexStrikeColors.ERROR}❌ Browser Agent {action} failed for {url}{HexStrikeColors.RESET}")
         
         return result
 
@@ -5274,11 +5274,11 @@ def setup_mcp_server(hexstrike_client: HexStrikeClient) -> FastMCP:
             "max_pages": max_pages
         }
         
-        logger.info(f"{Colors.BLOOD_RED}🔥 Starting Burp Suite Alternative {scan_type} scan: {target}{Colors.RESET}")
+        logger.info(f"{HexStrikeColors.BLOOD_RED}🔥 Starting Burp Suite Alternative {scan_type} scan: {target}{HexStrikeColors.RESET}")
         result = hexstrike_client.safe_post("api/tools/burpsuite-alternative", data_payload)
         
         if result.get("success"):
-            logger.info(f"{Colors.SUCCESS}✅ Burp Suite Alternative scan completed for {target}{Colors.RESET}")
+            logger.info(f"{HexStrikeColors.SUCCESS}✅ Burp Suite Alternative scan completed for {target}{HexStrikeColors.RESET}")
             
             # Enhanced logging for comprehensive results
             if result.get("result", {}).get("summary"):
@@ -5287,7 +5287,7 @@ def setup_mcp_server(hexstrike_client: HexStrikeClient) -> FastMCP:
                 pages_analyzed = summary.get("pages_analyzed", 0)
                 security_score = summary.get("security_score", 0)
                 
-                logger.info(f"{Colors.HIGHLIGHT_BLUE} SCAN SUMMARY {Colors.RESET}")
+                logger.info(f"{HexStrikeColors.HIGHLIGHT_BLUE} SCAN SUMMARY {HexStrikeColors.RESET}")
                 logger.info(f"  📊 Pages Analyzed: {pages_analyzed}")
                 logger.info(f"  🚨 Vulnerabilities: {total_vulns}")
                 logger.info(f"  🛡️  Security Score: {security_score}/100")
@@ -5297,16 +5297,16 @@ def setup_mcp_server(hexstrike_client: HexStrikeClient) -> FastMCP:
                 for severity, count in vuln_breakdown.items():
                     if count > 0:
                         color = {
-                            'critical': Colors.CRITICAL,
-                            'high': Colors.FIRE_RED,
-                            'medium': Colors.CYBER_ORANGE,
-                            'low': Colors.YELLOW,
-                            'info': Colors.INFO
-                        }.get(severity.lower(), Colors.WHITE)
+                                    'critical': HexStrikeColors.CRITICAL,
+        'high': HexStrikeColors.FIRE_RED,
+        'medium': HexStrikeColors.CYBER_ORANGE,
+        'low': HexStrikeColors.YELLOW,
+        'info': HexStrikeColors.INFO
+    }.get(severity.lower(), HexStrikeColors.WHITE)
                         
-                        logger.info(f"  {color}{severity.upper()}: {count}{Colors.RESET}")
+                        logger.info(f"  {color}{severity.upper()}: {count}{HexStrikeColors.RESET}")
         else:
-            logger.error(f"{Colors.ERROR}❌ Burp Suite Alternative scan failed for {target}{Colors.RESET}")
+            logger.error(f"{HexStrikeColors.ERROR}❌ Burp Suite Alternative scan failed for {target}{HexStrikeColors.RESET}")
         
         return result
 
@@ -5318,7 +5318,7 @@ def setup_mcp_server(hexstrike_client: HexStrikeClient) -> FastMCP:
         Returns:
             Error handling statistics and patterns
         """
-        logger.info(f"{Colors.ELECTRIC_PURPLE}📊 Retrieving error handling statistics{Colors.RESET}")
+        logger.info(f"{HexStrikeColors.ELECTRIC_PURPLE}📊 Retrieving error handling statistics{HexStrikeColors.RESET}")
         result = hexstrike_client.safe_get("api/error-handling/statistics")
         
         if result.get("success"):
@@ -5326,18 +5326,18 @@ def setup_mcp_server(hexstrike_client: HexStrikeClient) -> FastMCP:
             total_errors = stats.get("total_errors", 0)
             recent_errors = stats.get("recent_errors_count", 0)
             
-            logger.info(f"{Colors.SUCCESS}✅ Error statistics retrieved{Colors.RESET}")
+            logger.info(f"{HexStrikeColors.SUCCESS}✅ Error statistics retrieved{HexStrikeColors.RESET}")
             logger.info(f"  📈 Total Errors: {total_errors}")
             logger.info(f"  🕒 Recent Errors: {recent_errors}")
             
             # Log error breakdown by type
             error_counts = stats.get("error_counts_by_type", {})
             if error_counts:
-                logger.info(f"{Colors.HIGHLIGHT_BLUE} ERROR BREAKDOWN {Colors.RESET}")
+                logger.info(f"{HexStrikeColors.HIGHLIGHT_BLUE} ERROR BREAKDOWN {HexStrikeColors.RESET}")
                 for error_type, count in error_counts.items():
-                    logger.info(f"  {Colors.FIRE_RED}{error_type}: {count}{Colors.RESET}")
+                                          logger.info(f"  {HexStrikeColors.FIRE_RED}{error_type}: {count}{HexStrikeColors.RESET}")
         else:
-            logger.error(f"{Colors.ERROR}❌ Failed to retrieve error statistics{Colors.RESET}")
+            logger.error(f"{HexStrikeColors.ERROR}❌ Failed to retrieve error statistics{HexStrikeColors.RESET}")
         
         return result
 
@@ -5361,7 +5361,7 @@ def setup_mcp_server(hexstrike_client: HexStrikeClient) -> FastMCP:
             "target": target
         }
         
-        logger.info(f"{Colors.RUBY}🧪 Testing error recovery for {tool_name} with {error_type}{Colors.RESET}")
+        logger.info(f"{HexStrikeColors.RUBY}🧪 Testing error recovery for {tool_name} with {error_type}{HexStrikeColors.RESET}")
         result = hexstrike_client.safe_post("api/error-handling/test-recovery", data_payload)
         
         if result.get("success"):
@@ -5369,7 +5369,7 @@ def setup_mcp_server(hexstrike_client: HexStrikeClient) -> FastMCP:
             action = recovery_strategy.get("action", "unknown")
             success_prob = recovery_strategy.get("success_probability", 0)
             
-            logger.info(f"{Colors.SUCCESS}✅ Error recovery test completed{Colors.RESET}")
+            logger.info(f"{HexStrikeColors.SUCCESS}✅ Error recovery test completed{HexStrikeColors.RESET}")
             logger.info(f"  🔧 Recovery Action: {action}")
             logger.info(f"  📊 Success Probability: {success_prob:.2%}")
             
@@ -5378,7 +5378,7 @@ def setup_mcp_server(hexstrike_client: HexStrikeClient) -> FastMCP:
             if alternatives:
                 logger.info(f"  🔄 Alternative Tools: {', '.join(alternatives)}")
         else:
-            logger.error(f"{Colors.ERROR}❌ Error recovery test failed{Colors.RESET}")
+            logger.error(f"{HexStrikeColors.ERROR}❌ Error recovery test failed{HexStrikeColors.RESET}")
         
         return result
 
@@ -5403,18 +5403,9 @@ def main():
         logger.setLevel(logging.DEBUG)
         logger.debug("🔍 Debug logging enabled")
     
-    banner = f"""
-{HexStrikeColors.CRIMSON}{HexStrikeColors.BOLD}╔══════════════════════════════════════════════════════════════════════════════╗
-║  {HexStrikeColors.HACKER_RED}🔥 HexStrike AI MCP Client v6.0 - Blood-Red Offensive Core{HexStrikeColors.CRIMSON}         ║
-╠══════════════════════════════════════════════════════════════════════════════╣{HexStrikeColors.RESET}
-{HexStrikeColors.BOLD}║{HexStrikeColors.RESET} {HexStrikeColors.RUBY}🤖 Autonomous Offensive Orchestration Engine{HexStrikeColors.RESET}
-{HexStrikeColors.BOLD}║{HexStrikeColors.RESET} {HexStrikeColors.FIRE_RED}🔗 Connecting to: {args.server}{HexStrikeColors.RESET}
-{HexStrikeColors.BOLD}║{HexStrikeColors.RESET} {HexStrikeColors.SCARLET}⚡ AI-Augmented Recon | Exploit | Analysis Pipeline{HexStrikeColors.RESET}
-{HexStrikeColors.BOLD}║{HexStrikeColors.RESET} {HexStrikeColors.BLOOD_RED}🎨 Unified Blood-Red Theming & Visual Consistency{HexStrikeColors.RESET}
-{HexStrikeColors.BOLD}║{HexStrikeColors.RESET} {HexStrikeColors.WARNING}📊 Live Telemetry • Adaptive Decision Engine Active{HexStrikeColors.RESET}
-{HexStrikeColors.CRIMSON}{HexStrikeColors.BOLD}╚══════════════════════════════════════════════════════════════════════════════╝{HexStrikeColors.RESET}
-    """
-    print(banner, file=sys.stderr)
+    # MCP compatibility: No banner output to avoid JSON parsing issues
+    logger.info(f"🚀 Starting HexStrike AI MCP Client v6.0")
+    logger.info(f"🔗 Connecting to: {args.server}")
     
     try:
         # Initialize the HexStrike AI client
@@ -5445,22 +5436,6 @@ def main():
         import traceback
         logger.error(traceback.format_exc())
         sys.exit(1)
-
-# ============================================================================
-# HEXSTRIKE MCP CLIENT - ENHANCED & CONSISTENT (v6.0)
-# ============================================================================
-# 
-# This MCP client now features complete consistency with the server:
-# ✅ Enhanced HexStrikeColors class matching server's ModernVisualEngine.COLORS
-# ✅ Consistent reddish hacker-themed visual output
-# ✅ Improved error handling and recovery systems
-# ✅ Professional logging with colored output and emojis
-# ✅ FastMCP integration for seamless AI communication
-# 
-# The client and server now share the same visual identity and theming
-# for a cohesive user experience across all HexStrike components.
-# 
-# ============================================================================
 
 if __name__ == "__main__":
     main()
