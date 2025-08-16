@@ -126,7 +126,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="[🔥 HexStrike MCP] %(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.StreamHandler(sys.stdout)
+        logging.StreamHandler(sys.stderr)
     ]
 )
 
