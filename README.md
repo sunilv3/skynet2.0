@@ -23,15 +23,19 @@
 ---
 
 <div align="center">
-  <p align="center">
-    <a href="https://discord.gg/BWnmrrSHbA">
-      <img src="https://img.shields.io/badge/Discord-Join-7289DA?logo=discord&style=flat-square"/>
-    </a>
-    &nbsp;
-    <a href="https://www.linkedin.com/company/hexstrike-ai">
-      <img src="https://img.shields.io/badge/LinkedIn-Follow%20us-0A66C2?logo=linkedin&style=flat-square"/>
-    </a>
-  </p>
+
+## Follow Our Social Accounts
+
+<p align="center">
+  <a href="https://discord.gg/BWnmrrSHbA">
+    <img src="https://img.shields.io/badge/Discord-Join-7289DA?logo=discord&logoColor=white&style=for-the-badge" alt="Join our Discord" />
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://www.linkedin.com/company/hexstrike-ai">
+    <img src="https://img.shields.io/badge/LinkedIn-Follow%20us-0A66C2?logo=linkedin&logoColor=white&style=for-the-badge" alt="Follow us on LinkedIn" />
+  </a>
+</p>
+
 </div>
 
 ## What's New in v6.0
