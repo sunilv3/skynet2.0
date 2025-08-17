@@ -22,6 +22,12 @@
 
 ---
 
+<div align="center">
+[![Discord](https://img.shields.io/badge/Discord-Join-blue?logo=discord&style=for-the-badge)](https://discord.gg/BWnmrrSHbA)
+
+<p align="center">Join our Discord to discuss the project, report issues, and share ideas: <a href="https://discord.gg/BWnmrrSHbA">https://discord.gg/BWnmrrSHbA</a></p>
+</div>
+
 ## What's New in v6.0
 
 ### Major Enhancements
