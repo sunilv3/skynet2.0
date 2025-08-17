@@ -42,25 +42,20 @@
 
 ### Key Improvements & New Features
 
-#### Installation & Setup
+#### Installation & Setup:
 - **Streamlined Installation Process** - One-command setup with automated dependency management
 - **Docker Container Support** - Containerized deployment for consistent environments
-
-#### AI Agent Ecosystem
+#### AI Agent Ecosystem:
 - **250+ Specialized AI Agents** - Expanded from 150+ to 250+ autonomous security agents
-
-#### Desktop Application
+#### Desktop Application:
 - **Native Desktop Client** - Full-featured Application ([www.hexstrike.com](https://www.hexstrike.com))
-
-#### Browser Agent Enhancements
+#### Browser Agent Enhancements:
 - **Advanced Web Automation** - Enhanced Selenium integration with anti-detection
 - **JavaScript Runtime Analysis** - Deep DOM inspection and dynamic content handling
-
-#### Stability & Performance
+#### Stability & Performance:
 - **Memory Optimization** - 40% reduction in resource usage for large-scale operations
 - **Enhanced Error Handling** - Graceful degradation and automatic recovery mechanisms
-
-#### Better support with multiple AI assistant/MCP client
+#### Better support with multiple AI assistant/MCP client:
 - **Bypassing Limitations** - Fixed limited allowed mcp tools by MCP clients
 
 
