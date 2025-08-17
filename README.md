@@ -23,7 +23,17 @@
 ---
 
 <div align="center">
-<p align="center">Join our Discord to discuss the project, report issues, and share ideas: <a href="https://discord.gg/BWnmrrSHbA">https://discord.gg/BWnmrrSHbA</a></p>
+  <p align="center">Join our Discord to discuss the project, report issues, and share ideas:</p>
+  <p align="center">
+    <a href="https://discord.gg/BWnmrrSHbA">
+      <img src="https://img.shields.io/badge/Discord-Join-7289DA?logo=discord&style=flat-square" alt="Join our Discord" />
+    </a>
+    &nbsp;
+    <a href="https://www.linkedin.com/company/hexstrike-ai">
+      <img src="https://img.shields.io/badge/LinkedIn-Follow%20us-0A66C2?logo=linkedin&style=flat-square" alt="Follow us on LinkedIn" />
+    </a>
+  </p>
+  <p align="center"><strong>Follow us on LinkedIn</strong></p>
 </div>
 
 ## What's New in v6.0
