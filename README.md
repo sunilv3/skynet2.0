@@ -144,18 +144,6 @@ graph TD
 
 ## Installation
 
-### System Requirements
-
-```bash
-OS: Kali Linux 2024.1+ / Ubuntu 22.04+ / Debian 12+
-Python: 3.9+ with pip (3.11+ recommended)
-RAM: 8GB+ (16GB recommended)
-Storage: 50GB+ free space
-CPU: 4+ cores (8+ cores recommended)
-Network: High-speed internet
-GPU: Optional (for hashcat acceleration)
-```
-
 ### Quick Setup
 
 ```bash
@@ -171,8 +159,6 @@ source hexstrike-env/bin/activate  # Linux/Mac
 # 3. Install Python dependencies
 pip3 install -r requirements.txt
 
-# 4. Install Browser Agent dependencies
-pip3 install selenium beautifulsoup4 mitmproxy webdriver-manager
 ```
 
 ### Install Security Tools
@@ -180,26 +166,26 @@ pip3 install selenium beautifulsoup4 mitmproxy webdriver-manager
 **Core Tools (Essential):**
 ```bash
 # Network & Reconnaissance
-sudo apt install nmap masscan rustscan amass subfinder nuclei fierce dnsenum
-sudo apt install autorecon theharvester responder netexec enum4linux-ng
+nmap masscan rustscan amass subfinder nuclei fierce dnsenum
+autorecon theharvester responder netexec enum4linux-ng
 
 # Web Application Security
-sudo apt install gobuster feroxbuster dirsearch ffuf dirb httpx katana
-sudo apt install nikto sqlmap wpscan arjun paramspider dalfox wafw00f
+gobuster feroxbuster dirsearch ffuf dirb httpx katana
+nikto sqlmap wpscan arjun paramspider dalfox wafw00f
 
 # Password & Authentication
-sudo apt install hydra john hashcat medusa patator crackmapexec
-sudo apt install evil-winrm hash-identifier ophcrack
+hydra john hashcat medusa patator crackmapexec
+evil-winrm hash-identifier ophcrack
 
 # Binary Analysis & Reverse Engineering
-sudo apt install gdb radare2 binwalk ghidra checksec strings objdump
-sudo apt install volatility3 foremost steghide exiftool
+gdb radare2 binwalk ghidra checksec strings objdump
+volatility3 foremost steghide exiftool
 ```
 
 **Cloud Security Tools:**
 ```bash
-pip3 install prowler scout-suite trivy
-sudo apt install kube-hunter kube-bench docker-bench-security
+prowler scout-suite trivy
+kube-hunter kube-bench docker-bench-security
 ```
 
 **Browser Agent Requirements:**
