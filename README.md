@@ -25,11 +25,11 @@
 <div align="center">
   <p align="center">
     <a href="https://discord.gg/BWnmrrSHbA">
-      <img src="https://img.shields.io/badge/Discord-Join-7289DA?logo=discord&style=flat-square" alt="Join our Discord" />
+      <img src="https://img.shields.io/badge/Discord-Join-7289DA?logo=discord&style=flat-square"/>
     </a>
     &nbsp;
     <a href="https://www.linkedin.com/company/hexstrike-ai">
-      <img src="https://img.shields.io/badge/LinkedIn-Follow%20us-0A66C2?logo=linkedin&style=flat-square" alt="Follow us on LinkedIn" />
+      <img src="https://img.shields.io/badge/LinkedIn-Follow%20us-0A66C2?logo=linkedin&style=flat-square"/>
     </a>
   </p>
 </div>
