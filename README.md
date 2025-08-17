@@ -38,6 +38,16 @@
 
 </div>
 
+## What's New in v7.0 COMING SOON!
+
+### Major Updates
+
+- **Fixed Installation Mess**
+- **250+ AI Agents**
+- **More Robust Browser Agent**
+- **Many more bug fixes and adaptability!**
+
+
 ## What's New in v6.0
 
 ### Major Enhancements
