@@ -38,7 +38,7 @@
 
 </div>
 
-## What's New in v7.0 COMING SOON!
+## NEW v7.0 COMING SOON!
 
 ### Major Updates
 
