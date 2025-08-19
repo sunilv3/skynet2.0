@@ -4719,7 +4719,7 @@ def setup_mcp_server(hexstrike_client: HexStrikeClient) -> FastMCP:
         Returns:
             Results from AI-optimized scanning with tool execution summary
         """
-        logger.info(f"🚀 Starting intelligent smart scan for {target}")
+        logger.info(f"{HexStrikeColors.FIRE_RED}🚀 Starting intelligent smart scan for {target}{HexStrikeColors.RESET}")
         
         data = {
             "target": target,
@@ -4730,10 +4730,32 @@ def setup_mcp_server(hexstrike_client: HexStrikeClient) -> FastMCP:
         
         if result.get("success"):
             scan_results = result.get("scan_results", {})
-            tools_executed = len(scan_results.get("tools_executed", []))
-            logger.info(f"✅ Intelligent scan completed - {tools_executed} tools executed")
+            tools_executed = scan_results.get("tools_executed", [])
+            execution_summary = scan_results.get("execution_summary", {})
+            
+            # Enhanced logging with detailed results
+            logger.info(f"{HexStrikeColors.SUCCESS}✅ Intelligent scan completed for {target}{HexStrikeColors.RESET}")
+            logger.info(f"{HexStrikeColors.CYBER_ORANGE}📊 Execution Summary:{HexStrikeColors.RESET}")
+            logger.info(f"   • Tools executed: {execution_summary.get('successful_tools', 0)}/{execution_summary.get('total_tools', 0)}")
+            logger.info(f"   • Success rate: {execution_summary.get('success_rate', 0):.1f}%")
+            logger.info(f"   • Total vulnerabilities: {scan_results.get('total_vulnerabilities', 0)}")
+            logger.info(f"   • Execution time: {execution_summary.get('total_execution_time', 0):.2f}s")
+            
+            # Log successful tools
+            successful_tools = [t['tool'] for t in tools_executed if t.get('success')]
+            if successful_tools:
+                logger.info(f"{HexStrikeColors.HIGHLIGHT_GREEN} Successful tools: {', '.join(successful_tools)} {HexStrikeColors.RESET}")
+            
+            # Log failed tools
+            failed_tools = [t['tool'] for t in tools_executed if not t.get('success')]
+            if failed_tools:
+                logger.warning(f"{HexStrikeColors.HIGHLIGHT_RED} Failed tools: {', '.join(failed_tools)} {HexStrikeColors.RESET}")
+            
+            # Log vulnerabilities found
+            if scan_results.get('total_vulnerabilities', 0) > 0:
+                logger.warning(f"{HexStrikeColors.VULN_HIGH}🚨 {scan_results['total_vulnerabilities']} vulnerabilities detected!{HexStrikeColors.RESET}")
         else:
-            logger.error(f"❌ Intelligent scan failed for {target}")
+            logger.error(f"{HexStrikeColors.ERROR}❌ Intelligent scan failed for {target}: {result.get('error', 'Unknown error')}{HexStrikeColors.RESET}")
         
         return result
 
