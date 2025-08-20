@@ -3,7 +3,7 @@
 <img src="assets/hexstrike-logo.png" alt="HexStrike AI Logo" width="220" style="margin-bottom: 20px;"/>
 
 # HexStrike AI MCP Agents v6.0
-### AI-Powered Cybersecurity Automation Platform
+### AI-Powered MCP Cybersecurity Automation Platform
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -14,7 +14,7 @@
 [![Agents](https://img.shields.io/badge/AI%20Agents-12%2B-purple.svg)](https://github.com/0x4m4/hexstrike-ai)
 [![Stars](https://img.shields.io/github/stars/0x4m4/hexstrike-ai?style=social)](https://github.com/0x4m4/hexstrike-ai)
 
-**Advanced AI-powered penetration testing framework with 150+ security tools and 12+ autonomous AI agents**
+**Advanced AI-powered penetration testing MCP framework with 150+ security tools and 12+ autonomous AI agents**
 
 [📋 What's New](#whats-new-in-v60) • [🏗️ Architecture](#architecture-overview) • [🚀 Installation](#installation) • [🛠️ Features](#features) • [🤖 AI Agents](#ai-agents) • [📡 API Reference](#api-reference)
 
@@ -38,62 +38,11 @@
 
 </div>
 
-## HexStrike AI v7.0 - Major Release Coming Soon!
-
-### Key Improvements & New Features
-
-- **Streamlined Installation Process** - One-command setup with automated dependency management
-- **Docker Container Support** - Containerized deployment for consistent environments
-- **250+ Specialized AI Agents** - Expanded from 150+ to 250+ autonomous security agents
-- **Native Desktop Client** - Full-featured Application ([www.hexstrike.com](https://www.hexstrike.com))
-- **Advanced Web Automation** - Enhanced Selenium integration with anti-detection
-- **JavaScript Runtime Analysis** - Deep DOM inspection and dynamic content handling
-- **Memory Optimization** - 40% reduction in resource usage for large-scale operations
-- **Enhanced Error Handling** - Graceful degradation and automatic recovery mechanisms
-- **Bypassing Limitations** - Fixed limited allowed mcp tools by MCP clients
-
-
-## What's New in v6.0
-
-### Major Enhancements
-
-- **150+ Security Tools** - Comprehensive security testing arsenal
-- **12+ AI Agents** - Autonomous decision-making and workflow management
-- **Intelligent Decision Engine** - AI-powered tool selection and parameter optimization
-- **Modern Visual Engine** - Real-time dashboards and progress tracking
-- **Advanced Process Management** - Smart caching and resource optimization
-- **Vulnerability Intelligence** - CVE analysis and exploit generation
-
-### New AI Agents
-
-- **IntelligentDecisionEngine** - AI-powered tool selection and parameter optimization
-- **BugBountyWorkflowManager** - Specialized workflows for bug bounty hunting
-- **CTFWorkflowManager** - Automated CTF challenge solving
-- **CVEIntelligenceManager** - Real-time vulnerability intelligence
-- **AIExploitGenerator** - Automated exploit development
-- **VulnerabilityCorrelator** - Multi-stage attack chain discovery
-- **TechnologyDetector** - Advanced technology stack identification
-- **RateLimitDetector** - Intelligent rate limiting detection
-- **FailureRecoverySystem** - Automatic error handling
-- **PerformanceMonitor** - Real-time system optimization
-- **ParameterOptimizer** - Context-aware parameter optimization
-- **GracefulDegradation** - Fault-tolerant operation
-
-### New Security Tools
-
-- **Network Security**: Rustscan, Masscan, AutoRecon, NetExec, Responder
-- **Web Application**: Katana, HTTPx, Feroxbuster, Arjun, ParamSpider, X8, Jaeles, Dalfox
-- **Cloud Security**: Prowler, Scout Suite, CloudMapper, Pacu, Trivy, Kube-Hunter, Kube-Bench
-- **Binary Analysis**: Ghidra, Radare2, Pwntools, ROPgadget, One_gadget, Angr, Volatility3
-- **API Testing**: GraphQL introspection, JWT manipulation, REST API fuzzing
-- **CTF Specialized**: Advanced cryptography, steganography, forensics tools
-- **OSINT & Reconnaissance**: Advanced subdomain enumeration, social media analysis
-
 ---
 
 ## Architecture Overview
 
-HexStrike AI v6.0 features a multi-agent architecture with autonomous AI agents, intelligent decision-making, and advanced vulnerability intelligence.
+HexStrike AI MCP v6.0 features a multi-agent architecture with autonomous AI agents, intelligent decision-making, and vulnerability intelligence.
 
 ```mermaid
 %%{init: {"themeVariables": {
@@ -175,6 +124,27 @@ source hexstrike-env/bin/activate  # Linux/Mac
 pip3 install -r requirements.txt
 
 ```
+
+### Installation and Setting Up Guide:
+
+#### Installation & Demo Video
+
+Watch the full installation and setup walkthrough here: [YouTube - HexStrike AI Installation & Demo](https://www.youtube.com/watch?v=pSoftCagCm8)
+
+#### Supported AI Clients for Running & Integration
+
+You can install and run HexStrike AI MCPs with various AI clients, including:
+
+- **5ire**
+- **VS Code Copilot**
+- **Roo Code**
+- **Cursor**
+- **Claude Desktop**
+- **Any MCP-compatible agent**
+
+Refer to the video above for step-by-step instructions and integration examples for these platforms.
+
+
 
 ### Install Security Tools
 
@@ -442,7 +412,7 @@ Configure VS Code settings in `.vscode/settings.json`:
 </details>
 
 <details>
-<summary><b>🏆 Advanced CTF & Forensics Tools (20+ Tools)</b></summary>
+<summary><b>🏆 CTF & Forensics Tools (20+ Tools)</b></summary>
 
 - **Volatility** - Advanced memory forensics framework with comprehensive plugins
 - **Volatility3** - Next-generation memory forensics with enhanced analysis
@@ -726,6 +696,60 @@ AI Agent: "I'll conduct comprehensive bug bounty reconnaissance:
 - **Attack Vector Coverage**: 95% (vs 70% manual testing)
 - **CTF Success Rate**: 89% (vs 65% human expert average)
 - **Bug Bounty Success**: 15+ high-impact vulnerabilities discovered in testing
+
+---
+
+## HexStrike AI v7.0 - Major Release Coming Soon!
+
+### Key Improvements & New Features
+
+- **Streamlined Installation Process** - One-command setup with automated dependency management
+- **Docker Container Support** - Containerized deployment for consistent environments
+- **250+ Specialized AI Agents/Tools** - Expanded from 150+ to 250+ autonomous security agents
+- **Native Desktop Client** - Full-featured Application ([www.hexstrike.com](https://www.hexstrike.com))
+- **Advanced Web Automation** - Enhanced Selenium integration with anti-detection
+- **JavaScript Runtime Analysis** - Deep DOM inspection and dynamic content handling
+- **Memory Optimization** - 40% reduction in resource usage for large-scale operations
+- **Enhanced Error Handling** - Graceful degradation and automatic recovery mechanisms
+- **Bypassing Limitations** - Fixed limited allowed mcp tools by MCP clients
+
+
+## What's New in v6.0
+
+### Major Enhancements
+
+- **150+ Security Tools** - Comprehensive security testing arsenal
+- **12+ AI Agents** - Autonomous decision-making and workflow management
+- **Intelligent Decision Engine** - AI-powered tool selection and parameter optimization
+- **Modern Visual Engine** - Real-time dashboards and progress tracking
+- **Advanced Process Management** - Smart caching and resource optimization
+- **Vulnerability Intelligence** - CVE analysis and exploit generation
+
+### New AI Agents
+
+- **IntelligentDecisionEngine** - AI-powered tool selection and parameter optimization
+- **BugBountyWorkflowManager** - Specialized workflows for bug bounty hunting
+- **CTFWorkflowManager** - Automated CTF challenge solving
+- **CVEIntelligenceManager** - Real-time vulnerability intelligence
+- **AIExploitGenerator** - Automated exploit development
+- **VulnerabilityCorrelator** - Multi-stage attack chain discovery
+- **TechnologyDetector** - Advanced technology stack identification
+- **RateLimitDetector** - Intelligent rate limiting detection
+- **FailureRecoverySystem** - Automatic error handling
+- **PerformanceMonitor** - Real-time system optimization
+- **ParameterOptimizer** - Context-aware parameter optimization
+- **GracefulDegradation** - Fault-tolerant operation
+
+### New Security Tools
+
+- **Network Security**: Rustscan, Masscan, AutoRecon, NetExec, Responder
+- **Web Application**: Katana, HTTPx, Feroxbuster, Arjun, ParamSpider, X8, Jaeles, Dalfox
+- **Cloud Security**: Prowler, Scout Suite, CloudMapper, Pacu, Trivy, Kube-Hunter, Kube-Bench
+- **Binary Analysis**: Ghidra, Radare2, Pwntools, ROPgadget, One_gadget, Angr, Volatility3
+- **API Testing**: GraphQL introspection, JWT manipulation, REST API fuzzing
+- **CTF Specialized**: Advanced cryptography, steganography, forensics tools
+- **OSINT & Reconnaissance**: Advanced subdomain enumeration, social media analysis
+
 
 ---
 
