@@ -108,7 +108,7 @@ graph TD
 
 ## Installation
 
-### Quick Setup
+### Quick Setup to Run the hexstrike MCPs Server
 
 ```bash
 # 1. Clone the repository
@@ -125,7 +125,7 @@ pip3 install -r requirements.txt
 
 ```
 
-### Installation and Setting Up Guide:
+### Installation and Setting Up Guide for various AI Clients:
 
 #### Installation & Demo Video
 
