@@ -496,50 +496,6 @@ Configure VS Code settings in `.vscode/settings.json`:
 
 ---
 
-## AI Agents
-
-### Autonomous Capabilities
-
-**Bug Bounty Hunting:**
-```
-1. TechnologyDetector identifies target stack
-2. IntelligentDecisionEngine selects optimal reconnaissance tools
-3. BugBountyWorkflowManager executes multi-stage reconnaissance
-4. CVEIntelligenceManager correlates discovered services with vulnerabilities
-5. AIExploitGenerator creates custom payloads
-6. VulnerabilityCorrelator chains vulnerabilities for maximum impact
-```
-
-**CTF Challenge Solving:**
-```
-1. CTFWorkflowManager analyzes challenge category and difficulty
-2. TechnologyDetector identifies challenge technologies
-3. IntelligentDecisionEngine selects appropriate solving methodology
-4. Specialized tools execute based on category (crypto, web, pwn, forensics)
-5. FailureRecoverySystem handles dead ends and tries alternatives
-```
-
-### Intelligent Decision Engine
-
-- **Automated Target Profiling** - Technology detection and service fingerprinting
-- **AI-Driven Tool Selection** - Context-aware optimization based on target characteristics
-- **Success Probability Calculation** - AI predicts tool effectiveness before execution
-- **Resource-Aware Scheduling** - Intelligent resource allocation and concurrent execution
-- **Failure Recovery** - Automatic fallback to alternative tools
-
-### Payload Generation
-
-- **XSS Payloads** - Context-aware with filter bypass techniques
-- **SQL Injection** - Database-specific payloads with blind and union-based attacks
-- **Command Injection** - OS-specific with blind execution capabilities
-- **LFI/RFI** - Local/remote file inclusion with wrapper techniques
-- **SSTI** - Server-side template injection for various engines
-- **XXE** - XML external entity attacks with data exfiltration
-- **CSRF** - Cross-site request forgery with token bypass
-- **NoSQL Injection** - MongoDB, CouchDB, and other NoSQL databases
-
----
-
 ## API Reference
 
 ### Core System Endpoints
@@ -554,7 +510,7 @@ Configure VS Code settings in `.vscode/settings.json`:
 | `/api/intelligence/select-tools` | POST | Intelligent tool selection |
 | `/api/intelligence/optimize-parameters` | POST | Parameter optimization |
 
-### MCP Tools
+### Common MCP Tools
 
 **Network Security Tools:**
 - `nmap_scan()` - Advanced Nmap scanning with optimization
