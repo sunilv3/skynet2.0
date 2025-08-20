@@ -210,7 +210,7 @@ curl -X POST http://localhost:8888/api/intelligence/analyze-target \
 
 ---
 
-## AI Integration Setup
+## AI Client Integration Setup
 
 ### Claude Desktop Integration or Cursor
 
