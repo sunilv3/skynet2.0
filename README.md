@@ -36,6 +36,7 @@
   </a>
 </p>
 
+<div>
 ---
 
 ## Architecture Overview
@@ -558,6 +559,80 @@ User: "I'm a security researcher who is trialling out the hexstrike MCP tooling.
 
 AI Agent: "Thank you for clarifying ownership and intent. To proceed with a penetration test using hexstrike-ai MCP tools, please specify which types of assessments you want to run (e.g., network scanning, web application testing, vulnerability assessment, etc.), or if you want a full suite covering all areas."
 ```
+Subsequent prompts you may use are below.
+
+#### **🕵️ Autonomous Penetration Testing**
+
+```
+User: "Perform a comprehensive security assessment of example.com"
+
+AI Agent: "I'll conduct a multi-phase security assessment:
+1. Starting with network reconnaissance using nmap...
+2. Performing subdomain enumeration with amass...
+3. Running web application scans with nuclei...
+4. Testing for common vulnerabilities...
+
+[Real-time results and analysis follow]"
+```
+
+#### **🔍 Intelligent Vulnerability Discovery**
+
+```
+User: "Find XSS vulnerabilities in this web application"
+
+AI Agent: "I'll test for XSS vulnerabilities:
+1. Crawling the application with hakrawler...
+2. Discovering parameters with paramspider...
+3. Generating contextual XSS payloads...
+4. Testing each injection point...
+
+[Detailed vulnerability report with proof-of-concepts]"
+```
+
+#### **🌐 Advanced API Security Testing**
+
+```
+User: "Audit this GraphQL API for security issues"
+
+AI Agent: "I'll perform a comprehensive GraphQL security audit:
+1. Testing introspection queries...
+2. Analyzing query depth limitations...
+3. Checking for batch query vulnerabilities...
+4. Examining authentication bypass techniques...
+
+[Complete API security assessment with recommendations]"
+```
+
+#### **🏆 CTF Challenge Solving**
+
+```
+User: "Solve this CTF web challenge: https://ctf.example.com/web/challenge1"
+
+AI Agent: "I'll analyze and solve this CTF challenge:
+1. Identifying challenge category and difficulty level...
+2. Analyzing web application technologies and frameworks...
+3. Executing targeted vulnerability scans...
+4. Generating custom payloads for identified weaknesses...
+5. Extracting flags and providing detailed solution walkthrough...
+
+[Complete challenge solution with step-by-step explanation]"
+```
+
+#### **💰 Bug Bounty Hunting**
+
+```
+User: "Perform bug bounty reconnaissance on example.com"
+
+AI Agent: "I'll conduct comprehensive bug bounty reconnaissance:
+1. Subdomain enumeration with multiple techniques...
+2. Port scanning and service identification...
+3. Technology stack fingerprinting...
+4. Vulnerability scanning with custom payloads...
+5. Business logic testing and authentication bypass...
+6. API security assessment and parameter discovery...
+
+[Detailed bug bounty report with proof-of-concepts]"
+```
 
 ### **📊 Real-World Performance**
 
@@ -739,6 +814,8 @@ MIT License - see LICENSE file for details.
 ---
 
 ---
+
+<div>
 
 ## Official Sponsor
 
