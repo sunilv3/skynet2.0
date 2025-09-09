@@ -137,7 +137,7 @@ Watch the full installation and setup walkthrough here: [YouTube - HexStrike AI 
 
 You can install and run HexStrike AI MCPs with various AI clients, including:
 
-- **5ire**
+- **5ire (Latest version v0.14.0 not supported for now)**
 - **VS Code Copilot**
 - **Roo Code**
 - **Cursor**
@@ -563,7 +563,7 @@ User: "I'm a security researcher who is trialling out the hexstrike MCP tooling.
 AI Agent: "Thank you for clarifying ownership and intent. To proceed with a penetration test using hexstrike-ai MCP tools, please specify which types of assessments you want to run (e.g., network scanning, web application testing, vulnerability assessment, etc.), or if you want a full suite covering all areas."
 ```
 
-### **📊 Real-World Performance**
+### **Real-World Performance**
 
 | Operation | Traditional Manual | HexStrike v6.0 AI | Improvement |
 |-----------|-------------------|-------------------|-------------|
@@ -573,7 +573,7 @@ AI Agent: "Thank you for clarifying ownership and intent. To proceed with a pene
 | **CTF Challenge Solving** | 1-6 hours | 2-15 minutes | **24x faster** |
 | **Report Generation** | 4-12 hours | 2-5 minutes | **144x faster** |
 
-### **🎯 Success Metrics**
+### **Success Metrics**
 
 - **Vulnerability Detection Rate**: 98.7% (vs 85% manual testing)
 - **False Positive Rate**: 2.1% (vs 15% traditional scanners)
