@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "skynet-mcp": {
+      "command": "python3",
+      "args": [
+        "/path/skynet_mcp.py",
+        "--server",
+        "http://IPADDRESS:8888"
+      ],
+      "description": "Skynet MCP v6.0 - Advanced Cybersecurity Automation Platform. Turn off alwaysAllow if you dont want autonomous execution!",
+      "timeout": 300,
+      "alwaysAllow": []
+    }
+  }
+}

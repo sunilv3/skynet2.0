@@ -1,10 +1,10 @@
-# HexStrike AI MCP Agents v6.0
+# Skynet MCP Agents v6.0
 #
 # INSTALLATION COMMANDS:
-# python3 -m venv hexstrike_env
-# source hexstrike_env/bin/activate
+# python3 -m venv skynet_env
+# source skynet_env/bin/activate
 # python3 -m pip install -r requirements.txt
-# python3 hexstrike_server.py
+# python3 skynet_server.py
 
 # ============================================================================
 # CORE FRAMEWORK DEPENDENCIES (ACTUALLY USED)
@@ -42,7 +42,7 @@ bcrypt==4.0.1                   # Pin bcrypt version for passlib compatibility (
 # EXTERNAL SECURITY TOOLS (150+ Tools - Install separately)
 # ============================================================================
 #
-# HexStrike v6.0 integrates with 150+ external security tools that must be
+# Skynet MCP v6.0 integrates with 150+ external security tools that must be
 # installed separately from their official sources:
 #
 # 🔍 Network & Reconnaissance (25+ tools):
