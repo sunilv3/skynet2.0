@@ -38,6 +38,7 @@ from collections import OrderedDict
 import shutil
 import venv
 import zipfile
+import tempfile
 from pathlib import Path
 from flask import Flask, request, jsonify
 import psutil
@@ -5705,9 +5706,15 @@ class ProcessManager:
 class PythonEnvironmentManager:
     """Manage Python virtual environments and dependencies"""
 
-    def __init__(self, base_dir: str = "/tmp/skynet_envs"):
+    def __init__(self, base_dir: Optional[str] = None):
+        if base_dir is None:
+            base_dir = str(Path(tempfile.gettempdir()) / "skynet_envs")
         self.base_dir = Path(base_dir)
-        self.base_dir.mkdir(exist_ok=True)
+        self.base_dir.mkdir(parents=True, exist_ok=True)
+
+    @staticmethod
+    def _bin_dir(env_path: Path) -> Path:
+        return env_path / ("Scripts" if os.name == "nt" else "bin")
 
     def create_venv(self, env_name: str) -> Path:
         """Create a new virtual environment"""
@@ -5720,7 +5727,7 @@ class PythonEnvironmentManager:
     def install_package(self, env_name: str, package: str) -> bool:
         """Install a package in the specified environment"""
         env_path = self.create_venv(env_name)
-        pip_path = env_path / "bin" / "pip"
+        pip_path = self._bin_dir(env_path) / ("pip.exe" if os.name == "nt" else "pip")
 
         try:
             result = subprocess.run([str(pip_path), "install", package],
@@ -5738,7 +5745,7 @@ class PythonEnvironmentManager:
     def get_python_path(self, env_name: str) -> str:
         """Get Python executable path for environment"""
         env_path = self.create_venv(env_name)
-        return str(env_path / "bin" / "python")
+        return str(self._bin_dir(env_path) / ("python.exe" if os.name == "nt" else "python"))
 
 # Global environment manager
 env_manager = PythonEnvironmentManager()
@@ -8928,9 +8935,11 @@ def _determine_operation_type(tool_name: str) -> str:
 class FileOperationsManager:
     """Handle file operations with security and validation"""
 
-    def __init__(self, base_dir: str = "/tmp/skynet_files"):
+    def __init__(self, base_dir: Optional[str] = None):
+        if base_dir is None:
+            base_dir = str(Path(tempfile.gettempdir()) / "skynet_files")
         self.base_dir = Path(base_dir)
-        self.base_dir.mkdir(exist_ok=True)
+        self.base_dir.mkdir(parents=True, exist_ok=True)
         self.max_file_size = 100 * 1024 * 1024  # 100MB
 
     def create_file(self, filename: str, content: str, binary: bool = False) -> Dict[str, Any]:

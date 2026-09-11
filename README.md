@@ -100,7 +100,7 @@ graph TD
 ### 1. Server Setup
 ```bash
 # Clone the repository
-git clone https://github.com/0x4m4/skynet-mcp.git
+git clone https://github.com/sunilv3/skynet.git
 cd skynet-mcp
 
 # Create virtual environment
