@@ -277,8 +277,74 @@ def setup_mcp_server(skynet_client: SkynetClient) -> FastMCP:
     mcp = FastMCP("skynet-mcp")
 
     # ============================================================================
+    # STRATEGIC ATTACKER TOOLS (v7.0 ENHANCEMENT)
+    # ============================================================================
+
+    @mcp.tool()
+    def initialize_strategic_engagement(target: str) -> Dict[str, Any]:
+        """
+        Initialize a goal-oriented strategic engagement for a target.
+        This sets up the Attacker Mindset and begins tracking evidence.
+        """
+        logger.info(f"{SkynetColors.FIRE_RED}🎯 Initializing strategic engagement for: {target}{SkynetColors.RESET}")
+        result = skynet_client.safe_post("api/strategic/initialize", {"target": target})
+        return result
+
+    @mcp.tool()
+    def get_next_strategic_move(target: str) -> Dict[str, Any]:
+        """
+        Consult the Strategic Planning Engine to determine the next best move.
+        The engine analyzes current evidence and target state to suggest a tool and parameters.
+        """
+        logger.info(f"{SkynetColors.CYBER_ORANGE}🧠 Consulting Strategic Planning Engine for {target}...{SkynetColors.RESET}")
+        result = skynet_client.safe_post("api/strategic/next_move", {"target": target})
+        return result
+
+    @mcp.tool()
+    def update_strategic_mindset(tool: str, output: str) -> Dict[str, Any]:
+        """
+        Feed tool output back into the Strategic Planning Engine to update the attacker mindset.
+        This allows the system to detect WAFs, discover assets, and pivot strategies.
+        """
+        logger.info(f"{SkynetColors.ELECTRIC_PURPLE}📈 Updating strategic mindset with output from {tool}...{SkynetColors.RESET}")
+        result = skynet_client.safe_post("api/strategic/update_mindset", {"tool": tool, "output": output})
+        return result
+
+    @mcp.tool()
+    def set_aggressiveness_level(level: str) -> Dict[str, Any]:
+        """
+        Set the intensity of the current strategic engagement.
+        Levels:
+        - stealth: Low noise, slow speed, avoids detection.
+        - balanced: Standard professional pentest approach.
+        - aggressive: High speed, loud, prioritizes results.
+        - blitz: Maximum intensity, automated chaining, extreme noise.
+        """
+        logger.info(f"{SkynetColors.CYBER_ORANGE}⚡ Changing engagement intensity to: {level}...{SkynetColors.RESET}")
+        result = skynet_client.safe_post("api/strategic/set_aggressiveness", {"level": level})
+        return result
+
+    # ============================================================================
     # CORE NETWORK SCANNING TOOLS
     # ============================================================================
+
+    @mcp.tool()
+    def cloud_enum(keyword: str, additional_args: str = "") -> Dict[str, Any]:
+        """
+        Execute cloud-enum to discover public cloud assets (S3 buckets, Azure blobs, etc.) by keyword.
+        """
+        logger.info(f"☁️ Starting cloud-enum discovery for keyword: {keyword}")
+        result = skynet_client.safe_post("api/tools/cloud-enum", {"keyword": keyword, "additional_args": additional_args})
+        return result
+
+    @mcp.tool()
+    def trufflehog_scan(target: str, additional_args: str = "") -> Dict[str, Any]:
+        """
+        Execute TruffleHog to scan for leaked secrets and credentials in a filesystem or target.
+        """
+        logger.info(f"🔑 Starting TruffleHog secret scan: {target}")
+        result = skynet_client.safe_post("api/tools/trufflehog", {"target": target, "additional_args": additional_args})
+        return result
 
     @mcp.tool()
     def nmap_scan(target: str, scan_type: str = "-sV", ports: str = "", additional_args: str = "") -> Dict[str, Any]:

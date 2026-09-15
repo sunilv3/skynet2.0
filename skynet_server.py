@@ -70,6 +70,9 @@ from mitmproxy.options import Options as MitmOptions
 # LOGGING CONFIGURATION (MUST BE FIRST)
 # ============================================================================
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 # Configure logging with fallback for permission issues
 try:
     logging.basicConfig(
@@ -77,7 +80,7 @@ try:
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
             logging.StreamHandler(sys.stdout),
-            logging.FileHandler('skynet.log')
+            logging.FileHandler('skynet.log', encoding='utf-8')
         ]
     )
 except PermissionError:
@@ -183,15 +186,15 @@ class ModernVisualEngine:
         title_block = f"{accent}{BOLD}"
         banner = f"""
 {title_block}
-██████╗ ██╗   ██╗██╗   ██╗███╗   ██╗██████╗ ███████╗
-██╔═══╝ ██║   ██║╚██╗ ██╔╝████╗  ██║██╔══██╗██╔════╝
-██║     ██║   ██║ ╚████╔╝ ██╔██╗ ██║██║  ██║█████╗
-██║     ██║   ██║  ╚██╔╝  ██║╚██╗██║██║  ██║██╔══╝
-██║     ╚██████╔╝   ██║   ██║ ╚████║██████╔╝███████╗
-╚═╝      ╚═════╝    ╚═╝   ╚═╝  ╚═══╝╚═════╝ ╚══════╝
+███████╗██╗  ██╗██╗   ██╗███╗   ██╗███████╗████████╗
+██╔════╝██║ ██╔╝╚██╗ ██╔╝████╗  ██║██╔════╝╚══██╔══╝
+███████╗█████╔╝  ╚████╔╝ ██╔██╗ ██║█████╗     ██║
+╚════██║██╔═██╗   ╚██╔╝  ██║╚██╗██║██╔══╝     ██║
+███████║██║  ██╗   ██║   ██║ ╚████║███████╗   ██║
+╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═══╝╚══════╝   ╚═╝
 {RESET}
 {border_color}┌─────────────────────────────────────────────────────────────────────┐
-│  {ModernVisualEngine.COLORS['BRIGHT_WHITE']}🔴 SKYNET - Blood-Red Offensive Intelligence Core{border_color}        │
+│  {ModernVisualEngine.COLORS['BRIGHT_WHITE']}🔴 SKY NET - Blood-Red Offensive Intelligence Core{border_color}        │
 │  {accent}⚡ AI-Automated Recon | Exploitation | Analysis Pipeline{border_color}          │
 │  {gradient}🎯 Bug Bounty | CTF | Red Team | Zero-Day Research{border_color}              │
 └─────────────────────────────────────────────────────────────────────┘{RESET}
@@ -438,6 +441,163 @@ class ModernVisualEngine:
         duration_text = f" ({duration:.2f}s)" if duration > 0 else ""
 
         return f"{color}▶ {command[:60]}{'...' if len(command) > 60 else ''} | {status.upper()}{duration_text}{ModernVisualEngine.COLORS['RESET']}"
+
+# ============================================================================
+# STRATEGIC ATTACKER CORE (v7.0 ENHANCEMENT)
+# ============================================================================
+
+class AttackPhase(Enum):
+    """Phases of a strategic offensive engagement"""
+    RECON = "reconnaissance"
+    ENUMERATION = "enumeration"
+    ACCESS = "initial_access"
+    PERSISTENCE = "persistence"
+    EXFILTRATION = "exfiltration"
+    POST_EXPLOITATION = "post_exploitation"
+
+class AggressivenessLevel(Enum):
+    """Levels of engagement intensity"""
+    STEALTH = "stealth"      # Low noise, slow speed, avoids detection
+    BALANCED = "balanced"    # Standard professional pentest approach
+    AGGRESSIVE = "aggressive" # High speed, loud, prioritizes results over stealth
+    BLITZ = "blitz"          # Maximum intensity, automated chaining, extreme noise
+
+@dataclass
+class Evidence:
+    """Represents a piece of security evidence discovered during an engagement"""
+    category: str
+    value: Any
+    confidence: float
+    timestamp: datetime = field(default_factory=datetime.now)
+    source_tool: Optional[str] = None
+
+class AttackerMindset:
+    """Tracks the mental model of the target and progress toward goals"""
+    def __init__(self, target: str):
+        self.target = target
+        self.current_phase = AttackPhase.RECON
+        self.evidence_store: List[Evidence] = []
+        self.discovered_assets: Set[str] = set()
+        self.vulnerabilities: List[Dict[str, Any]] = []
+        self.goal = "Initial Access"
+        self.is_goal_reached = False
+        self.defense_signals: Dict[str, int] = {} # e.g., {"WAF_DETECTED": 3}
+        self.aggressiveness = AggressivenessLevel.BALANCED # Default level
+
+    def add_evidence(self, evidence: Evidence):
+        """Store new evidence and potentially trigger a phase shift"""
+        self.evidence_store.append(evidence)
+        if evidence.category == "security_signal":
+            sig = evidence.value
+            self.defense_signals[sig] = self.defense_signals.get(sig, 0) + 1
+
+        # Logic to shift phases based on evidence
+        if self.current_phase == AttackPhase.RECON and len(self.discovered_assets) > 5:
+            self.current_phase = AttackPhase.ENUMERATION
+        elif self.current_phase == AttackPhase.ENUMERATION and self.vulnerabilities:
+            self.current_phase = AttackPhase.ACCESS
+
+    def get_evidence_by_category(self, category: str) -> List[Evidence]:
+        return [e for e in self.evidence_store if e.category == category]
+
+    def update_goal(self, new_goal: str):
+        self.goal = new_goal
+
+class StrategicPlanningEngine:
+    """Dynamic attack chain generator based on attacker mindset and evidence"""
+    def __init__(self, decision_engine: 'IntelligentDecisionEngine'):
+        self.decision_engine = decision_engine
+        self.mindset: Optional[AttackerMindset] = None
+
+    def initialize_engagement(self, target: str):
+        self.mindset = AttackerMindset(target)
+        logger.info(f"Strategic engagement initialized for target: {target}")
+
+    def determine_next_move(self, profile: 'TargetProfile') -> Tuple[str, Dict[str, Any]]:
+        """Strategic move generation: Returns (tool_name, optimized_params)"""
+        if not self.mindset:
+            raise ValueError("Engagement not initialized. Call initialize_engagement first.")
+
+        # 1. Check for Defense Evasion needs
+        # In BLITZ mode, we ignore WAF signals and just push through
+        if self.mindset.aggressiveness != AggressivenessLevel.BLITZ:
+            if self.mindset.defense_signals.get("WAF_DETECTED", 0) > 0:
+                return self._plan_evasion_move(profile)
+
+        # 2. State-based tool selection
+        phase = self.mindset.current_phase
+        level = self.mindset.aggressiveness
+        logger.info(f"Strategic Phase: {phase.name} | Level: {level.name} | Goal: {self.mindset.goal}")
+
+        if phase == AttackPhase.RECON:
+            return self._plan_recon_move(profile, level)
+        elif phase == AttackPhase.ENUMERATION:
+            return self._plan_enum_move(profile, level)
+        elif phase == AttackPhase.ACCESS:
+            return self._plan_access_move(profile, level)
+
+        # Fallback to tactical engine
+        tools = self.decision_engine.select_optimal_tools(profile)
+        if tools:
+            tool = tools[0]
+            params = self.decision_engine.optimize_parameters(tool, profile)
+            return tool, params
+
+        raise RuntimeError("No strategic move could be determined.")
+
+    def _plan_recon_move(self, profile: 'TargetProfile', level: AggressivenessLevel) -> Tuple[str, Dict[str, Any]]:
+        # Aggressive recon uses louder, faster tools
+        if level in [AggressivenessLevel.AGGRESSIVE, AggressivenessLevel.BLITZ]:
+            return "masscan", self.decision_engine.optimize_parameters("masscan", profile)
+        return "amass", self.decision_engine.optimize_parameters("amass", profile)
+
+    def _plan_enum_move(self, profile: 'TargetProfile', level: AggressivenessLevel) -> Tuple[str, Dict[str, Any]]:
+        # Aggressive enumeration uses higher thread counts and broader scopes
+        if level in [AggressivenessLevel.AGGRESSIVE, AggressivenessLevel.BLITZ]:
+            return "nuclei", self.decision_engine.optimize_parameters("nuclei", profile)
+        return "nuclei", self.decision_engine.optimize_parameters("nuclei", profile)
+
+    def _plan_access_move(self, profile: 'TargetProfile', level: AggressivenessLevel) -> Tuple[str, Dict[str, Any]]:
+        # Aggressive access attempts exploits immediately
+        if self.mindset.vulnerabilities:
+            vuln = self.mindset.vulnerabilities[0]
+            tool = "sqlmap" if "sqli" in vuln['name'].lower() else "metasploit"
+            return tool, self.decision_engine.optimize_parameters(tool, profile)
+
+        if level == AggressivenessLevel.BLITZ:
+            # Blitz mode attempts "blind" exploits based on target type
+            return "sqlmap", self.decision_engine.optimize_parameters("sqlmap", profile)
+
+        return "nmap-advanced", self.decision_engine.optimize_parameters("nmap-advanced", profile)
+
+    def set_aggressiveness(self, level: AggressivenessLevel):
+        """Update the intensity of the engagement"""
+        if not self.mindset: return
+        logger.info(f"⚠️  Engagement intensity changed to: {level.name}")
+        self.mindset.aggressiveness = level
+
+    def _plan_evasion_move(self, profile: 'TargetProfile') -> Tuple[str, Dict[str, Any]]:
+        logger.warning("WAF detected! Pivoting to stealthy evasion mode.")
+        # In a real implementation, this would call an AI Payload Generator
+        # For now, we use a stealthy tool configuration
+        return "httpx", {"probe": True, "tech_detect": True, "rate_limit": "low", "random_user_agent": True}
+
+    def process_tool_output(self, tool: str, output: str):
+        """Update mindset based on tool results"""
+        if not self.mindset: return
+
+        # Detect security signals (e.g., WAF)
+        if re.search(r"403 Forbidden|WAF|Cloudflare|Akamai", output, re.I):
+            self.mindset.add_evidence(Evidence("security_signal", "WAF_DETECTED", 0.9, source_tool=tool))
+
+        # Detect assets
+        ips = re.findall(r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b', output)
+        for ip in ips:
+            self.mindset.discovered_assets.add(ip)
+
+        # Detect vulnerabilities (simplified)
+        if "critical" in output.lower() and "vulnerability" in output.lower():
+            self.mindset.vulnerabilities.append({"name": f"Vuln found by {tool}", "severity": "critical"})
 
 # ============================================================================
 # INTELLIGENT DECISION ENGINE (v6.0 ENHANCEMENT)
@@ -1544,6 +1704,7 @@ class IntelligentDecisionEngine:
 
 # Global decision engine instance
 decision_engine = IntelligentDecisionEngine()
+strategic_engine = StrategicPlanningEngine(decision_engine)
 
 # ============================================================================
 # INTELLIGENT ERROR HANDLING AND RECOVERY SYSTEM (v11.0 ENHANCEMENT)
@@ -9545,6 +9706,68 @@ def format_tool_output():
 # INTELLIGENT DECISION ENGINE API ENDPOINTS
 # ============================================================================
 
+@app.route("/api/strategic/initialize", methods=["POST"])
+def api_strategic_initialize():
+    """Initialize a strategic engagement for a target"""
+    data = request.json or {}
+    target = data.get("target")
+    if not target:
+        return jsonify({"error": "Target is required", "success": False}), 400
+
+    strategic_engine.initialize_engagement(target)
+    return jsonify({"message": f"Strategic engagement initialized for {target}", "success": True})
+
+@app.route("/api/strategic/next_move", methods=["POST"])
+def api_strategic_next_move():
+    """Determine the next strategic move based on current mindset and evidence"""
+    data = request.json or {}
+    target = data.get("target")
+    if not target:
+        return jsonify({"error": "Target is required", "success": False}), 400
+
+    try:
+        # Use existing intelligence engine to analyze target first
+        profile = decision_engine.analyze_target(target)
+        tool, params = strategic_engine.determine_next_move(profile)
+        return jsonify({
+            "tool": tool,
+            "parameters": params,
+            "current_phase": strategic_engine.mindset.current_phase.name,
+            "goal": strategic_engine.mindset.goal,
+            "success": True
+        })
+    except Exception as e:
+        return jsonify({"error": str(e), "success": False}), 500
+
+@app.route("/api/strategic/set_aggressiveness", methods=["POST"])
+def api_strategic_set_aggressiveness():
+    """Set the aggressiveness level of the current engagement"""
+    data = request.json or {}
+    level_str = data.get("level", "balanced").lower()
+
+    try:
+        level = AggressivenessLevel(level_str)
+        strategic_engine.set_aggressiveness(level)
+        return jsonify({"message": f"Aggressiveness set to {level.name}", "success": True})
+    except ValueError:
+        return jsonify({"error": f"Invalid level. Use: {[l.value for l in AggressivenessLevel]}", "success": False}), 400
+
+@app.route("/api/strategic/update_mindset", methods=["POST"])
+def api_strategic_update_mindset():
+    """Update the attacker mindset based on tool output"""
+    data = request.json or {}
+    tool = data.get("tool")
+    output = data.get("output")
+    if not tool or not output:
+        return jsonify({"error": "Tool and output are required", "success": False}), 400
+
+    strategic_engine.process_tool_output(tool, output)
+    return jsonify({
+        "message": "Mindset updated",
+        "current_phase": strategic_engine.mindset.current_phase.name if strategic_engine.mindset else "none",
+        "success": True
+    })
+
 @app.route("/api/intelligence/analyze-target", methods=["POST"])
 def analyze_target():
     """Analyze target and create comprehensive profile using Intelligent Decision Engine"""
@@ -10332,6 +10555,42 @@ def create_comprehensive_bugbounty_assessment():
 # ============================================================================
 # SECURITY TOOLS API ENDPOINTS
 # ============================================================================
+
+@app.route("/api/tools/cloud-enum", methods=["POST"])
+def cloud_enum():
+    """Execute cloud-enum for cloud asset discovery with enhanced logging"""
+    try:
+        params = request.json
+        keyword = params.get("keyword", "")
+        additional_args = params.get("additional_args", "")
+        if not keyword:
+            return jsonify({"error": "Keyword is required"}), 400
+        command = f"cloud_enum -k {keyword}"
+        if additional_args:
+            command += f" {additional_args}"
+        logger.info(f"☁️ Starting cloud-enum for keyword: {keyword}")
+        result = execute_command(command)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/tools/trufflehog", methods=["POST"])
+def trufflehog():
+    """Execute TruffleHog for secret scanning with enhanced logging"""
+    try:
+        params = request.json
+        target = params.get("target", "")
+        additional_args = params.get("additional_args", "")
+        if not target:
+            return jsonify({"error": "Target is required"}), 400
+        command = f"trufflehog filesystem {target}"
+        if additional_args:
+            command += f" {additional_args}"
+        logger.info(f"🔑 Starting TruffleHog secret scan: {target}")
+        result = execute_command(command)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/api/tools/nmap", methods=["POST"])
 def nmap():
