@@ -156,6 +156,65 @@ Add the following to your `claude_desktop_config.json`:
 }
 ```
 
+### OpenCode
+OpenCode reads project configuration from `opencode.json` in the repository root. Start the Skynet HTTP server first, then configure the MCP client to launch `skynet_mcp.py`.
+
+#### Windows
+Start the server from PowerShell:
+```powershell
+cd D:\redteam-mcp
+& .\skynet-env\Scripts\python.exe .\skynet_server.py --port 8888
+```
+
+Create `D:\redteam-mcp\opencode.json`:
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "skynet": {
+      "type": "local",
+      "command": [
+        "D:\\redteam-mcp\\skynet-env\\Scripts\\python.exe",
+        "D:\\redteam-mcp\\skynet_mcp.py",
+        "--server",
+        "http://127.0.0.1:8888"
+      ],
+      "enabled": true,
+      "timeout": 30000
+    }
+  }
+}
+```
+
+#### Linux
+Start the server from a shell:
+```bash
+cd /path/to/redteam-mcp
+./skynet-env/bin/python skynet_server.py --port 8888
+```
+
+Create `/path/to/redteam-mcp/opencode.json`:
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "skynet": {
+      "type": "local",
+      "command": [
+        "/path/to/redteam-mcp/skynet-env/bin/python",
+        "/path/to/redteam-mcp/skynet_mcp.py",
+        "--server",
+        "http://127.0.0.1:8888"
+      ],
+      "enabled": true,
+      "timeout": 30000
+    }
+  }
+}
+```
+
+Restart OpenCode after saving the file. The Skynet tools will then be available through the `skynet` MCP server.
+
 ### VS Code Copilot
 Configure in `.vscode/settings.json`:
 ```json
