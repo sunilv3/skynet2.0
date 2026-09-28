@@ -19,11 +19,13 @@ Framework: FastMCP integration for tool orchestration
 
 import sys
 import os
+import json
 import argparse
 import logging
 from typing import Dict, Any, Optional
 import requests
 import time
+import re
 from datetime import datetime
 
 from mcp.server.fastmcp import FastMCP
@@ -140,14 +142,39 @@ for handler in logging.getLogger().handlers:
 logger = logging.getLogger(__name__)
 
 # Default configuration
-DEFAULT_SKYNET_SERVER = "http://127.0.0.1:8888"  # Default Skynet server URL
-DEFAULT_REQUEST_TIMEOUT = 300  # 5 minutes default timeout for API requests
+DEFAULT_SKYNET_SERVER = os.environ.get("SKYNET_SERVER", "http://127.0.0.1:8888")
+# Default timeout 330s (gives 300s server command execution + 30s margin for network/cleanup)
+DEFAULT_REQUEST_TIMEOUT = int(os.environ.get("SKYNET_TIMEOUT", "330"))
 MAX_RETRIES = 3  # Maximum number of retries for connection attempts
+
+# Output sanitization for clean MCP and AI client consumption
+ANSI_ESCAPE_RE = re.compile(r'\x1b(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+
+def strip_ansi(text: str) -> str:
+    """Remove ANSI escape sequences and normalize terminal control characters."""
+    if not text:
+        return ""
+    clean = ANSI_ESCAPE_RE.sub('', text)
+    clean = clean.replace('\r\n', '\n')
+    lines = []
+    for line in clean.split('\n'):
+        if '\r' in line:
+            line = line.split('\r')[-1]
+        lines.append(line)
+    return '\n'.join(lines)
+
+def sanitize_output(text: str, max_chars: int = 50000) -> str:
+    """Clean and safely truncate output for MCP / LLM consumption."""
+    clean = strip_ansi(text)
+    if len(clean) > max_chars:
+        truncated_msg = f"\n\n... [Output truncated: showing first {max_chars} of {len(clean)} characters to preserve LLM context]"
+        return clean[:max_chars] + truncated_msg
+    return clean
 
 class SkynetClient:
     """Enhanced client for communicating with the Skynet MCP API Server"""
 
-    def __init__(self, server_url: str, timeout: int = DEFAULT_REQUEST_TIMEOUT):
+    def __init__(self, server_url: str = DEFAULT_SKYNET_SERVER, timeout: int = DEFAULT_REQUEST_TIMEOUT):
         """
         Initialize the Skynet MCP Client
 
@@ -189,6 +216,82 @@ class SkynetClient:
             logger.error(error_msg)
             # We'll continue anyway to allow the MCP server to start, but tools will likely fail
 
+    def _sanitize_result(self, result: Any, elapsed: float) -> Dict[str, Any]:
+        """
+        Normalize, sanitize, and validate tool execution results for AI agents.
+        Ensures consistent timing, strips ANSI artifacts, checks return codes, and sets proper status.
+        """
+        if not isinstance(result, dict):
+            return {
+                "result": str(result),
+                "success": True,
+                "status": "success",
+                "stdout": str(result),
+                "stderr": "",
+                "return_code": 0,
+                "execution_time": round(elapsed, 2),
+                "duration": round(elapsed, 2),
+                "timed_out": False,
+                "timestamp": datetime.now().isoformat()
+            }
+
+        # Sanitize stdout
+        if "stdout" in result and isinstance(result["stdout"], str):
+            result["stdout"] = sanitize_output(result["stdout"])
+
+        # Sanitize stderr
+        if "stderr" in result and isinstance(result["stderr"], str):
+            result["stderr"] = sanitize_output(result["stderr"])
+
+        # Normalize timing fields
+        exec_time = result.get("execution_time")
+        duration = result.get("duration")
+
+        if result.get("cached", False):
+            # For cached results, report instantaneous retrieval
+            result["cached_execution_time"] = exec_time or duration or 0.0
+            result["execution_time"] = result.get("cache_retrieval_ms", 0.5) / 1000.0
+            result["duration"] = result["execution_time"]
+        else:
+            final_time = exec_time if exec_time is not None else (duration if duration is not None else round(elapsed, 2))
+            result["execution_time"] = round(float(final_time), 2)
+            result["duration"] = round(float(final_time), 2)
+
+        # Check result properly:
+        if result.get("timed_out", False):
+            result["success"] = False
+            result["status"] = "timeout"
+        elif "return_code" in result:
+            code = result["return_code"]
+            # Security tools that exit 1 or 2 when findings are discovered (grep, nikto, dalfox, trufflehog)
+            if code in (1, 2, 18) and bool(result.get("stdout", "").strip()):
+                result["status"] = "completed_with_findings"
+                result["success"] = True
+            elif code == 0:
+                if "status" not in result or result["status"] == "failed":
+                    result["status"] = "success"
+                result["success"] = True
+            else:
+                if not result.get("success", False):
+                    result["status"] = "failed"
+                    result["success"] = False
+        elif "success" in result:
+            result["status"] = "success" if result["success"] else "failed"
+
+        # Ensure return_code exists
+        if "return_code" not in result:
+            result["return_code"] = 0 if result.get("success", False) else -1
+
+        # Ensure timed_out flag
+        if "timed_out" not in result:
+            result["timed_out"] = False
+
+        # Ensure timestamp
+        if "timestamp" not in result:
+            result["timestamp"] = datetime.now().isoformat()
+
+        return result
+
     def safe_get(self, endpoint: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Perform a GET request with optional query parameters.
@@ -204,18 +307,74 @@ class SkynetClient:
             params = {}
 
         url = f"{self.server_url}/{endpoint}"
+        start_req = time.time()
 
         try:
             logger.debug(f"📡 GET {url} with params: {params}")
             response = self.session.get(url, params=params, timeout=self.timeout)
             response.raise_for_status()
-            return response.json()
+            elapsed = time.time() - start_req
+            return self._sanitize_result(response.json(), elapsed)
+        except requests.exceptions.Timeout as e:
+            elapsed = time.time() - start_req
+            logger.error(f"⏰ GET {url} timed out after {elapsed:.1f}s: {str(e)}")
+            return {
+                "success": False,
+                "status": "timeout",
+                "timed_out": True,
+                "error": f"Request timed out after {self.timeout}s waiting for {url}.",
+                "stdout": "",
+                "stderr": f"HTTP Timeout: request timed out after {self.timeout}s",
+                "return_code": -1,
+                "execution_time": round(elapsed, 2),
+                "duration": round(elapsed, 2),
+                "timestamp": datetime.now().isoformat()
+            }
+        except requests.exceptions.ConnectionError as e:
+            elapsed = time.time() - start_req
+            logger.error(f"🔌 Connection refused for GET {url}: {str(e)}")
+            return {
+                "success": False,
+                "status": "connection_error",
+                "timed_out": False,
+                "error": f"Connection refused connecting to Skynet server at {self.server_url}. Make sure 'python skynet_server.py' is running.",
+                "stdout": "",
+                "stderr": f"Connection error: {str(e)}",
+                "return_code": -1,
+                "execution_time": round(elapsed, 2),
+                "duration": round(elapsed, 2),
+                "timestamp": datetime.now().isoformat()
+            }
         except requests.exceptions.RequestException as e:
-            logger.error(f"🚫 Request failed: {str(e)}")
-            return {"error": f"Request failed: {str(e)}", "success": False}
+            elapsed = time.time() - start_req
+            logger.error(f"🚫 Request failed for GET {url}: {str(e)}")
+            return {
+                "success": False,
+                "status": "error",
+                "timed_out": False,
+                "error": f"Request failed: {str(e)}",
+                "stdout": "",
+                "stderr": str(e),
+                "return_code": -1,
+                "execution_time": round(elapsed, 2),
+                "duration": round(elapsed, 2),
+                "timestamp": datetime.now().isoformat()
+            }
         except Exception as e:
-            logger.error(f"💥 Unexpected error: {str(e)}")
-            return {"error": f"Unexpected error: {str(e)}", "success": False}
+            elapsed = time.time() - start_req
+            logger.error(f"💥 Unexpected error for GET {url}: {str(e)}")
+            return {
+                "success": False,
+                "status": "error",
+                "timed_out": False,
+                "error": f"Unexpected error: {str(e)}",
+                "stdout": "",
+                "stderr": str(e),
+                "return_code": -1,
+                "execution_time": round(elapsed, 2),
+                "duration": round(elapsed, 2),
+                "timestamp": datetime.now().isoformat()
+            }
 
     def safe_post(self, endpoint: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -229,18 +388,95 @@ class SkynetClient:
             Response data as dictionary
         """
         url = f"{self.server_url}/{endpoint}"
+        start_req = time.time()
 
         try:
             logger.debug(f"📡 POST {url} with data: {json_data}")
             response = self.session.post(url, json=json_data, timeout=self.timeout)
             response.raise_for_status()
-            return response.json()
+            elapsed = time.time() - start_req
+            return self._sanitize_result(response.json(), elapsed)
+        except requests.exceptions.Timeout as e:
+            elapsed = time.time() - start_req
+            logger.error(f"⏰ Request timed out after {elapsed:.1f}s: {str(e)}")
+            return {
+                "success": False,
+                "status": "timeout",
+                "timed_out": True,
+                "error": f"Request timed out after {self.timeout}s waiting for {url}. The task may still be running on the server.",
+                "stdout": "",
+                "stderr": f"HTTP Timeout: request timed out after {self.timeout}s",
+                "return_code": -1,
+                "execution_time": round(elapsed, 2),
+                "duration": round(elapsed, 2),
+                "timestamp": datetime.now().isoformat()
+            }
+        except requests.exceptions.ConnectionError as e:
+            elapsed = time.time() - start_req
+            logger.error(f"🔌 Connection refused to {url}: {str(e)}")
+            return {
+                "success": False,
+                "status": "connection_error",
+                "timed_out": False,
+                "error": f"Connection refused connecting to Skynet server at {self.server_url}. Make sure 'python skynet_server.py' is running.",
+                "stdout": "",
+                "stderr": f"Connection error: {str(e)}",
+                "return_code": -1,
+                "execution_time": round(elapsed, 2),
+                "duration": round(elapsed, 2),
+                "timestamp": datetime.now().isoformat()
+            }
+        except requests.exceptions.HTTPError as e:
+            elapsed = time.time() - start_req
+            logger.error(f"🚫 HTTP Error from {url}: {str(e)}")
+            try:
+                err_data = response.json()
+                if isinstance(err_data, dict):
+                    return self._sanitize_result(err_data, elapsed)
+            except Exception:
+                pass
+            return {
+                "success": False,
+                "status": "error",
+                "timed_out": False,
+                "error": f"HTTP error: {str(e)}",
+                "stdout": "",
+                "stderr": f"HTTP error: {str(e)}",
+                "return_code": response.status_code if 'response' in locals() else -1,
+                "execution_time": round(elapsed, 2),
+                "duration": round(elapsed, 2),
+                "timestamp": datetime.now().isoformat()
+            }
         except requests.exceptions.RequestException as e:
+            elapsed = time.time() - start_req
             logger.error(f"🚫 Request failed: {str(e)}")
-            return {"error": f"Request failed: {str(e)}", "success": False}
+            return {
+                "success": False,
+                "status": "error",
+                "timed_out": False,
+                "error": f"Request failed: {str(e)}",
+                "stdout": "",
+                "stderr": str(e),
+                "return_code": -1,
+                "execution_time": round(elapsed, 2),
+                "duration": round(elapsed, 2),
+                "timestamp": datetime.now().isoformat()
+            }
         except Exception as e:
+            elapsed = time.time() - start_req
             logger.error(f"💥 Unexpected error: {str(e)}")
-            return {"error": f"Unexpected error: {str(e)}", "success": False}
+            return {
+                "success": False,
+                "status": "error",
+                "timed_out": False,
+                "error": f"Unexpected error: {str(e)}",
+                "stdout": "",
+                "stderr": str(e),
+                "return_code": -1,
+                "execution_time": round(elapsed, 2),
+                "duration": round(elapsed, 2),
+                "timestamp": datetime.now().isoformat()
+            }
 
     def execute_command(self, command: str, use_cache: bool = True) -> Dict[str, Any]:
         """
@@ -2899,9 +3135,15 @@ def setup_mcp_server(skynet_client: SkynetClient) -> FastMCP:
             if payloads:
                 logger.info("🎯 Sample payloads generated:")
                 for i, payload_info in enumerate(payloads[:3]):  # Show first 3
-                    risk = payload_info.get("risk_level", "UNKNOWN")
-                    context = payload_info.get("context", "basic")
-                    logger.info(f"   ├─ [{risk}] {context}: {payload_info['payload'][:50]}...")
+                    if isinstance(payload_info, dict):
+                        risk = payload_info.get("risk_level", "UNKNOWN")
+                        context = payload_info.get("context", "basic")
+                        payload_text = str(payload_info.get("payload", ""))
+                    else:
+                        risk = "UNKNOWN"
+                        context = "basic"
+                        payload_text = str(payload_info)
+                    logger.info(f"   ├─ [{risk}] {context}: {payload_text[:50]}...")
         else:
             logger.error("❌ AI payload generation failed")
 
@@ -2973,7 +3215,7 @@ def setup_mcp_server(skynet_client: SkynetClient) -> FastMCP:
             logger.info(f"🤖 Generating {attack_type} payloads...")
 
             # Generate payloads for this attack type
-            payload_result = self.ai_generate_payload(attack_type, "advanced", "", target_url)
+            payload_result = ai_generate_payload(attack_type, "advanced", "", target_url)
 
             if payload_result.get("success"):
                 payload_data = payload_result.get("ai_payload_generation", {})
@@ -2985,7 +3227,7 @@ def setup_mcp_server(skynet_client: SkynetClient) -> FastMCP:
 
                 # Count high-risk payloads
                 for payload_info in payload_data.get("payloads", []):
-                    if payload_info.get("risk_level") == "HIGH":
+                    if isinstance(payload_info, dict) and payload_info.get("risk_level") == "HIGH":
                         results["summary"]["high_risk_payloads"] += 1
 
         logger.info(f"✅ Attack suite generated:")
@@ -3073,8 +3315,12 @@ def setup_mcp_server(skynet_client: SkynetClient) -> FastMCP:
             if vuln_count > 0:
                 logger.warning(f"⚠️  Found {vuln_count} GraphQL vulnerabilities!")
                 for vuln in scan_results.get("vulnerabilities", [])[:3]:  # Show first 3
-                    severity = vuln.get("severity", "UNKNOWN")
-                    vuln_type = vuln.get("type", "unknown")
+                    if isinstance(vuln, dict):
+                        severity = vuln.get("severity", "UNKNOWN")
+                        vuln_type = vuln.get("type", "unknown")
+                    else:
+                        severity = "UNKNOWN"
+                        vuln_type = str(vuln)
                     logger.warning(f"   ├─ [{severity}] {vuln_type}")
         else:
             logger.error("❌ GraphQL scanning failed")
@@ -3112,8 +3358,12 @@ def setup_mcp_server(skynet_client: SkynetClient) -> FastMCP:
             if vuln_count > 0:
                 logger.warning(f"⚠️  Found {vuln_count} JWT vulnerabilities!")
                 for vuln in analysis.get("vulnerabilities", [])[:3]:  # Show first 3
-                    severity = vuln.get("severity", "UNKNOWN")
-                    vuln_type = vuln.get("type", "unknown")
+                    if isinstance(vuln, dict):
+                        severity = vuln.get("severity", "UNKNOWN")
+                        vuln_type = vuln.get("type", "unknown")
+                    else:
+                        severity = "UNKNOWN"
+                        vuln_type = str(vuln)
                     logger.warning(f"   ├─ [{severity}] {vuln_type}")
         else:
             logger.error("❌ JWT analysis failed")
@@ -3150,15 +3400,23 @@ def setup_mcp_server(skynet_client: SkynetClient) -> FastMCP:
             if issue_count > 0:
                 logger.warning(f"⚠️  Found {issue_count} security issues in schema!")
                 for issue in analysis.get("security_issues", [])[:3]:  # Show first 3
-                    severity = issue.get("severity", "UNKNOWN")
-                    issue_type = issue.get("issue", "unknown")
+                    if isinstance(issue, dict):
+                        severity = issue.get("severity", "UNKNOWN")
+                        issue_type = issue.get("issue", "unknown")
+                    else:
+                        severity = "UNKNOWN"
+                        issue_type = str(issue)
                     logger.warning(f"   ├─ [{severity}] {issue_type}")
 
             if endpoint_count > 0:
                 logger.info(f"📊 Discovered endpoints:")
                 for endpoint in analysis.get("endpoints_found", [])[:5]:  # Show first 5
-                    method = endpoint.get("method", "GET")
-                    path = endpoint.get("path", "/")
+                    if isinstance(endpoint, dict):
+                        method = endpoint.get("method", "GET")
+                        path = endpoint.get("path", "/")
+                    else:
+                        method = "GET"
+                        path = str(endpoint)
                     logger.info(f"   ├─ {method} {path}")
         else:
             logger.error("❌ Schema analysis failed")
@@ -3192,7 +3450,7 @@ def setup_mcp_server(skynet_client: SkynetClient) -> FastMCP:
 
         # 1. API Endpoint Fuzzing
         logger.info("🔍 Phase 1: API endpoint discovery and fuzzing")
-        fuzz_result = self.api_fuzzer(base_url)
+        fuzz_result = api_fuzzer(base_url)
         if fuzz_result.get("success"):
             audit_results["tests_performed"].append("api_fuzzing")
             audit_results["api_fuzzing"] = fuzz_result
@@ -3200,7 +3458,7 @@ def setup_mcp_server(skynet_client: SkynetClient) -> FastMCP:
         # 2. Schema Analysis (if provided)
         if schema_url:
             logger.info("🔍 Phase 2: API schema analysis")
-            schema_result = self.api_schema_analyzer(schema_url)
+            schema_result = api_schema_analyzer(schema_url)
             if schema_result.get("success"):
                 audit_results["tests_performed"].append("schema_analysis")
                 audit_results["schema_analysis"] = schema_result
@@ -3211,7 +3469,7 @@ def setup_mcp_server(skynet_client: SkynetClient) -> FastMCP:
         # 3. JWT Analysis (if provided)
         if jwt_token:
             logger.info("🔍 Phase 3: JWT token analysis")
-            jwt_result = self.jwt_analyzer(jwt_token, base_url)
+            jwt_result = jwt_analyzer(jwt_token, base_url)
             if jwt_result.get("success"):
                 audit_results["tests_performed"].append("jwt_analysis")
                 audit_results["jwt_analysis"] = jwt_result
@@ -3222,7 +3480,7 @@ def setup_mcp_server(skynet_client: SkynetClient) -> FastMCP:
         # 4. GraphQL Testing (if provided)
         if graphql_endpoint:
             logger.info("🔍 Phase 4: GraphQL security scanning")
-            graphql_result = self.graphql_scanner(graphql_endpoint)
+            graphql_result = graphql_scanner(graphql_endpoint)
             if graphql_result.get("success"):
                 audit_results["tests_performed"].append("graphql_scanning")
                 audit_results["graphql_scanning"] = graphql_result
@@ -3454,41 +3712,6 @@ def setup_mcp_server(skynet_client: SkynetClient) -> FastMCP:
             logger.error(f"❌ Hakrawler crawling failed")
         return result
 
-    @mcp.tool()
-    def httpx_probe(targets: str = "", target_file: str = "", ports: str = "", methods: str = "GET", status_code: str = "", content_length: bool = False, output_file: str = "", additional_args: str = "") -> Dict[str, Any]:
-        """
-        Execute HTTPx for HTTP probing with enhanced logging.
-
-        Args:
-            targets: Target URLs or IPs
-            target_file: File containing targets
-            ports: Ports to probe
-            methods: HTTP methods to use
-            status_code: Filter by status code
-            content_length: Show content length
-            output_file: Output file path
-            additional_args: Additional HTTPx arguments
-
-        Returns:
-            HTTP probing results
-        """
-        data = {
-            "targets": targets,
-            "target_file": target_file,
-            "ports": ports,
-            "methods": methods,
-            "status_code": status_code,
-            "content_length": content_length,
-            "output_file": output_file,
-            "additional_args": additional_args
-        }
-        logger.info(f"🌐 Starting HTTPx probing")
-        result = skynet_client.safe_post("api/tools/httpx", data)
-        if result.get("success"):
-            logger.info(f"✅ HTTPx probing completed")
-        else:
-            logger.error(f"❌ HTTPx probing failed")
-        return result
 
     @mcp.tool()
     def paramspider_discovery(domain: str, exclude: str = "", output_file: str = "", level: int = 2, additional_args: str = "") -> Dict[str, Any]:
@@ -4046,29 +4269,27 @@ def setup_mcp_server(skynet_client: SkynetClient) -> FastMCP:
         try:
             logger.info(f"⚡ Executing command: {command}")
             result = skynet_client.execute_command(command, use_cache)
-            if "error" in result:
-                logger.error(f"❌ Command failed: {result['error']}")
-                return {
-                    "success": False,
-                    "error": result["error"],
-                    "stdout": "",
-                    "stderr": f"Error executing command: {result['error']}"
-                }
+            execution_time = result.get("execution_time", result.get("duration", 0))
 
             if result.get("success"):
-                execution_time = result.get("execution_time", 0)
                 logger.info(f"✅ Command completed successfully in {execution_time:.2f}s")
             else:
-                logger.warning(f"⚠️  Command completed with errors")
+                logger.warning(f"⚠️  Command completed with status '{result.get('status', 'unknown')}' in {execution_time:.2f}s")
 
             return result
         except Exception as e:
             logger.error(f"💥 Error executing command '{command}': {str(e)}")
             return {
                 "success": False,
+                "status": "error",
+                "timed_out": False,
                 "error": str(e),
                 "stdout": "",
-                "stderr": f"Error executing command: {str(e)}"
+                "stderr": f"Error executing command: {str(e)}",
+                "return_code": -1,
+                "execution_time": 0.0,
+                "duration": 0.0,
+                "timestamp": datetime.now().isoformat()
             }
 
     # ============================================================================
@@ -5481,11 +5702,13 @@ def setup_mcp_server(skynet_client: SkynetClient) -> FastMCP:
 
 def parse_args():
     """Parse command line arguments."""
+    server_default = os.environ.get("SKYNET_SERVER", DEFAULT_SKYNET_SERVER)
+    timeout_default = int(os.environ.get("SKYNET_TIMEOUT", str(DEFAULT_REQUEST_TIMEOUT)))
     parser = argparse.ArgumentParser(description="Run the Skynet MCP MCP Client")
-    parser.add_argument("--server", type=str, default=DEFAULT_SKYNET_SERVER,
-                      help=f"Skynet MCP API server URL (default: {DEFAULT_SKYNET_SERVER})")
-    parser.add_argument("--timeout", type=int, default=DEFAULT_REQUEST_TIMEOUT,
-                      help=f"Request timeout in seconds (default: {DEFAULT_REQUEST_TIMEOUT})")
+    parser.add_argument("--server", type=str, default=server_default,
+                      help=f"Skynet MCP API server URL (default: {server_default})")
+    parser.add_argument("--timeout", type=int, default=timeout_default,
+                      help=f"Request timeout in seconds (default: {timeout_default})")
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
     return parser.parse_args()
 

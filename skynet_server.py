@@ -46,6 +46,7 @@ import signal
 import requests
 import re
 import socket
+import urllib
 import urllib.parse
 from dataclasses import dataclass, field
 from enum import Enum
@@ -101,6 +102,38 @@ app.config['JSON_SORT_KEYS'] = False
 # API Configuration
 API_PORT = int(os.environ.get('SKYNET_PORT', 8888))
 API_HOST = os.environ.get('SKYNET_HOST', '127.0.0.1')
+
+# Cross-platform temporary directory management
+SKYNET_TMP_DIR = Path(tempfile.gettempdir()) / "skynet_tmp"
+SKYNET_TMP_DIR.mkdir(parents=True, exist_ok=True)
+
+def get_temp_path(filename: str) -> str:
+    """Return a cross-platform safe temporary file path."""
+    return str((SKYNET_TMP_DIR / filename).resolve())
+
+# Output sanitization for clean MCP and AI client consumption
+ANSI_ESCAPE_RE = re.compile(r'\x1b(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+
+def strip_ansi(text: str) -> str:
+    """Remove ANSI escape sequences and normalize terminal control characters."""
+    if not text:
+        return ""
+    clean = ANSI_ESCAPE_RE.sub('', text)
+    clean = clean.replace('\r\n', '\n')
+    lines = []
+    for line in clean.split('\n'):
+        if '\r' in line:
+            line = line.split('\r')[-1]
+        lines.append(line)
+    return '\n'.join(lines)
+
+def sanitize_output(text: str, max_chars: int = 50000) -> str:
+    """Clean and safely truncate output for MCP / LLM consumption."""
+    clean = strip_ansi(text)
+    if len(clean) > max_chars:
+        truncated_msg = f"\n\n... [Output truncated: showing first {max_chars} of {len(clean)} characters to preserve LLM context]"
+        return clean[:max_chars] + truncated_msg
+    return clean
 
 # ============================================================================
 # MODERN VISUAL ENGINE (v2.0 ENHANCEMENT)
@@ -1452,7 +1485,7 @@ class IntelligentDecisionEngine:
             params["timeout"] = 600
 
         # Set output directory
-        params["output_dir"] = f"/tmp/autorecon_{profile.target.replace('.', '_')}"
+        params["output_dir"] = get_temp_path(f"autorecon_{profile.target.replace('.', '_')}")
 
         return params
 
@@ -1545,7 +1578,7 @@ class IntelligentDecisionEngine:
 
         # Set output format and directory
         params["output_format"] = "json"
-        params["output_dir"] = f"/tmp/prowler_{params['provider']}"
+        params["output_dir"] = get_temp_path(f"prowler_{params['provider']}")
 
         return params
 
@@ -1562,7 +1595,7 @@ class IntelligentDecisionEngine:
             params["profile"] = context["aws_profile"]
 
         # Set report directory
-        params["report_dir"] = f"/tmp/scout-suite_{params['provider']}"
+        params["report_dir"] = get_temp_path(f"scout-suite_{params['provider']}")
 
         return params
 
@@ -3718,7 +3751,7 @@ class CTFToolManager:
 
             # Forensics Investigation Tools
             "binwalk": "binwalk -e --dd='.*'",
-            "foremost": "foremost -i {} -o /tmp/foremost_output",
+            "foremost": f"foremost -i {{}} -o {get_temp_path('foremost_output')}",
             "photorec": "photorec /log /cmd",
             "testdisk": "testdisk /log",
             "exiftool": "exiftool -all",
@@ -3736,7 +3769,7 @@ class CTFToolManager:
             "autopsy": "autopsy",
             "sleuthkit": "fls -r",
             "scalpel": "scalpel -c /etc/scalpel/scalpel.conf",
-            "bulk-extractor": "bulk_extractor -o /tmp/bulk_output",
+            "bulk-extractor": f"bulk_extractor -o {get_temp_path('bulk_output')}",
             "ddrescue": "ddrescue",
             "dc3dd": "dc3dd",
 
@@ -5719,7 +5752,24 @@ rate_limiter = RateLimitDetector()
 failure_recovery = FailureRecoverySystem()
 performance_monitor = PerformanceMonitor()
 parameter_optimizer = ParameterOptimizer()
-enhanced_process_manager = EnhancedProcessManager()
+class LazyEnhancedProcessManager:
+    """Lazy loader for EnhancedProcessManager to prevent spawning thread pools on import/help."""
+    _instance = None
+
+    def __getattr__(self, name):
+        if LazyEnhancedProcessManager._instance is None:
+            LazyEnhancedProcessManager._instance = EnhancedProcessManager()
+        return getattr(LazyEnhancedProcessManager._instance, name)
+
+    def __setattr__(self, name, value):
+        if name == "_instance":
+            super().__setattr__(name, value)
+        else:
+            if LazyEnhancedProcessManager._instance is None:
+                LazyEnhancedProcessManager._instance = EnhancedProcessManager()
+            setattr(LazyEnhancedProcessManager._instance, name, value)
+
+enhanced_process_manager = LazyEnhancedProcessManager()
 
 # Global CTF framework instances
 ctf_manager = CTFWorkflowManager()
@@ -5818,51 +5868,33 @@ class ProcessManager:
 
     @staticmethod
     def pause_process(pid):
-        """Pause a specific process (SIGSTOP)"""
+        """Pause a specific process (cross-platform using psutil)"""
         with process_lock:
             if pid in active_processes:
                 try:
-                    process_obj = active_processes[pid]["process"]
-                    if process_obj and process_obj.poll() is None:
-                        os.kill(pid, signal.SIGSTOP)
-                        active_processes[pid]["status"] = "paused"
-                        logger.info(f"⏸️  PAUSED: Process {pid}")
-                        return True
+                    proc = psutil.Process(pid)
+                    proc.suspend()
+                    active_processes[pid]["status"] = "paused"
+                    logger.info(f"⏸️  PAUSED: Process {pid}")
+                    return True
                 except Exception as e:
                     logger.error(f"💥 Error pausing process {pid}: {str(e)}")
             return False
 
     @staticmethod
     def resume_process(pid):
-        """Resume a paused process (SIGCONT)"""
+        """Resume a paused process (cross-platform using psutil)"""
         with process_lock:
             if pid in active_processes:
                 try:
-                    process_obj = active_processes[pid]["process"]
-                    if process_obj and process_obj.poll() is None:
-                        os.kill(pid, signal.SIGCONT)
-                        active_processes[pid]["status"] = "running"
-                        logger.info(f"▶️  RESUMED: Process {pid}")
-                        return True
+                    proc = psutil.Process(pid)
+                    proc.resume()
+                    active_processes[pid]["status"] = "running"
+                    logger.info(f"▶️  RESUMED: Process {pid}")
+                    return True
                 except Exception as e:
                     logger.error(f"💥 Error resuming process {pid}: {str(e)}")
             return False
-
-# Enhanced color codes and visual elements for modern terminal output
-# All color references consolidated to ModernVisualEngine.COLORS for consistency
-    BG_GREEN = '\033[42m'
-    BG_YELLOW = '\033[43m'
-    BG_BLUE = '\033[44m'
-    BG_MAGENTA = '\033[45m'
-    BG_CYAN = '\033[46m'
-    BG_WHITE = '\033[47m'
-
-    # Text effects
-    DIM = '\033[2m'
-    UNDERLINE = '\033[4m'
-    BLINK = '\033[5m'
-    REVERSE = '\033[7m'
-    STRIKETHROUGH = '\033[9m'
 
 class PythonEnvironmentManager:
     """Manage Python virtual environments and dependencies"""
@@ -6829,7 +6861,7 @@ def setup_logging():
 
 # Configuration (using existing API_PORT from top of file)
 DEBUG_MODE = os.environ.get("DEBUG_MODE", "0").lower() in ("1", "true", "yes", "y")
-COMMAND_TIMEOUT = 300  # 5 minutes default timeout
+COMMAND_TIMEOUT = int(os.environ.get("COMMAND_TIMEOUT", os.environ.get("SKYNET_TIMEOUT", "300")))  # Default 300s timeout (configurable via env)
 CACHE_SIZE = 1000
 CACHE_TTL = 3600  # 1 hour
 
@@ -7080,9 +7112,6 @@ class EnhancedCommandExecutor:
 
                 execution_time = self.end_time - self.start_time
 
-                # Cleanup process from registry (v5.0 enhancement)
-                ProcessManager.cleanup_process(pid)
-
                 if self.return_code == 0:
                     logger.info(f"✅ SUCCESS: Command completed | Exit Code: {self.return_code} | Duration: {execution_time:.2f}s")
                     telemetry.record_execution(True, execution_time)
@@ -7109,64 +7138,89 @@ class EnhancedCommandExecutor:
 
                 self.return_code = -1
                 telemetry.record_execution(False, execution_time)
+            finally:
+                # Cleanup process from registry on both success and timeout
+                ProcessManager.cleanup_process(pid)
 
-            # Always consider it a success if we have output, even with timeout
-            success = True if self.timed_out and (self.stdout_data or self.stderr_data) else (self.return_code == 0)
+            # Calculate execution duration
+            execution_time = round(self.end_time - self.start_time, 2) if self.end_time else 0
 
-            # Log enhanced final results with summary using ModernVisualEngine
-            output_size = len(self.stdout_data) + len(self.stderr_data)
-            execution_time = self.end_time - self.start_time if self.end_time else 0
+            # Clean and sanitize stdout and stderr (strips ANSI escape codes & normalizes carriage returns)
+            clean_stdout = sanitize_output(self.stdout_data)
+            clean_stderr = sanitize_output(self.stderr_data)
+
+            # Determine true execution status and success
+            if self.timed_out:
+                success = False
+                status = "timeout"
+            elif self.return_code == 0:
+                success = True
+                status = "success"
+            elif self.return_code in [1, 2] and bool(clean_stdout.strip()):
+                # Security tools (Nikto, Dalfox, Grep, etc.) frequently exit 1 or 2 when findings are discovered
+                success = True
+                status = "completed_with_findings"
+            else:
+                success = False
+                status = "failed"
 
             # Create status summary
-            status_icon = "✅" if success else "❌"
+            status_icon = "✅" if success else ("⏰" if self.timed_out else "❌")
             status_color = ModernVisualEngine.COLORS['MATRIX_GREEN'] if success else ModernVisualEngine.COLORS['HACKER_RED']
             timeout_status = f" {ModernVisualEngine.COLORS['WARNING']}[TIMEOUT]{ModernVisualEngine.COLORS['RESET']}" if self.timed_out else ""
 
-            # Create beautiful results summary
+            # Log results
+            output_size = len(clean_stdout) + len(clean_stderr)
             results_summary = f"""
 {ModernVisualEngine.COLORS['MATRIX_GREEN']}{ModernVisualEngine.COLORS['BOLD']}╭─────────────────────────────────────────────────────────────────────────────╮{ModernVisualEngine.COLORS['RESET']}
 {ModernVisualEngine.COLORS['BOLD']}│{ModernVisualEngine.COLORS['RESET']} {status_color}📊 FINAL RESULTS {status_icon}{ModernVisualEngine.COLORS['RESET']}
 {ModernVisualEngine.COLORS['BOLD']}├─────────────────────────────────────────────────────────────────────────────┤{ModernVisualEngine.COLORS['RESET']}
 {ModernVisualEngine.COLORS['BOLD']}│{ModernVisualEngine.COLORS['RESET']} {ModernVisualEngine.COLORS['NEON_BLUE']}🚀 Command:{ModernVisualEngine.COLORS['RESET']} {self.command[:55]}{'...' if len(self.command) > 55 else ''}
-{ModernVisualEngine.COLORS['BOLD']}│{ModernVisualEngine.COLORS['RESET']} {ModernVisualEngine.COLORS['CYBER_ORANGE']}⏱️  Duration:{ModernVisualEngine.COLORS['RESET']} {execution_time:.2f}s{timeout_status}
+{ModernVisualEngine.COLORS['BOLD']}│{ModernVisualEngine.COLORS['RESET']} {ModernVisualEngine.COLORS['CYBER_ORANGE']}⏱️  Duration:{ModernVisualEngine.COLORS['RESET']} {execution_time}s{timeout_status}
 {ModernVisualEngine.COLORS['BOLD']}│{ModernVisualEngine.COLORS['RESET']} {ModernVisualEngine.COLORS['WARNING']}📊 Output Size:{ModernVisualEngine.COLORS['RESET']} {output_size} bytes
 {ModernVisualEngine.COLORS['BOLD']}│{ModernVisualEngine.COLORS['RESET']} {ModernVisualEngine.COLORS['ELECTRIC_PURPLE']}🔢 Exit Code:{ModernVisualEngine.COLORS['RESET']} {self.return_code}
-{ModernVisualEngine.COLORS['BOLD']}│{ModernVisualEngine.COLORS['RESET']} {status_color}📈 Status:{ModernVisualEngine.COLORS['RESET']} {'SUCCESS' if success else 'FAILED'} | Cached: Yes
+{ModernVisualEngine.COLORS['BOLD']}│{ModernVisualEngine.COLORS['RESET']} {status_color}📈 Status:{ModernVisualEngine.COLORS['RESET']} {status.upper()}
 {ModernVisualEngine.COLORS['MATRIX_GREEN']}{ModernVisualEngine.COLORS['BOLD']}╰─────────────────────────────────────────────────────────────────────────────╯{ModernVisualEngine.COLORS['RESET']}
 """
-
-            # Log the beautiful summary
             for line in results_summary.strip().split('\n'):
                 if line.strip():
                     logger.info(line)
 
             return {
-                "stdout": self.stdout_data,
-                "stderr": self.stderr_data,
-                "return_code": self.return_code,
+                "status": status,
                 "success": success,
+                "stdout": clean_stdout,
+                "stderr": clean_stderr,
+                "return_code": self.return_code,
                 "timed_out": self.timed_out,
-                "partial_results": self.timed_out and (self.stdout_data or self.stderr_data),
-                "execution_time": self.end_time - self.start_time if self.end_time else 0,
+                "partial_results": self.timed_out and bool(clean_stdout or clean_stderr),
+                "execution_time": execution_time,
+                "duration": execution_time,
+                "command": self.command,
+                "cached": False,
                 "timestamp": datetime.now().isoformat()
             }
 
         except Exception as e:
             self.end_time = time.time()
-            execution_time = self.end_time - self.start_time if self.start_time else 0
+            execution_time = round(self.end_time - self.start_time, 2) if self.start_time else 0
 
             logger.error(f"💥 ERROR: Command execution failed: {str(e)}")
             logger.error(f"🔍 TRACEBACK: {traceback.format_exc()}")
             telemetry.record_execution(False, execution_time)
 
             return {
-                "stdout": self.stdout_data,
-                "stderr": f"Error executing command: {str(e)}\n{self.stderr_data}",
-                "return_code": -1,
+                "status": "error",
                 "success": False,
+                "stdout": sanitize_output(self.stdout_data),
+                "stderr": f"Error executing command: {str(e)}\n{sanitize_output(self.stderr_data)}",
+                "return_code": -1,
                 "timed_out": False,
                 "partial_results": bool(self.stdout_data or self.stderr_data),
                 "execution_time": execution_time,
+                "duration": execution_time,
+                "command": self.command,
+                "cached": False,
                 "timestamp": datetime.now().isoformat()
             }
 
@@ -7611,7 +7665,7 @@ class SQLiExploit:
         results = {{}}
         
         for info_type, query in queries.items():
-            payload = f"1' UNION SELECT 1,({query}),3--"
+            payload = f"1' UNION SELECT 1,({{query}}),3--"
             try:
                 response = self.session.get(
                     f"{{self.target_url}}{{self.endpoint}}",
@@ -8650,7 +8704,7 @@ if __name__ == "__main__":
     def _generate_usage_instructions(self, vuln_type, params):
         """Generate usage instructions for the exploit"""
         instructions = [
-            f"# Exploit for CVE {params['cve_id']}",
+            f"# Exploit for CVE {params.get('cve_id', 'Unknown')}",
             f"# Vulnerability Type: {vuln_type}",
             "",
             "## Usage Instructions:",
@@ -8801,13 +8855,14 @@ cve_intelligence = CVEIntelligenceManager()
 exploit_generator = AIExploitGenerator()
 vulnerability_correlator = VulnerabilityCorrelator()
 
-def execute_command(command: str, use_cache: bool = True) -> Dict[str, Any]:
+def execute_command(command: str, use_cache: bool = True, timeout: int = COMMAND_TIMEOUT) -> Dict[str, Any]:
     """
     Execute a shell command with enhanced features
 
     Args:
         command: The command to execute
         use_cache: Whether to use caching for this command
+        timeout: Execution timeout in seconds
 
     Returns:
         A dictionary containing the stdout, stderr, return code, and metadata
@@ -8817,10 +8872,16 @@ def execute_command(command: str, use_cache: bool = True) -> Dict[str, Any]:
     if use_cache:
         cached_result = cache.get(command, {})
         if cached_result:
-            return cached_result
+            result_copy = dict(cached_result)
+            result_copy["cached"] = True
+            result_copy["cache_retrieval_ms"] = 0.5
+            result_copy["cached_execution_time"] = result_copy.get("execution_time", 0.0)
+            result_copy["execution_time"] = 0.001
+            result_copy["duration"] = 0.001
+            return result_copy
 
     # Execute command
-    executor = EnhancedCommandExecutor(command)
+    executor = EnhancedCommandExecutor(command, timeout=timeout)
     result = executor.execute()
 
     # Cache successful results
@@ -8830,7 +8891,7 @@ def execute_command(command: str, use_cache: bool = True) -> Dict[str, Any]:
     return result
 
 def execute_command_with_recovery(tool_name: str, command: str, parameters: Dict[str, Any] = None,
-                                 use_cache: bool = True, max_attempts: int = 3) -> Dict[str, Any]:
+                                 use_cache: bool = True, max_attempts: int = 3, timeout: int = COMMAND_TIMEOUT) -> Dict[str, Any]:
     """
     Execute a command with intelligent error handling and recovery
 
@@ -8840,6 +8901,7 @@ def execute_command_with_recovery(tool_name: str, command: str, parameters: Dict
         parameters: Tool parameters for context
         use_cache: Whether to use caching
         max_attempts: Maximum number of recovery attempts
+        timeout: Execution timeout in seconds
 
     Returns:
         A dictionary containing execution results with recovery information
@@ -8856,7 +8918,7 @@ def execute_command_with_recovery(tool_name: str, command: str, parameters: Dict
 
         try:
             # Execute the command
-            result = execute_command(command, use_cache)
+            result = execute_command(command, use_cache=use_cache, timeout=timeout)
 
             # Check if execution was successful
             if result.get("success", False):
@@ -9103,10 +9165,23 @@ class FileOperationsManager:
         self.base_dir.mkdir(parents=True, exist_ok=True)
         self.max_file_size = 100 * 1024 * 1024  # 100MB
 
+    def _resolve_safe_path(self, filename: str) -> Optional[Path]:
+        """Resolve path and verify it stays inside base_dir to prevent path traversal."""
+        try:
+            target = (self.base_dir / filename).resolve()
+            base = self.base_dir.resolve()
+            if not target.is_relative_to(base):
+                return None
+            return target
+        except Exception:
+            return None
+
     def create_file(self, filename: str, content: str, binary: bool = False) -> Dict[str, Any]:
         """Create a file with the specified content"""
         try:
-            file_path = self.base_dir / filename
+            file_path = self._resolve_safe_path(filename)
+            if file_path is None:
+                return {"success": False, "error": "Access denied: Path traversal detected"}
             file_path.parent.mkdir(parents=True, exist_ok=True)
 
             if len(content.encode()) > self.max_file_size:
@@ -9129,7 +9204,9 @@ class FileOperationsManager:
     def modify_file(self, filename: str, content: str, append: bool = False) -> Dict[str, Any]:
         """Modify an existing file"""
         try:
-            file_path = self.base_dir / filename
+            file_path = self._resolve_safe_path(filename)
+            if file_path is None:
+                return {"success": False, "error": "Access denied: Path traversal detected"}
             if not file_path.exists():
                 return {"success": False, "error": "File does not exist"}
 
@@ -9147,7 +9224,9 @@ class FileOperationsManager:
     def delete_file(self, filename: str) -> Dict[str, Any]:
         """Delete a file or directory"""
         try:
-            file_path = self.base_dir / filename
+            file_path = self._resolve_safe_path(filename)
+            if file_path is None:
+                return {"success": False, "error": "Access denied: Path traversal detected"}
             if not file_path.exists():
                 return {"success": False, "error": "File does not exist"}
 
@@ -9166,9 +9245,9 @@ class FileOperationsManager:
     def list_files(self, directory: str = ".") -> Dict[str, Any]:
         """List files in a directory"""
         try:
-            dir_path = self.base_dir / directory
-            if not dir_path.exists():
-                return {"success": False, "error": "Directory does not exist"}
+            dir_path = self._resolve_safe_path(directory)
+            if dir_path is None or not dir_path.exists():
+                return {"success": False, "error": "Directory does not exist or access denied"}
 
             files = []
             for item in dir_path.iterdir():
@@ -9266,11 +9345,7 @@ def health_check():
     tools_status = {}
 
     for tool in all_tools:
-        try:
-            result = execute_command(f"which {tool}", use_cache=True)
-            tools_status[tool] = result["success"]
-        except:
-            tools_status[tool] = False
+        tools_status[tool] = bool(shutil.which(tool))
 
     all_essential_tools_available = all(tools_status[tool] for tool in essential_tools)
 
@@ -9308,23 +9383,47 @@ def health_check():
 def generic_command():
     """Execute any command provided in the request with enhanced logging"""
     try:
-        params = request.json
+        params = request.json or {}
         command = params.get("command", "")
         use_cache = params.get("use_cache", True)
+        timeout = params.get("timeout")
+        if timeout is not None:
+            try:
+                timeout = int(timeout)
+            except (ValueError, TypeError):
+                timeout = COMMAND_TIMEOUT
+        else:
+            timeout = COMMAND_TIMEOUT
 
         if not command:
             logger.warning("⚠️  Command endpoint called without command parameter")
             return jsonify({
-                "error": "Command parameter is required"
+                "error": "Command parameter is required",
+                "success": False,
+                "status": "failed",
+                "stdout": "",
+                "stderr": "Command parameter is required",
+                "return_code": -1,
+                "execution_time": 0.0,
+                "duration": 0.0,
+                "timed_out": False
             }), 400
 
-        result = execute_command(command, use_cache=use_cache)
+        result = execute_command(command, use_cache=use_cache, timeout=timeout)
         return jsonify(result)
     except Exception as e:
         logger.error(f"💥 Error in command endpoint: {str(e)}")
         logger.error(traceback.format_exc())
         return jsonify({
-            "error": f"Server error: {str(e)}"
+            "error": f"Server error: {str(e)}",
+            "success": False,
+            "status": "error",
+            "stdout": "",
+            "stderr": f"Server error: {str(e)}",
+            "return_code": -1,
+            "execution_time": 0.0,
+            "duration": 0.0,
+            "timed_out": False
         }), 500
 
 # File Operations API Endpoints
@@ -10763,7 +10862,7 @@ def prowler():
         profile = params.get("profile", "default")
         region = params.get("region", "")
         checks = params.get("checks", "")
-        output_dir = params.get("output_dir", "/tmp/prowler_output")
+        output_dir = params.get("output_dir", get_temp_path("prowler_output"))
         output_format = params.get("output_format", "json")
         additional_args = params.get("additional_args", "")
 
@@ -10853,7 +10952,7 @@ def scout_suite():
         params = request.json
         provider = params.get("provider", "aws")  # aws, azure, gcp, aliyun, oci
         profile = params.get("profile", "default")
-        report_dir = params.get("report_dir", "/tmp/scout-suite")
+        report_dir = params.get("report_dir", get_temp_path("scout-suite"))
         services = params.get("services", "")
         exceptions = params.get("exceptions", "")
         additional_args = params.get("additional_args", "")
@@ -10947,7 +11046,7 @@ def pacu():
         commands.append("exit")
 
         # Create command file
-        command_file = "/tmp/pacu_commands.txt"
+        command_file = get_temp_path("pacu_commands.txt")
         with open(command_file, "w") as f:
             f.write("\n".join(commands))
 
@@ -11038,7 +11137,8 @@ def kube_bench():
             command += f" --config-dir {config_dir}"
 
         if output_format:
-            command += f" --outputfile /tmp/kube-bench-results.{output_format} --json"
+            bench_output = get_temp_path(f"kube-bench-results.{output_format}")
+            command += f" --outputfile {bench_output} --json"
 
         if additional_args:
             command += f" {additional_args}"
@@ -11058,7 +11158,7 @@ def docker_bench_security():
         params = request.json
         checks = params.get("checks", "")  # Specific checks to run
         exclude = params.get("exclude", "")  # Checks to exclude
-        output_file = params.get("output_file", "/tmp/docker-bench-results.json")
+        output_file = params.get("output_file", get_temp_path("docker-bench-results.json"))
         additional_args = params.get("additional_args", "")
 
         command = "docker-bench-security"
@@ -11335,7 +11435,7 @@ def metasploit():
         resource_content += "exploit\n"
 
         # Save resource script to a temporary file
-        resource_file = "/tmp/mcp_msf_resource.rc"
+        resource_file = get_temp_path("mcp_msf_resource.rc")
         with open(resource_file, "w") as f:
             f.write(resource_content)
 
@@ -11894,7 +11994,7 @@ def autorecon():
     try:
         params = request.json
         target = params.get("target", "")
-        output_dir = params.get("output_dir", "/tmp/autorecon")
+        output_dir = params.get("output_dir", get_temp_path("autorecon"))
         port_scans = params.get("port_scans", "top-100-ports")
         service_scans = params.get("service_scans", "default")
         heartbeat = params.get("heartbeat", 60)
@@ -12247,7 +12347,7 @@ def gdb():
             command += f" -x {script_file}"
 
         if commands:
-            temp_script = "/tmp/gdb_commands.txt"
+            temp_script = get_temp_path("gdb_commands.txt")
             with open(temp_script, "w") as f:
                 f.write(commands)
             command += f" -x {temp_script}"
@@ -12260,9 +12360,9 @@ def gdb():
         logger.info(f"🔧 Starting GDB analysis: {binary}")
         result = execute_command(command)
 
-        if commands and os.path.exists("/tmp/gdb_commands.txt"):
+        if commands and os.path.exists(temp_script):
             try:
-                os.remove("/tmp/gdb_commands.txt")
+                os.remove(temp_script)
             except:
                 pass
 
@@ -12289,8 +12389,9 @@ def radare2():
                 "error": "Binary parameter is required"
             }), 400
 
+        temp_script = None
         if commands:
-            temp_script = "/tmp/r2_commands.txt"
+            temp_script = get_temp_path("r2_commands.txt")
             with open(temp_script, "w") as f:
                 f.write(commands)
             command = f"r2 -i {temp_script} -q {binary}"
@@ -12303,9 +12404,9 @@ def radare2():
         logger.info(f"🔧 Starting Radare2 analysis: {binary}")
         result = execute_command(command)
 
-        if commands and os.path.exists("/tmp/r2_commands.txt"):
+        if commands and temp_script and os.path.exists(temp_script):
             try:
-                os.remove("/tmp/r2_commands.txt")
+                os.remove(temp_script)
             except:
                 pass
 
@@ -12536,7 +12637,7 @@ def ghidra():
             return jsonify({"error": "Binary parameter is required"}), 400
 
         # Create Ghidra project directory
-        project_dir = f"/tmp/ghidra_projects/{project_name}"
+        project_dir = get_temp_path(f"ghidra_projects_{project_name}")
         os.makedirs(project_dir, exist_ok=True)
 
         # Base Ghidra command for headless analysis
@@ -12576,7 +12677,7 @@ def pwntools():
             return jsonify({"error": "Script content or target binary is required"}), 400
 
         # Create temporary Python script
-        script_file = "/tmp/pwntools_exploit.py"
+        script_file = get_temp_path("pwntools_exploit.py")
 
         if script_content:
             # Use provided script content
@@ -12729,8 +12830,9 @@ def gdb_peda():
             command += f" -p {attach_pid}"
 
         # Create command script
+        temp_script = None
         if commands:
-            temp_script = "/tmp/gdb_peda_commands.txt"
+            temp_script = get_temp_path("gdb_peda_commands.txt")
             peda_commands = f"""
 source ~/peda/peda.py
 {commands}
@@ -12751,9 +12853,9 @@ quit
         result = execute_command(command)
 
         # Cleanup
-        if commands and os.path.exists("/tmp/gdb_peda_commands.txt"):
+        if commands and temp_script and os.path.exists(temp_script):
             try:
-                os.remove("/tmp/gdb_peda_commands.txt")
+                os.remove(temp_script)
             except:
                 pass
 
@@ -12780,7 +12882,7 @@ def angr():
             return jsonify({"error": "Binary parameter is required"}), 400
 
         # Create angr script
-        script_file = "/tmp/angr_analysis.py"
+        script_file = get_temp_path("angr_analysis.py")
 
         if script_content:
             with open(script_file, "w") as f:
@@ -12834,7 +12936,7 @@ for func_addr, func in cfg.functions.items():
             with open(script_file, "w") as f:
                 f.write(template)
 
-        command = f"python3 {script_file}"
+        command = f'"{sys.executable}" "{script_file}"'
 
         if additional_args:
             command += f" {additional_args}"
@@ -13952,7 +14054,7 @@ class BrowserAgent:
             time.sleep(wait_time)
 
             # Take screenshot
-            screenshot_path = f"/tmp/skynet_screenshot_{int(time.time())}.png"
+            screenshot_path = get_temp_path(f"skynet_screenshot_{int(time.time())}.png")
             self.driver.save_screenshot(screenshot_path)
             self.screenshots.append(screenshot_path)
 
@@ -14454,7 +14556,7 @@ def browser_agent_endpoint():
                     400,
                 )
 
-            screenshot_path = f"/tmp/skynet_screenshot_{int(time.time())}.png"
+            screenshot_path = get_temp_path(f"skynet_screenshot_{int(time.time())}.png")
             browser_agent.driver.save_screenshot(screenshot_path)
 
             return jsonify(
@@ -14487,6 +14589,38 @@ def browser_agent_endpoint():
         logger.error(
             f"{ModernVisualEngine.format_error_card('ERROR', 'BrowserAgent', str(e))}"
         )
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+@app.route("/api/tools/burpsuite", methods=["POST"])
+def burpsuite():
+    """Execute Burp Suite with enhanced logging"""
+    try:
+        params = request.json or {}
+        project_file = params.get("project_file", "")
+        config_file = params.get("config_file", "")
+        target = params.get("target", "")
+        headless = params.get("headless", False)
+        scan_type = params.get("scan_type", "")
+        scan_config = params.get("scan_config", "")
+        output_file = params.get("output_file", "")
+        additional_args = params.get("additional_args", "")
+
+        command = "burpsuite"
+        if headless:
+            command += " --headless"
+        if project_file:
+            command += f' --project-file="{project_file}"'
+        if config_file:
+            command += f' --config-file="{config_file}"'
+        if additional_args:
+            command += f" {additional_args}"
+
+        logger.info(f"🔍 Starting Burp Suite: {target or project_file}")
+        result = execute_command(command)
+        logger.info(f"📊 Burp Suite execution completed")
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"💥 Error in burpsuite endpoint: {str(e)}")
         return jsonify({"error": f"Server error: {str(e)}"}), 500
 
 @app.route("/api/tools/burpsuite-alternative", methods=["POST"])
@@ -15546,7 +15680,7 @@ def foremost():
     try:
         params = request.json
         input_file = params.get("input_file", "")
-        output_dir = params.get("output_dir", "/tmp/foremost_output")
+        output_dir = params.get("output_dir", get_temp_path("foremost_output"))
         file_types = params.get("file_types", "")
         additional_args = params.get("additional_args", "")
 
@@ -16734,7 +16868,7 @@ def ctf_forensics_analyzer():
                     elif tool == "zsteg":
                         steg_result = subprocess.run([tool, '-a', file_path], capture_output=True, text=True, timeout=30)
                     elif tool == "outguess":
-                        steg_result = subprocess.run([tool, '-r', file_path, '/tmp/outguess_output'], capture_output=True, text=True, timeout=30)
+                        steg_result = subprocess.run([tool, '-r', file_path, get_temp_path('outguess_output')], capture_output=True, text=True, timeout=30)
 
                     if steg_result.returncode == 0 and steg_result.stdout.strip():
                         results["steganography_results"].append({
@@ -17527,22 +17661,30 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Run the Skynet MCP API Server")
     parser.add_argument("--debug", action="store_true", help="Enable debug mode")
+    parser.add_argument("--host", type=str, default=API_HOST, help=f"Host for the API server (default: {API_HOST})")
     parser.add_argument("--port", type=int, default=API_PORT, help=f"Port for the API server (default: {API_PORT})")
+    parser.add_argument("--timeout", type=int, default=COMMAND_TIMEOUT, help=f"Default command timeout in seconds (default: {COMMAND_TIMEOUT})")
     args = parser.parse_args()
 
     if args.debug:
         DEBUG_MODE = True
         logger.setLevel(logging.DEBUG)
 
+    if args.host:
+        API_HOST = args.host
+
     if args.port != API_PORT:
         API_PORT = args.port
+
+    if args.timeout:
+        COMMAND_TIMEOUT = args.timeout
 
     # Enhanced startup messages with beautiful formatting
     startup_info = f"""
 {ModernVisualEngine.COLORS['MATRIX_GREEN']}{ModernVisualEngine.COLORS['BOLD']}╭─────────────────────────────────────────────────────────────────────────────╮{ModernVisualEngine.COLORS['RESET']}
 {ModernVisualEngine.COLORS['BOLD']}│{ModernVisualEngine.COLORS['RESET']} {ModernVisualEngine.COLORS['NEON_BLUE']}🚀 Starting Skynet MCP Tools API Server{ModernVisualEngine.COLORS['RESET']}
 {ModernVisualEngine.COLORS['BOLD']}├─────────────────────────────────────────────────────────────────────────────┤{ModernVisualEngine.COLORS['RESET']}
-{ModernVisualEngine.COLORS['BOLD']}│{ModernVisualEngine.COLORS['RESET']} {ModernVisualEngine.COLORS['CYBER_ORANGE']}🌐 Port:{ModernVisualEngine.COLORS['RESET']} {API_PORT}
+{ModernVisualEngine.COLORS['BOLD']}│{ModernVisualEngine.COLORS['RESET']} {ModernVisualEngine.COLORS['CYBER_ORANGE']}🌐 Host:{ModernVisualEngine.COLORS['RESET']} {API_HOST} | {ModernVisualEngine.COLORS['CYBER_ORANGE']}Port:{ModernVisualEngine.COLORS['RESET']} {API_PORT}
 {ModernVisualEngine.COLORS['BOLD']}│{ModernVisualEngine.COLORS['RESET']} {ModernVisualEngine.COLORS['WARNING']}🔧 Debug Mode:{ModernVisualEngine.COLORS['RESET']} {DEBUG_MODE}
 {ModernVisualEngine.COLORS['BOLD']}│{ModernVisualEngine.COLORS['RESET']} {ModernVisualEngine.COLORS['ELECTRIC_PURPLE']}💾 Cache Size:{ModernVisualEngine.COLORS['RESET']} {CACHE_SIZE} | TTL: {CACHE_TTL}s
 {ModernVisualEngine.COLORS['BOLD']}│{ModernVisualEngine.COLORS['RESET']} {ModernVisualEngine.COLORS['TERMINAL_GRAY']}⏱️  Command Timeout:{ModernVisualEngine.COLORS['RESET']} {COMMAND_TIMEOUT}s
@@ -17554,4 +17696,4 @@ if __name__ == "__main__":
         if line.strip():
             logger.info(line)
 
-    app.run(host="0.0.0.0", port=API_PORT, debug=DEBUG_MODE)
+    app.run(host=API_HOST, port=API_PORT, debug=DEBUG_MODE)
