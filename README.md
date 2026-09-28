@@ -5,11 +5,11 @@
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Security](https://img.shields.io/badge/Security-Penetration%20Testing-red.svg)](https://github.com/0x4m4/skynet-mcp)
-[![MCP](https://img.shields.io/badge/MCP-Compatible-purple.svg)](https://github.com/0x4m4/skynet-mcp)
-[![Version](https://img.shields.io/badge/Version-6.0.0-orange.svg)](https://github.com/0x4m4/skynet-mcp/releases)
-[![Tools](https://img.shields.io/badge/Security%20Tools-150%2B-brightgreen.svg)](https://github.com/0x4m4/skynet-mcp)
-[![Agents](https://img.shields.io/badge/AI%20Agents-12%2B-purple.svg)](https://github.com/0x4m4/skynet-mcp)
+[![Security](https://img.shields.io/badge/Security-Penetration%20Testing-red.svg)
+[![MCP](https://img.shields.io/badge/MCP-Compatible-purple.svg)]
+[![Version](https://img.shields.io/badge/Version-6.0.0-orange.svg)
+[![Tools](https://img.shields.io/badge/Security%20Tools-150%2B-brightgreen.svg)])
+[![Agents](https://img.shields.io/badge/AI%20Agents-12%2B-purple.svg)]
 
 **A high-performance Model Context Protocol (MCP) framework designed to empower AI agents with 150+ professional security tools and autonomous offensive capabilities.**
 
